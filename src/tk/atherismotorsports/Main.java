@@ -34,15 +34,17 @@ public class Main implements Runnable{
 	public BufferedImage settingImage;
 	public BufferedImage backImage;
 	public JLabel background;
-	public JLabel timeLabel;
+	public static JLabel timeLabel;
 	
 	public boolean running = false;
+	public boolean settingsOpen = false;
 	public Thread thread;
 	
 	public int alpha = 25;
 	
 	public Weather weather;
 	public MusicPlayer musicPlayer;
+	public Settings settings;
 	public Main main;
 	public Time time;
 	
@@ -75,7 +77,7 @@ public class Main implements Runnable{
 		JButton musicButton = new JButton();
 		JButton weatherButton = new JButton();
 		JButton speed = new JButton();
-		JButton settings = new JButton();
+		JButton settingsButton = new JButton();
 		frame.setSize(WIDTH, HEIGHT);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setContentPane(background);
@@ -122,17 +124,23 @@ public class Main implements Runnable{
 		
 		c.gridy++;
 		
-		settings.setBackground(new Color(56, 56, 56, alpha));
-		settings.setBorderPainted(false);
-		settings.setOpaque(true);
-		settings.setIcon(new ImageIcon((settingImage)));
-		frame.add(settings, c);
+		settingsButton.setBackground(new Color(56, 56, 56, alpha));
+		settingsButton.setBorderPainted(false);
+		settingsButton.setOpaque(true);
+		settingsButton.setIcon(new ImageIcon((settingImage)));
+		frame.add(settingsButton, c);
+		settingsButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				settings = new Settings(main);
+				settingsOpen = true;
+			}
+		});
 		
 		c.gridx = 1;
 		c.gridy = 0;
 		
 		timeLabel.setForeground(Color.white);
-		timeLabel.setFont(new Font("Stencil", Font.PLAIN, 18));
+		timeLabel.setFont(new Font("Stencil", Font.PLAIN, 24));
 		frame.add(timeLabel, c);
 		
 		frame.setResizable(false);
@@ -158,6 +166,9 @@ public class Main implements Runnable{
 	
 	public void update(){
 		time.update();
+		if(settingsOpen){
+			settings.update();
+		}
 		//System.out.println(time.hours + ":" + time.minutes + ":" + time.seconds);
 	}
 	

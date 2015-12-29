@@ -16,6 +16,7 @@ import javax.swing.JScrollPane;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 
 public class MusicPlayer {
 	
@@ -102,6 +103,7 @@ public class MusicPlayer {
 	
 	
 	class SceneGenerator(){
+		final Label currentlyPlayer = new Label();
 		
 	}
 

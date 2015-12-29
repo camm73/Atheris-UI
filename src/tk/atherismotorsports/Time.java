@@ -16,7 +16,11 @@ public class Time{
 	
 	public void update(){
 		seconds = String.valueOf(Calendar.getInstance().get(Calendar.SECOND));
-		hours = String.valueOf(Calendar.getInstance().get(Calendar.HOUR));
+		if(String.valueOf(Calendar.getInstance().get(Calendar.HOUR)).equals("0")){
+			hours = "12";
+		}else{
+			hours = String.valueOf(Calendar.getInstance().get(Calendar.HOUR));
+		}
 		minutes = String.valueOf(Calendar.getInstance().get(Calendar.MINUTE));
 	}
 	
