@@ -49,7 +49,11 @@ public class Settings {
 	}
 	
 	public void update(){
-		timeLabel.setText(time.hours + ":" + time.minutes + ":" + time.seconds);
+		if(Integer.parseInt(time.seconds) < 10){
+			timeLabel.setText(time.hours + ":" + time.minutes + ":0" + time.seconds);
+		}else{
+			timeLabel.setText(time.hours + ":" + time.minutes + ":" + time.seconds);
+		}
 	}
 
 	class SettingsPanel extends JPanel {
