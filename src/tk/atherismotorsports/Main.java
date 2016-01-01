@@ -41,6 +41,7 @@ public class Main implements Runnable{
 	public Thread thread;
 	
 	public int alpha = 25;
+	public boolean initial = true;
 	
 	public Weather weather;
 	public MusicPlayer musicPlayer;
@@ -96,7 +97,8 @@ public class Main implements Runnable{
 		frame.add(musicButton, c);
 		musicButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				//musicPlayer = new MusicPlayer(main);
+				musicPlayer = new MusicPlayer(main);
+				initial = false;
 			}
 		});
 		
@@ -109,7 +111,13 @@ public class Main implements Runnable{
 		frame.add(weatherButton, c);
 		weatherButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
+				frame.setAlwaysOnTop(true);
 				weather = new Weather(main);
+				while(!weather.frameDone){
+					System.out.println("Weather frame loading");
+				}
+				frame.setAlwaysOnTop(false);
+				weather.weatherFrame.setAlwaysOnTop(true);
 			}
 		});
 		

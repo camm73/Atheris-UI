@@ -6,17 +6,16 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
 
 public class MusicPlayer {
 	
@@ -53,29 +52,35 @@ public class MusicPlayer {
 		//protected List<>
 		private JScrollPane songScroll = new JScrollPane(songPanel);
 		private Insets insets = getInsets();
-		private final JFXPanel fxPanel = new JFXPanel();
+		
+		public File musicDirectory;
 		
 		public MusicPanel(){
 			backButton.setBackground(new Color(56, 56, 56));
 			backButton.setIcon(new ImageIcon(main.backImage));
-			handleJavaFX();
-			getSongList();
-			loadSongPanel();
+			createMusicFolder();
+			loadMusicList();
 			content();
 		}
 		
-		public void handleJavaFX(){
-			Platform.runLater(new Runnable(){
-				public void run(){
-					initFx(fxPanel);
-				}
-			});
+		public void createMusicFolder(){
+			JFileChooser jfc = new JFileChooser();
+			String directory;
+			directory = jfc.getCurrentDirectory().toString();
+			
+			musicDirectory = new File(directory + "/Atheris Music/");
+			
+			if(!musicDirectory.mkdirs()){
+				System.out.println("Error creating Atheris Music directory or it already exists");
+			}else{
+				System.out.println("Successfully created Atheris Music directory!");
+			}
 		}
 		
-		public void initFx(JFXPanel fxPanel){
-			Scene scene = new SceneGenerator().createScene();
-			fxPanel.setScene(scene);
+		public void loadMusicList(){
+			//TODO use code from test maker to load array of files
 		}
+		
 		
 		public void content(){
 			setLayout(null);
@@ -100,11 +105,6 @@ public class MusicPlayer {
 		}
 		
 	}
-	
-	
-	class SceneGenerator(){
-		final Label currentlyPlayer = new Label();
 		
-	}
 
 }

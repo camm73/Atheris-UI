@@ -17,8 +17,10 @@ public class Weather {
 	private final int WIDTH = 800;
 	private final int HEIGHT = 480;
 	
-	private JFrame weatherFrame;
+	public JFrame weatherFrame;
 	private Main main;
+	
+	public boolean frameDone = false;
 
 	public Weather(Main main){
 		this.main = main;
@@ -35,6 +37,7 @@ public class Weather {
 		weatherFrame.add(new WeatherPanel());
 		//weatherFrame.setAlwaysOnTop(true);
 		weatherFrame.setVisible(true);
+		frameDone = true;
 	}
 	
 	
@@ -58,7 +61,8 @@ public class Weather {
 			add(backButton);
 			backButton.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent e){
-					weatherFrame.dispose();				}
+					weatherFrame.dispose();
+					}
 			});
 		}
 		
