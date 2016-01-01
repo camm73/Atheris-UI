@@ -21,7 +21,7 @@ public class Main implements Runnable{
 
 	private static final long serialVersionUID = 1L;
 
-	private JFrame frame;
+	public JFrame frame;
 	
 	public final int WIDTH = 800;
 	public final int HEIGHT = 480;
@@ -98,8 +98,15 @@ public class Main implements Runnable{
 		frame.add(musicButton, c);
 		musicButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				musicPlayer = new MusicPlayer(main);
-				musicOpen = true;
+				if(initial){
+					musicPlayer = new MusicPlayer(main);
+					musicOpen = true;
+					initial = false;
+				}else{
+					frame.setAlwaysOnTop(false);
+					musicPlayer.musicFrame.setVisible(true);
+					musicPlayer.musicFrame.setAlwaysOnTop(true);
+				}
 			}
 		});
 		
