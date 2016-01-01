@@ -9,6 +9,7 @@ public class Time{
 	public String hours;
 	public String minutes;
 	public String seconds;
+	public static String timeString = "";
 	
 	public Time(){
 		update();
@@ -22,6 +23,16 @@ public class Time{
 			hours = String.valueOf(Calendar.getInstance().get(Calendar.HOUR));
 		}
 		minutes = String.valueOf(Calendar.getInstance().get(Calendar.MINUTE));
+		
+		if(Integer.parseInt(minutes) < 10){
+			minutes = "0" + String.valueOf(Calendar.getInstance().get(Calendar.MINUTE));
+		}
+		
+		if(Integer.parseInt(seconds) < 10){
+			seconds = "0" + String.valueOf(Calendar.getInstance().get(Calendar.SECOND));
+		}
+		
+		timeString = hours + ":" + minutes + ":" + seconds;
 	}
 	
 	

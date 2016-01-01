@@ -48,12 +48,10 @@ public class Settings {
 		settingsFrame.setVisible(true);
 	}
 	
+
+	
 	public void update(){
-		if(Integer.parseInt(time.seconds) < 10){
-			timeLabel.setText(time.hours + ":" + time.minutes + ":0" + time.seconds);
-		}else{
-			timeLabel.setText(time.hours + ":" + time.minutes + ":" + time.seconds);
-		}
+		timeLabel.setText(Time.timeString);
 	}
 
 	class SettingsPanel extends JPanel {

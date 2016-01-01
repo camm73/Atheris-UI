@@ -38,6 +38,7 @@ public class Main implements Runnable{
 	
 	public boolean running = false;
 	public boolean settingsOpen = false;
+	public boolean musicOpen = false;
 	public Thread thread;
 	
 	public int alpha = 25;
@@ -52,7 +53,7 @@ public class Main implements Runnable{
 	public Main(){
 		main = this;
 		time = new Time();
-		timeLabel = new JLabel(time.hours + ":" + time.minutes);
+		timeLabel = new JLabel("");
 		frame = new JFrame(title);
 		start();
 		loadImages();
@@ -98,7 +99,7 @@ public class Main implements Runnable{
 		musicButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				musicPlayer = new MusicPlayer(main);
-				initial = false;
+				musicOpen = true;
 			}
 		});
 		
@@ -177,6 +178,9 @@ public class Main implements Runnable{
 		if(settingsOpen){
 			settings.update();
 		}
+		if(musicOpen){
+			musicPlayer.musicPanel.update();
+		}
 		//System.out.println(time.hours + ":" + time.minutes + ":" + time.seconds);
 	}
 	
@@ -190,11 +194,8 @@ public class Main implements Runnable{
 			prev = now;
 			while(delta >= 1){
 				update();
-				if(Integer.parseInt(time.seconds) < 10){
-					timeLabel.setText(time.hours + ":" + time.minutes + ":0" + time.seconds);
-				}else{
-					timeLabel.setText(time.hours + ":" + time.minutes + ":" + time.seconds);
-				}
+				timeLabel.setText(Time.timeString);
+				
 				frame.repaint();
 				frame.revalidate();
 			}
