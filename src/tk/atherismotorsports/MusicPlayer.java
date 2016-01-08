@@ -2,6 +2,7 @@ package tk.atherismotorsports;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -9,11 +10,14 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -36,19 +40,23 @@ public class MusicPlayer {
 	public MusicPanel musicPanel;
 	public AdvancedPlayer currentPlayer;
 	public Thread songThread;
-	
+
 	public int songNum;
-	public ArrayList<JButton> songButtons;
+	public HashMap<String, JButton> songButtons;
+	public HashMap<JButton, String> oppSongButtons;
 	private JButton backButton = new JButton();
 	private JPanel songListPanel = new JPanel();
 	// protected List<>
 	private JScrollPane songScroll;
 
 	public ArrayList<File> songList;
+	public BufferedImage albumCover;
 
 	public File musicDirectory;
 	public Time time;
 	public JLabel timeLabel;
+	public String songFullName;
+	public static String songName;
 
 	private final int WIDTH, HEIGHT;
 
@@ -71,27 +79,45 @@ public class MusicPlayer {
 		musicFrame.add(musicPanel);
 		musicFrame.setVisible(true);
 	}
+
 	public void playSong(String songName) {
 		File songFile = new File(musicDirectory + "/" + songName);
 		try {
 			FileInputStream fis = new FileInputStream(songFile);
 			if (songThread.isAlive()) {
 				currentPlayer.close();
+				try {
+					songThread.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
+
 			currentPlayer = new AdvancedPlayer(fis);
 			songThread = new Thread(new SongRunnable());
-			if(!songThread.isAlive()){
+			if (!songThread.isAlive()) {
 				songThread.start();
 			}
+			setAlbumCover();
 		} catch (FileNotFoundException | JavaLayerException e) {
 			e.printStackTrace();
 		}
 	}
+	
+	public void setSongName(){
+		songName = songFullName.replace(".mp3", "");
+	}
+	
+	public void setAlbumCover(){
+		URL url = new URL("https://ajax.googleapis.com/ajax/services/search/images?" + "");
+		albumCover = new BufferedImage();
+	}
 
 	class MusicPanel extends JPanel {
 
+		private static final long serialVersionUID = 8198695019655562023L;
 		private Insets insets = getInsets();
-		
+
 		public MusicPanel() {
 			setLayout(new BorderLayout());
 			backButton.setBackground(new Color(56, 56, 56));
@@ -125,9 +151,14 @@ public class MusicPlayer {
 			// TODO use code from test maker to load array of files
 			songList = new ArrayList<File>(Arrays.asList(musicDirectory.listFiles()));
 
-			songButtons = new ArrayList<JButton>();
+			songButtons = new HashMap<String, JButton>();
 			for (int i = 0; i < songList.size(); i++) {
-				songButtons.add(new JButton(songList.get(i).getName()));
+				songButtons.put(String.valueOf(i), new SongButton(songList.get(i).getName()));
+			}
+			oppSongButtons = new HashMap<JButton, String>();
+
+			for (int i = 0; i < songList.size(); i++) {
+				oppSongButtons.put(songButtons.get(String.valueOf(i)), String.valueOf(i));
 			}
 		}
 
@@ -145,21 +176,17 @@ public class MusicPlayer {
 
 			songThread = new Thread();
 			for (int i = 0; i < songButtons.size(); i++) {
-				JButton tmp = songButtons.get(i);
+				JButton tmp = songButtons.get(String.valueOf(i));
 				tmp.setBackground(new Color(50, 50, 50, 255));
 				tmp.setForeground(Color.red);
+				songNum = Integer.parseInt(oppSongButtons.get(tmp));
+				System.out.println("songNum: " + songNum);
 				songListPanel.add(tmp, c);
-				songNum = i;
-				tmp.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						playSong(tmp.getText());
-					}
-				});
 
 				c.gridy++;
 			}
 		}
-
+		
 
 		public void content() {
 
@@ -177,13 +204,13 @@ public class MusicPlayer {
 					main.frame.setAlwaysOnTop(true);
 				}
 			});
-			
+
 			add(getSongInfo(), BorderLayout.EAST);
 
 		}
-		
-		public JComponent getSongInfo(){
-			JPanel songInfo = new JPanel(new GridBagLayout());
+
+		public JComponent getSongInfo() {
+			JPanel songInfo = new JPanel();
 			
 			return songInfo;
 		}
@@ -223,11 +250,15 @@ public class MusicPlayer {
 		@Override
 		public void run() {
 			try {
-				currentPlayer.setPlayBackListener(new PlaybackListener(){
-					public void playbackFinished(PlaybackEvent e){
-						if(songNum == songButtons.size()){
-							playSong(songButtons.get(songNum+1).getText());
-						}else{
+				currentPlayer.setPlayBackListener(new PlaybackListener() {
+					public void playbackFinished(PlaybackEvent e) {
+						System.out.println(songNum + "   " + songButtons.size());
+						if (songNum <= (songButtons.size() - 1)) {
+							JButton next = songButtons.get(songNum + 1);
+							playSong(next.getText());
+							songFullName = next.getText();
+							setSongName();
+						} else {
 							playSong(songButtons.get(0).getText());
 						}
 					}
@@ -240,4 +271,27 @@ public class MusicPlayer {
 
 	}
 
+	class SongButton extends JButton {
+
+		private static final long serialVersionUID = -4108225614529661693L;
+		protected Dimension buttonSize = new Dimension(250, 30);
+		
+		public SongButton(String txt) {
+			setText(txt);
+			setMaximumSize(buttonSize);
+			setPreferredSize(buttonSize);
+			act();
+		}
+
+		public void act() {
+			addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					songFullName = getText(); // TODO rename text
+					setSongName();
+					playSong(songFullName);
+				}
+			});
+		}
+	}
+	
 }

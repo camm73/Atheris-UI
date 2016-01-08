@@ -13,22 +13,26 @@ import javax.swing.JProgressBar;
 
 public class Splash extends Canvas {
 
+	private static final long serialVersionUID = -1471791406895679571L;
 	protected BufferedImage splash;
 	private JFrame splashWindow;
 	public boolean splashEnabled = true;
 	public double splashDuration = 3500;
-	
+	public boolean initial = true;
+	public boolean threadInitial = true;
+	public Thread initThread;
 
+	public Main main = new Main();
+	
 	int w, h;
 	long old;
-	private JProgressBar pb = new JProgressBar();
 	int counter = 0;
 
 	public Splash() {
 		showSplashScreen();
 	}
 
-	private void showSplashScreen() {
+	public void showSplashScreen() {
 		splashWindow = new JFrame();
 		try {
 			splash = ImageIO.read(Splash.class.getResource("/images/atheris splashscreen.png"));
@@ -48,14 +52,24 @@ public class Splash extends Canvas {
 		splashWindow.setVisible(true);
 		old = System.currentTimeMillis();
 		
+		initThread = new Thread(new InitRunnable());
 		while (splashEnabled) {
 			counter++;
 			if(counter % 100 == 0){
 				render();
 			}
 			
+			if(initial){
+				initThread.start();
+			}
+			initial = false;
 		}
-		new Main();
+		
+		while(threadInitial){
+			System.out.println("Waiting for thread to finish loading songs");
+		}
+		
+		main.frame.setVisible(true);
 		splashWindow.dispose();
 	}
 
@@ -84,5 +98,20 @@ public class Splash extends Canvas {
 		}
 	}
 	
+	
+	class InitRunnable implements Runnable{
+
+		@Override
+		public void run() {
+			if(threadInitial){
+				main.frame.setVisible(false);
+				main.musicPlayer = new MusicPlayer(main);
+				main.musicPlayer.musicFrame.setVisible(false);
+				System.out.println("Done");
+			}
+			threadInitial = false;
+		}
+		
+	}
 
 }

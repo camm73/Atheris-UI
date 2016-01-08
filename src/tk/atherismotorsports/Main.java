@@ -99,7 +99,7 @@ public class Main implements Runnable{
 		musicButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				if(initial){
-					musicPlayer = new MusicPlayer(main);
+					musicPlayer.musicFrame.setVisible(true);
 					musicOpen = true;
 					initial = false;
 				}else{
