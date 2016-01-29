@@ -44,7 +44,7 @@ public class Splash extends Canvas {
 		h = splash.getHeight();
 
 		splashWindow.setSize(w, h);
-		splashWindow.setAlwaysOnTop(true);
+		splashWindow.setAlwaysOnTop(false);
 		splashWindow.setUndecorated(true);
 		splashWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		splashWindow.setLocationRelativeTo(null);
@@ -66,7 +66,7 @@ public class Splash extends Canvas {
 		}
 		
 		while(threadInitial){
-			System.out.println("Waiting for thread to finish loading songs");
+			//System.out.println("Waiting for thread to finish loading songs");
 		}
 		
 		main.frame.setVisible(true);

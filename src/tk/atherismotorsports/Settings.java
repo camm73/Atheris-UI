@@ -40,11 +40,11 @@ public class Settings {
 		settingsFrame = new JFrame();
 		settingsFrame.setSize(WIDTH, HEIGHT);
 		settingsFrame.setResizable(false);
+		settingsFrame.setLocationRelativeTo(null);
 		settingsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		settingsFrame.setUndecorated(true);
-		settingsFrame.setLocationRelativeTo(null);
 		settingsFrame.add(new SettingsPanel());
-		// frame.setAlwaysOnTop(true);
+		settingsFrame.setAlwaysOnTop(true);
 		settingsFrame.setVisible(true);
 	}
 	
@@ -75,6 +75,7 @@ public class Settings {
 			backButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					main.settingsOpen = false;
+					main.frame.setAlwaysOnTop(true);
 					settingsFrame.dispose();
 				}
 			});

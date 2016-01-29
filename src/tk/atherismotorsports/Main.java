@@ -148,6 +148,7 @@ public class Main implements Runnable{
 		settingsButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				settings = new Settings(main);
+				frame.setAlwaysOnTop(false);
 				settingsOpen = true;
 			}
 		});

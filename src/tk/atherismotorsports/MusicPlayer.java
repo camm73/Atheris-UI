@@ -14,6 +14,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +41,6 @@ public class MusicPlayer {
 
 	private Main main;
 	public JFrame musicFrame;
-	public MusicPanel musicPanel;
 	public AdvancedPlayer currentPlayer;
 	public Thread songThread;
 
@@ -51,19 +54,26 @@ public class MusicPlayer {
 
 	public ArrayList<File> songList;
 	public BufferedImage albumCover;
+	public JLabel albumCoverLabel;
+	public JPanel songInfo;
 
 	public File musicDirectory;
 	public Time time;
 	public JLabel timeLabel;
 	public String songFullName;
 	public static String songName;
+	public String editedSongName;
+	public JLabel songNameLabel;
 
 	private final int WIDTH, HEIGHT;
+	public MusicPanel musicPanel;
+
 
 	public MusicPlayer(Main main) {
 		this.main = main;
 		this.WIDTH = main.WIDTH;
 		this.HEIGHT = main.HEIGHT;
+		musicPanel = new MusicPanel();
 		createFrame();
 	}
 
@@ -75,9 +85,32 @@ public class MusicPlayer {
 		musicFrame.setUndecorated(true);
 		musicFrame.setLocationRelativeTo(null);
 		// musicFrame.setAlwaysOnTop(true);
-		musicPanel = new MusicPanel();
 		musicFrame.add(musicPanel);
 		musicFrame.setVisible(true);
+	}
+	
+	public void content() {
+		while(musicPanel == null){
+			System.out.println("Waiting for music Panel to load");
+			musicPanel = new MusicPanel();
+		}
+		musicPanel.add(musicPanel.getTopBar(), BorderLayout.NORTH);
+
+		songScroll = new JScrollPane(songListPanel);
+		songScroll.setViewportView(songListPanel);
+		songScroll.setBackground(new Color(56, 56, 56, 255));
+		songScroll.setOpaque(true);
+		songScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		musicPanel.add(songScroll, BorderLayout.WEST);
+		backButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				musicFrame.setVisible(false);
+				main.frame.setAlwaysOnTop(true);
+			}
+		});
+
+		musicPanel.add(musicPanel.getSongInfo(), BorderLayout.EAST);
+
 	}
 
 	public void playSong(String songName) {
@@ -106,11 +139,36 @@ public class MusicPlayer {
 	
 	public void setSongName(){
 		songName = songFullName.replace(".mp3", "");
+		editedSongName = songName.replace(" ", "+");
+		songNameLabel = new JLabel(songName);
 	}
 	
 	public void setAlbumCover(){
-		URL url = new URL("https://ajax.googleapis.com/ajax/services/search/images?" + "");
-		albumCover = new BufferedImage();
+		String imageUrl = "http://www.avajava.com/images/avajavalogo.jpg";
+	    String destinationFile = musicDirectory + "/" + editedSongName + ".jpg";
+
+	    try {
+			saveImage(imageUrl, destinationFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//key: AKIAILLGZ5FRFEIOU2NQ
+	public static void saveImage(String imageUrl, String destinationFile) throws IOException {
+	    URL url = new URL(imageUrl);
+	    InputStream is = url.openStream();
+	    OutputStream os = new FileOutputStream(destinationFile);
+
+	    byte[] b = new byte[2048];
+	    int length;
+
+	    while ((length = is.read(b)) != -1) {
+	        os.write(b, 0, length);
+	    }
+
+	    is.close();
+	    os.close();
 	}
 
 	class MusicPanel extends JPanel {
@@ -119,6 +177,7 @@ public class MusicPlayer {
 		private Insets insets = getInsets();
 
 		public MusicPanel() {
+			musicPanel = this;
 			setLayout(new BorderLayout());
 			backButton.setBackground(new Color(56, 56, 56));
 			backButton.setIcon(new ImageIcon(main.backImage));
@@ -188,29 +247,31 @@ public class MusicPlayer {
 		}
 		
 
-		public void content() {
-
-			add(getTopBar(), BorderLayout.NORTH);
-
-			songScroll = new JScrollPane(songListPanel);
-			songScroll.setViewportView(songListPanel);
-			songScroll.setBackground(new Color(56, 56, 56, 255));
-			songScroll.setOpaque(true);
-			songScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-			add(songScroll, BorderLayout.WEST);
-			backButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					musicFrame.setVisible(false);
-					main.frame.setAlwaysOnTop(true);
-				}
-			});
-
-			add(getSongInfo(), BorderLayout.EAST);
-
-		}
 
 		public JComponent getSongInfo() {
-			JPanel songInfo = new JPanel();
+			songInfo = new JPanel(new GridBagLayout());
+			GridBagConstraints c= new GridBagConstraints();
+			c.gridx = 0;
+			c.gridy = 0;
+			c.weighty = 1.0;
+			if(albumCover != null){
+				albumCoverLabel = new JLabel(new ImageIcon(albumCover));
+			}else{
+				System.out.println("albumCoverLabel = null");
+			}
+			
+			if(songNameLabel != null){
+				songInfo.add(songNameLabel, c);
+			}else{
+				System.out.println("songNameLabel = null");
+			}
+			
+			c.gridy++;
+			if(albumCoverLabel != null){
+				songInfo.add(albumCoverLabel, c);
+			}else{
+				System.out.println("albumCoverLabel = null");
+			}
 			
 			return songInfo;
 		}
@@ -258,8 +319,18 @@ public class MusicPlayer {
 							playSong(next.getText());
 							songFullName = next.getText();
 							setSongName();
+							musicPanel.removeAll();
+							content();
+							musicPanel.repaint();
+							System.out.println("here");
 						} else {
 							playSong(songButtons.get(0).getText());
+							songFullName = songButtons.get(0).getText();
+							setSongName();
+							musicPanel.removeAll();
+							content();
+							System.out.println("Here as well");
+							musicPanel.repaint();
 						}
 					}
 				});
@@ -289,6 +360,11 @@ public class MusicPlayer {
 					songFullName = getText(); // TODO rename text
 					setSongName();
 					playSong(songFullName);
+					setAlbumCover();
+					musicPanel.removeAll();
+					content();
+					System.out.println("I'm here");
+					musicPanel.repaint();
 				}
 			});
 		}
