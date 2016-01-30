@@ -17,6 +17,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import tk.atherismotorsports.music.MusicPlayer;
+import tk.atherismotorsports.music.NewMusicPlayer;
+
 public class Main implements Runnable{
 
 	private static final long serialVersionUID = 1L;
@@ -98,7 +101,7 @@ public class Main implements Runnable{
 		frame.add(musicButton, c);
 		musicButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				if(initial){
+				/*if(initial){
 					musicPlayer.musicFrame.setVisible(true);
 					musicOpen = true;
 					initial = false;
@@ -106,7 +109,8 @@ public class Main implements Runnable{
 					frame.setAlwaysOnTop(false);
 					musicPlayer.musicFrame.setVisible(true);
 					musicPlayer.musicFrame.setAlwaysOnTop(true);
-				}
+				}*/
+				new NewMusicPlayer(main);
 			}
 		});
 		
@@ -155,9 +159,10 @@ public class Main implements Runnable{
 		
 		c.gridx = 1;
 		c.gridy = 0;
+		c.weighty = 0.0;
 		
 		timeLabel.setForeground(Color.white);
-		timeLabel.setFont(new Font("Stencil", Font.PLAIN, 24));
+		timeLabel.setFont(new Font("Stencil", Font.PLAIN, 28));
 		frame.add(timeLabel, c);
 		
 		frame.setResizable(false);

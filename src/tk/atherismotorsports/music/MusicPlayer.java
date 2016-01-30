@@ -1,4 +1,4 @@
-package tk.atherismotorsports;
+package tk.atherismotorsports.music;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -36,6 +36,8 @@ import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.advanced.AdvancedPlayer;
 import javazoom.jl.player.advanced.PlaybackEvent;
 import javazoom.jl.player.advanced.PlaybackListener;
+import tk.atherismotorsports.Main;
+import tk.atherismotorsports.Time;
 
 public class MusicPlayer {
 
@@ -200,7 +202,7 @@ public class MusicPlayer {
 	    os.close();
 	}
 
-	class MusicPanel extends JPanel {
+	public class MusicPanel extends JPanel {
 
 		private static final long serialVersionUID = 8198695019655562023L;
 		private Insets insets = getInsets();
@@ -350,6 +352,7 @@ public class MusicPlayer {
 			System.out.println("Here as well");
 			try {
 				currentPlayer.play();
+				//songThread.join();
 			} catch (JavaLayerException e2) {
 				e2.printStackTrace();
 			}

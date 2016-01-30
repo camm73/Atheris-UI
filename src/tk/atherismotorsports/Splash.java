@@ -11,6 +11,8 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JProgressBar;
 
+import tk.atherismotorsports.music.MusicPlayer;
+
 public class Splash extends Canvas {
 
 	private static final long serialVersionUID = -1471791406895679571L;
