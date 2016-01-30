@@ -48,7 +48,7 @@ public class Main implements Runnable{
 	public boolean initial = true;
 	
 	public Weather weather;
-	public MusicPlayer musicPlayer;
+	public NewMusicPlayer musicPlayer;
 	public Settings settings;
 	public Main main;
 	public Time time;
@@ -101,16 +101,15 @@ public class Main implements Runnable{
 		frame.add(musicButton, c);
 		musicButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				/*if(initial){
-					musicPlayer.musicFrame.setVisible(true);
+				if(initial){
+					musicPlayer.frame.setVisible(true);
 					musicOpen = true;
 					initial = false;
 				}else{
 					frame.setAlwaysOnTop(false);
-					musicPlayer.musicFrame.setVisible(true);
-					musicPlayer.musicFrame.setAlwaysOnTop(true);
-				}*/
-				new NewMusicPlayer(main);
+					musicPlayer.frame.setVisible(true);
+					musicPlayer.frame.setAlwaysOnTop(true);
+				}
 			}
 		});
 		
@@ -192,7 +191,7 @@ public class Main implements Runnable{
 			settings.update();
 		}
 		if(musicOpen){
-			musicPlayer.musicPanel.update();
+			musicPlayer.update();
 		}
 		//System.out.println(time.hours + ":" + time.minutes + ":" + time.seconds);
 	}

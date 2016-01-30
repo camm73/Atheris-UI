@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JProgressBar;
 
 import tk.atherismotorsports.music.MusicPlayer;
+import tk.atherismotorsports.music.NewMusicPlayer;
 
 public class Splash extends Canvas {
 
@@ -107,8 +108,8 @@ public class Splash extends Canvas {
 		public void run() {
 			if(threadInitial){
 				main.frame.setVisible(false);
-				main.musicPlayer = new MusicPlayer(main);
-				main.musicPlayer.musicFrame.setVisible(false);
+				main.musicPlayer = new NewMusicPlayer(main);
+				main.musicPlayer.frame.setVisible(false);
 				System.out.println("Done");
 			}
 			threadInitial = false;
