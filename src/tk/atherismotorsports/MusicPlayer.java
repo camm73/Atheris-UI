@@ -109,32 +109,61 @@ public class MusicPlayer {
 			}
 		});
 
-		musicPanel.add(musicPanel.getSongInfo(), BorderLayout.EAST);
+		musicPanel.add(musicPanel.getSongInfo(), BorderLayout.CENTER);
 
 	}
 
 	public void playSong(String songName) {
+		if(currentPlayer != null){
+			currentPlayer.close();
+		}
 		File songFile = new File(musicDirectory + "/" + songName);
 		try {
 			FileInputStream fis = new FileInputStream(songFile);
-			if (songThread.isAlive()) {
-				currentPlayer.close();
-				try {
-					songThread.join();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-
 			currentPlayer = new AdvancedPlayer(fis);
-			songThread = new Thread(new SongRunnable());
-			if (!songThread.isAlive()) {
+			setPlaybackListener();
+			if (songThread.isAlive()) {
+				songThread = new Thread(new SongRunnable());
+				songThread.start();
+			}else{
+				songThread = new Thread(new SongRunnable());
 				songThread.start();
 			}
 			setAlbumCover();
 		} catch (FileNotFoundException | JavaLayerException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void setPlaybackListener(){
+		currentPlayer.setPlayBackListener(new PlaybackListener() {
+			public void playbackFinished(PlaybackEvent e) {
+				System.out.println(songNum + "   " + songButtons.size());
+				if (songNum < (songButtons.size() - 1)) {
+					String next = songList.get(songNum-1).getName();
+					System.out.println(next);
+					//JButton next = songButtons.get(songNum + 1);
+					playSong(next);
+					songFullName = next;
+					setSongName();
+					musicPanel.removeAll();
+					content();
+					musicPanel.repaint();
+				} else {
+					playSong(songList.get(0).getName());
+					try {
+						currentPlayer.play();
+					} catch (JavaLayerException e1) {
+						e1.printStackTrace();
+					}
+					songFullName = songButtons.get(0).getText();
+					setSongName();
+					musicPanel.removeAll();
+					content();
+					musicPanel.repaint();
+				}
+			}
+		});
 	}
 	
 	public void setSongName(){
@@ -147,11 +176,11 @@ public class MusicPlayer {
 		String imageUrl = "http://www.avajava.com/images/avajavalogo.jpg";
 	    String destinationFile = musicDirectory + "/" + editedSongName + ".jpg";
 
-	    try {
+	    /*try {
 			saveImage(imageUrl, destinationFile);
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 	
 	//key: AKIAILLGZ5FRFEIOU2NQ
@@ -180,6 +209,7 @@ public class MusicPlayer {
 			musicPanel = this;
 			setLayout(new BorderLayout());
 			backButton.setBackground(new Color(56, 56, 56));
+			backButton.setBorderPainted(false);
 			backButton.setIcon(new ImageIcon(main.backImage));
 			time = main.time;
 			timeLabel = new JLabel(Time.timeString);
@@ -250,10 +280,13 @@ public class MusicPlayer {
 
 		public JComponent getSongInfo() {
 			songInfo = new JPanel(new GridBagLayout());
+			//songInfo.setOpaque(false);
+			songInfo.setBackground(new Color(56, 56, 56, 40));
 			GridBagConstraints c= new GridBagConstraints();
 			c.gridx = 0;
 			c.gridy = 0;
 			c.weighty = 1.0;
+			c.anchor = GridBagConstraints.NORTH;
 			if(albumCover != null){
 				albumCoverLabel = new JLabel(new ImageIcon(albumCover));
 			}else{
@@ -261,6 +294,8 @@ public class MusicPlayer {
 			}
 			
 			if(songNameLabel != null){
+				songNameLabel.setFont(new Font("Stencil", Font.PLAIN, 24));
+				songNameLabel.setForeground(Color.red);
 				songInfo.add(songNameLabel, c);
 			}else{
 				System.out.println("songNameLabel = null");
@@ -300,6 +335,7 @@ public class MusicPlayer {
 			revalidate();
 		}
 
+		//TODO may remove this image
 		public void paintComponent(Graphics g) {
 			g.drawImage(main.backgroundImage, 0, 0, null);
 		}
@@ -310,33 +346,12 @@ public class MusicPlayer {
 
 		@Override
 		public void run() {
+
+			System.out.println("Here as well");
 			try {
-				currentPlayer.setPlayBackListener(new PlaybackListener() {
-					public void playbackFinished(PlaybackEvent e) {
-						System.out.println(songNum + "   " + songButtons.size());
-						if (songNum <= (songButtons.size() - 1)) {
-							JButton next = songButtons.get(songNum + 1);
-							playSong(next.getText());
-							songFullName = next.getText();
-							setSongName();
-							musicPanel.removeAll();
-							content();
-							musicPanel.repaint();
-							System.out.println("here");
-						} else {
-							playSong(songButtons.get(0).getText());
-							songFullName = songButtons.get(0).getText();
-							setSongName();
-							musicPanel.removeAll();
-							content();
-							System.out.println("Here as well");
-							musicPanel.repaint();
-						}
-					}
-				});
 				currentPlayer.play();
-			} catch (JavaLayerException e) {
-				e.printStackTrace();
+			} catch (JavaLayerException e2) {
+				e2.printStackTrace();
 			}
 		}
 
