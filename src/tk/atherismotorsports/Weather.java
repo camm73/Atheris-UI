@@ -14,8 +14,8 @@ import javax.swing.JPanel;
 
 public class Weather {
 	
-	private final int WIDTH = 800;
-	private final int HEIGHT = 480;
+	private final int WIDTH = Main.WIDTH;
+	private final int HEIGHT = Main.HEIGHT;
 	
 	public JFrame weatherFrame;
 	private Main main;

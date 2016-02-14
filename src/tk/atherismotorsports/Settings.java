@@ -16,8 +16,8 @@ import javax.swing.JPanel;
 
 public class Settings {
 
-	private final int WIDTH = 800;
-	private final int HEIGHT = 480;
+	private final int WIDTH = Main.WIDTH;
+	private final int HEIGHT = Main.HEIGHT;
 
 	private Main main;
 	private Time time;
@@ -31,7 +31,7 @@ public class Settings {
 		time = main.time;
 		timeLabel = new JLabel();
 		timeLabel.setForeground(Color.white);
-		timeLabel.setFont(new Font("Stencil", Font.PLAIN, 24));
+		timeLabel.setFont(new Font("Stencil", Font.PLAIN, 32));
 		update();
 		createFrame();
 	}

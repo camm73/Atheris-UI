@@ -2,6 +2,8 @@ package tk.atherismotorsports;
 
 import javax.swing.SwingUtilities;
 
+import tk.atherismotorsports.music.MusicPlayer;
+
 public class Start {
 
 	
@@ -9,7 +11,9 @@ public class Start {
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
 				new Splash();
-				//new Main();
+				//Main main = new Main();
+				//main.frame.setVisible(false);
+				//MusicPlayer mp = new MusicPlayer(main);
 			}
 		});
 	}

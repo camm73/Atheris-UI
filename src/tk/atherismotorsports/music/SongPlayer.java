@@ -9,31 +9,39 @@ public class SongPlayer implements Runnable{
 	
 	protected AdvancedPlayer player;
 	public NewMusicPlayer musicPlayer;
-	public boolean playing = true;
+	public int startTime;
 	
-	public Thread thread;
+	public Thread pauseThread;
 	
 	public SongPlayer(){
 		
 	}
 	
-	public SongPlayer(AdvancedPlayer player, NewMusicPlayer mp){
+	public SongPlayer(AdvancedPlayer player, NewMusicPlayer mp, int startTime){
 		this.player = player;
 		this.musicPlayer = mp;
+		this.startTime = startTime;
 		setPlaybackListener();
 	}
 	
 	public void setPlaybackListener(){
 		player.setPlayBackListener(new PlaybackListener(){
 			public void playbackFinished(PlaybackEvent e){
-				if(musicPlayer.songNum < (musicPlayer.songList.size() - 1)){
-					System.out.println("Song isn't the last one in the list");
-					musicPlayer.songNum++;
-					musicPlayer.playSong(musicPlayer.songList.get(musicPlayer.songNum).getName());
-				}else if(musicPlayer.songNum == (musicPlayer.songList.size() - 1)){
-					System.out.println("Was last song; skipping to the beginning");
-					musicPlayer.songNum = 0;
-					musicPlayer.playSong(musicPlayer.songList.get(musicPlayer.songNum).getName());
+				if(!musicPlayer.pause){
+					if(musicPlayer.songNum < (musicPlayer.songList.size() - 1)){
+						System.out.println("Song isn't the last one in the list");
+						musicPlayer.songNum++;
+						musicPlayer.songTime = 0;
+						musicPlayer.playSong(musicPlayer.songList.get(musicPlayer.songNum).getName(), 0);
+					}else if(musicPlayer.songNum == (musicPlayer.songList.size() - 1)){
+						System.out.println("Was last song; skipping to the beginning");
+						musicPlayer.songNum = 0;
+						musicPlayer.songTime = 0;
+						musicPlayer.playSong(musicPlayer.songList.get(musicPlayer.songNum).getName(), 0);
+					}
+				
+				}else if(musicPlayer.pause){
+					musicPlayer.countTime = false;
 				}
 			}
 		});
@@ -41,13 +49,11 @@ public class SongPlayer implements Runnable{
 
 	@Override
 	public void run() {
-		if(playing){
-			try {
-				player.play();
-			} catch (JavaLayerException e) {
-				e.printStackTrace();
-			}
-		}else{
+		try {
+			player.play(startTime, Integer.MAX_VALUE);
+
+		} catch (JavaLayerException e) {
+			e.printStackTrace();
 			player.stop();
 		}
 		//player.close();

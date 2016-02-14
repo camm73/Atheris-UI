@@ -11,6 +11,7 @@ public class SongButton extends JButton{
 	private static final long serialVersionUID = -3753774576995824513L;
 	
 	private NewMusicPlayer musicPlayer;
+	private MusicPlayer fxmp;
 	private String buttonText;
 	protected Dimension buttonSize = new Dimension(250, 30);
 	public final int id;
@@ -28,8 +29,31 @@ public class SongButton extends JButton{
 		this.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				System.out.println(buttonText);
-				musicPlayer.playSong(buttonText);
+				musicPlayer.playSong(buttonText, 0);
 				musicPlayer.songNum = id;
+			}
+		});
+	}
+	
+	public SongButton(MusicPlayer music, String text, final int id){
+		this.fxmp = music;
+		this.id = id;
+		buttonText = text;
+		this.setText(buttonText);
+		//System.out.println(text);
+		setMaximumSize(buttonSize);
+		setPreferredSize(buttonSize);
+		this.setBackground(musicPlayer.grayBack);
+		this.setForeground(Color.red);
+		this.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				System.out.println(buttonText);
+				musicPlayer.playSong(buttonText, 0);
+				musicPlayer.songNum = id;
+				musicPlayer.seekBar.setValue(0);
+				musicPlayer.songTime = 0;
+				
+				//TODO Change this
 			}
 		});
 	}

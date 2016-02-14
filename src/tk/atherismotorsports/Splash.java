@@ -88,7 +88,7 @@ public class Splash extends Canvas {
 		g.setColor(Color.red);
 		g.drawImage(splash, 0, 0, w, h, null);
 		
-		g.fillRect(0, 20, counter/100, 20);
+		g.fillRect(0, 20, counter/7, 20);
 		
 		
 		g.dispose();
@@ -110,7 +110,7 @@ public class Splash extends Canvas {
 				main.frame.setVisible(false);
 				main.musicPlayer = new NewMusicPlayer(main);
 				main.musicPlayer.frame.setVisible(false);
-				System.out.println("Done");
+				System.out.println("Done loading all preliminary things");
 			}
 			threadInitial = false;
 		}

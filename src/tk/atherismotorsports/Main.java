@@ -1,11 +1,11 @@
 package tk.atherismotorsports;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -16,18 +16,17 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
-import tk.atherismotorsports.music.MusicPlayer;
+import javafx.application.Application;
 import tk.atherismotorsports.music.NewMusicPlayer;
 
 public class Main implements Runnable{
 
-	private static final long serialVersionUID = 1L;
-
 	public JFrame frame;
 	
-	public final int WIDTH = 800;
-	public final int HEIGHT = 480;
+	public static final int WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;
+	public static final int HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height;
 	private final String title = "Atheris Motorsports";
 	
 	public BufferedImage backgroundImage;
@@ -38,6 +37,7 @@ public class Main implements Runnable{
 	public BufferedImage backImage;
 	public JLabel background;
 	public static JLabel timeLabel;
+	public JButton exitButton = new JButton("Exit");
 	
 	public boolean running = false;
 	public boolean settingsOpen = false;
@@ -52,6 +52,7 @@ public class Main implements Runnable{
 	public Settings settings;
 	public Main main;
 	public Time time;
+	public MainPanel mp;
 	
 	public Main(){
 		main = this;
@@ -60,6 +61,7 @@ public class Main implements Runnable{
 		frame = new JFrame(title);
 		start();
 		loadImages();
+		mp = new MainPanel();
 		createFrame();
 	}
 	
@@ -79,96 +81,16 @@ public class Main implements Runnable{
 	}
 	
 	private void createFrame(){
-		JButton musicButton = new JButton();
-		JButton weatherButton = new JButton();
-		JButton speed = new JButton();
-		JButton settingsButton = new JButton();
 		frame.setSize(WIDTH, HEIGHT);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setContentPane(background);
-		frame.setLayout(new GridBagLayout());
-		
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = 1;
-		c.weightx = 1.0;
-		c.weighty = 1.0;
-		
-		musicButton.setBackground(new Color(56, 56, 56, alpha));
-		musicButton.setIcon(new ImageIcon(musicImage));
-		musicButton.setBorderPainted(false);
-		musicButton.setOpaque(true);
-		frame.add(musicButton, c);
-		musicButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				if(initial){
-					musicPlayer.frame.setVisible(true);
-					musicOpen = true;
-					initial = false;
-				}else{
-					frame.setAlwaysOnTop(false);
-					musicPlayer.frame.setVisible(true);
-					musicPlayer.frame.setAlwaysOnTop(true);
-				}
-			}
-		});
-		
-		c.gridy++;
-		
-		weatherButton.setBackground(new Color(56, 56, 56, alpha));
-		weatherButton.setBorderPainted(false);
-		weatherButton.setIcon(new ImageIcon((weatherImage)));
-		weatherButton.setOpaque(true);
-		frame.add(weatherButton, c);
-		weatherButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				frame.setAlwaysOnTop(true);
-				weather = new Weather(main);
-				while(!weather.frameDone){
-					System.out.println("Weather frame loading");
-				}
-				frame.setAlwaysOnTop(false);
-				weather.weatherFrame.setAlwaysOnTop(true);
-			}
-		});
-		
-		c.gridy = 1;
-		c.gridx = 2;
-		
-		speed.setBackground(new Color(56, 56, 56, alpha));
-		speed.setOpaque(true);
-		speed.setBorderPainted(false);
-		speed.setIcon(new ImageIcon((speedImage)));
-		frame.add(speed, c);
-		
-		c.gridy++;
-		
-		settingsButton.setBackground(new Color(56, 56, 56, alpha));
-		settingsButton.setBorderPainted(false);
-		settingsButton.setOpaque(true);
-		settingsButton.setIcon(new ImageIcon((settingImage)));
-		frame.add(settingsButton, c);
-		settingsButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				settings = new Settings(main);
-				frame.setAlwaysOnTop(false);
-				settingsOpen = true;
-			}
-		});
-		
-		c.gridx = 1;
-		c.gridy = 0;
-		c.weighty = 0.0;
-		
-		timeLabel.setForeground(Color.white);
-		timeLabel.setFont(new Font("Stencil", Font.PLAIN, 28));
-		frame.add(timeLabel, c);
-		
 		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.add(mp);
 		frame.setUndecorated(true);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
+	
+	
 	
 	private void loadImages(){
 		try{
@@ -187,6 +109,7 @@ public class Main implements Runnable{
 	
 	public void update(){
 		time.update();
+		
 		if(settingsOpen){
 			settings.update();
 		}
@@ -200,6 +123,7 @@ public class Main implements Runnable{
 		long prev = System.nanoTime();
 		final double limit = 1000000000.0 / 60.0;
 		double delta = 0;
+		
 		while(running){
 			long now = System.nanoTime();
 			delta += (now-prev) / limit;
@@ -213,5 +137,111 @@ public class Main implements Runnable{
 			}
 		}
 		stop();
+	}
+	
+	class MainPanel extends JPanel{
+		
+		public MainPanel(){
+			setLayout(new GridBagLayout());
+			content();
+		}
+		
+		public void content(){
+			JButton musicButton = new JButton();
+			JButton weatherButton = new JButton();
+			JButton speed = new JButton();
+			JButton settingsButton = new JButton();
+			GridBagConstraints c = new GridBagConstraints();
+			c.gridx = 0;
+			c.gridy = 1;
+			c.weightx = 1.0;
+			c.weighty = 1.0;
+			
+			musicButton.setBackground(new Color(56, 56, 56, alpha));
+			musicButton.setIcon(new ImageIcon(musicImage));
+			musicButton.setBorderPainted(false);
+			musicButton.setOpaque(true);
+			add(musicButton, c);
+			musicButton.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					if(initial){
+						musicPlayer.frame.setVisible(true);
+						musicOpen = true;
+						initial = false;
+					}else{
+						frame.setAlwaysOnTop(false);
+						musicPlayer.frame.setVisible(true);
+						musicPlayer.frame.setAlwaysOnTop(true);
+					}
+				}
+			});
+			
+			c.gridy++;
+			
+			weatherButton.setBackground(new Color(56, 56, 56, alpha));
+			weatherButton.setBorderPainted(false);
+			weatherButton.setIcon(new ImageIcon((weatherImage)));
+			weatherButton.setOpaque(true);
+			add(weatherButton, c);
+			weatherButton.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					frame.setAlwaysOnTop(true);
+					weather = new Weather(main);
+					while(!weather.frameDone){
+						System.out.println("Weather frame loading");
+					}
+					frame.setAlwaysOnTop(false);
+					weather.weatherFrame.setAlwaysOnTop(true);
+				}
+			});
+			
+			c.gridy = 1;
+			c.gridx = 2;
+			
+			speed.setBackground(new Color(56, 56, 56, alpha));
+			speed.setOpaque(true);
+			speed.setBorderPainted(false);
+			speed.setIcon(new ImageIcon((speedImage)));
+			add(speed, c);
+			
+			c.gridy++;
+			
+			settingsButton.setBackground(new Color(56, 56, 56, alpha));
+			settingsButton.setBorderPainted(false);
+			settingsButton.setOpaque(true);
+			settingsButton.setIcon(new ImageIcon((settingImage)));
+			add(settingsButton, c);
+			settingsButton.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					settings = new Settings(main);
+					frame.setAlwaysOnTop(false);
+					settingsOpen = true;
+				}
+			});
+			
+			c.gridx = 1;
+			c.gridy = 0;
+			c.weighty = 0.0;
+			
+			timeLabel.setForeground(Color.white);
+			timeLabel.setFont(new Font("Stencil", Font.PLAIN, 32));
+			add(timeLabel, c);
+			
+			c.gridx = 3;
+			c.weightx = 0.0;
+			
+			exitButton.setBackground(musicPlayer.grayBack);
+			exitButton.setForeground(Color.red);
+			add(exitButton, c);
+			exitButton.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					System.exit(0);
+				}
+			});
+		}
+		
+		public void paintComponent(Graphics g){
+			g.drawImage(backgroundImage, 0, 0, null);
+		}
 	}
 }
