@@ -204,7 +204,9 @@ public class Main implements Runnable{
 			musicButton.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent e){
 					if(initial){
+						frame.setAlwaysOnTop(false);
 						musicPlayer.frame.setVisible(true);
+						musicPlayer.frame.setAlwaysOnTop(true);
 						musicOpen = true;
 						initial = false;
 					}else{
@@ -244,7 +246,6 @@ public class Main implements Runnable{
 			add(mapButton, c);
 			mapButton.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent e){
-					map.mapFrame.setVisible(true);
 					map.mapFrame.setAlwaysOnTop(true);
 					frame.setAlwaysOnTop(false);
 				}

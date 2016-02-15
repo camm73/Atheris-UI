@@ -83,7 +83,6 @@ public class Map {
 		top.add(backButton, BorderLayout.WEST);
 		backButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				mapFrame.setVisible(false);
 				mapFrame.setAlwaysOnTop(false);
 				main.frame.setAlwaysOnTop(true);
 			}

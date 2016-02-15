@@ -232,13 +232,11 @@ public class NewMusicPlayer {
 			c.gridy++;
 		}
 		
-		//TODO add progress bar
 		Dimension seekSize = new Dimension(400, 30);
 		seekBar.setValue(0);
 		seekBar.setStringPainted(true);
 		seekBar.setBackground(Color.white);
 		seekBar.setForeground(Color.red);
-		//seekBar.setSize(seekSize);
 		seekBar.setMaximumSize(seekSize);
 		seekBar.setMinimumSize(seekSize);
 		seekBar.setPreferredSize(seekSize);

@@ -47,7 +47,7 @@ public class Splash extends Canvas {
 		h = splash.getHeight();
 
 		splashWindow.setSize(w, h);
-		splashWindow.setAlwaysOnTop(false);
+		splashWindow.setAlwaysOnTop(true);
 		splashWindow.setUndecorated(true);
 		splashWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		splashWindow.setLocationRelativeTo(null);
@@ -73,6 +73,7 @@ public class Splash extends Canvas {
 		}
 		
 		main.frame.setVisible(true);
+		main.frame.setAlwaysOnTop(true);
 		splashWindow.dispose();
 	}
 
@@ -111,7 +112,6 @@ public class Splash extends Canvas {
 				main.musicPlayer = new NewMusicPlayer(main);
 				main.musicPlayer.frame.setVisible(false);
 				main.map = new Map(main);
-				main.map.mapFrame.setVisible(false);
 				System.out.println("Done loading all preliminary things");
 			}
 			threadInitial = false;
