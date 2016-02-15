@@ -28,14 +28,16 @@ public class SongButton extends JButton{
 		this.setForeground(Color.red);
 		this.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				System.out.println(buttonText);
+				//System.out.println(buttonText);
 				musicPlayer.playSong(buttonText, 0);
 				musicPlayer.songNum = id;
+				musicPlayer.seekBar.setValue(0);
+				musicPlayer.songTime = 0;
 			}
 		});
 	}
 	
-	public SongButton(MusicPlayer music, String text, final int id){
+	/*public SongButton(MusicPlayer music, String text, final int id){
 		this.fxmp = music;
 		this.id = id;
 		buttonText = text;
@@ -48,14 +50,15 @@ public class SongButton extends JButton{
 		this.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				System.out.println(buttonText);
-				musicPlayer.playSong(buttonText, 0);
-				musicPlayer.songNum = id;
 				musicPlayer.seekBar.setValue(0);
+				System.out.println("Value: " + musicPlayer.seekBar.getValue());
 				musicPlayer.songTime = 0;
+				musicPlayer.songNum = id;
+				musicPlayer.playSong(buttonText, 0);
 				
 				//TODO Change this
 			}
 		});
-	}
+	}*/
 
 }

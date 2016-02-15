@@ -120,7 +120,7 @@ public class MusicPlayer {
 
 	public void loadSongButtons() {
 		for (int i = 0; i < songList.size(); i++) {
-			songButtons.add(new SongButton(this, songList.get(i).getName(), i));
+			//songButtons.add(new SongButton(this, songList.get(i).getName(), i));
 		}
 	}
 

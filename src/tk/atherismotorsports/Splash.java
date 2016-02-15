@@ -20,7 +20,7 @@ public class Splash extends Canvas {
 	protected BufferedImage splash;
 	private JFrame splashWindow;
 	public boolean splashEnabled = true;
-	public double splashDuration = 3500;
+	public double splashDuration = 9000;
 	public boolean initial = true;
 	public boolean threadInitial = true;
 	public Thread initThread;
@@ -88,7 +88,7 @@ public class Splash extends Canvas {
 		g.setColor(Color.red);
 		g.drawImage(splash, 0, 0, w, h, null);
 		
-		g.fillRect(0, 20, counter/7, 20);
+		g.fillRect(0, 20, counter/14, 20);
 		
 		
 		g.dispose();
@@ -110,6 +110,8 @@ public class Splash extends Canvas {
 				main.frame.setVisible(false);
 				main.musicPlayer = new NewMusicPlayer(main);
 				main.musicPlayer.frame.setVisible(false);
+				main.map = new Map(main);
+				main.map.mapFrame.setVisible(false);
 				System.out.println("Done loading all preliminary things");
 			}
 			threadInitial = false;

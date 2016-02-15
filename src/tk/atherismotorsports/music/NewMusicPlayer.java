@@ -8,9 +8,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -23,8 +25,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
-import javax.swing.UIManager;
 
+import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
 import com.mpatric.mp3agic.UnsupportedTagException;
@@ -66,9 +68,13 @@ public class NewMusicPlayer {
 	public double songFrames = 0.0;
 	public double runtime = 0.0;
 	public double songFPS = 0.0;
+	public String albumName = "";
+	public String artistName = "";
+	public BufferedImage albumCover;
 	public int songTime = 0;
 	public int resumeFrame;
 	public boolean countTime = false;
+	
 
 	public boolean pause = false;
 
@@ -220,6 +226,11 @@ public class NewMusicPlayer {
 		infoPanel.add(titleLabel, c);
 		
 		c.gridy++;
+		if(albumCover != null){
+			JLabel temp = new JLabel(new ImageIcon(albumCover));
+			infoPanel.add(temp, c);
+			c.gridy++;
+		}
 		
 		//TODO add progress bar
 		Dimension seekSize = new Dimension(400, 30);
@@ -311,13 +322,12 @@ public class NewMusicPlayer {
 		if(countTime){
 			getSongTime();
 		}
-		System.out.println(songTime);
+		//System.out.println(songTime);
 		
 		seekBar.setString("Song Length");
 		seekBar.setValue((int) ((songTime/runtime)*400));
 		
 		timeLabel.setText(Time.timeString);
-		getRuntime();
 		setSongTitle();
 		panel.repaint();
 		panel.revalidate();
@@ -325,13 +335,34 @@ public class NewMusicPlayer {
 		//System.out.println("songFrames: " + songFrames + "   songFPS: " + songFPS + "   runtime: " + runtime);
 	}
 
-	public void getRuntime() {
+	public void getSongData(File song) {
 		try {
-			Mp3File currentSong = new Mp3File(songList.get(songNum));
+			Mp3File currentSong = new Mp3File(song);
 			songFrames = (long) currentSong.getFrameCount();
 			runtime = currentSong.getLengthInSeconds();
 			songFPS = (songFrames / runtime);
-			System.out.println(currentSong.getId3v2Tag().getArtist());
+			
+			if(currentSong.hasId3v2Tag()){
+				ID3v2 id3v2tag = currentSong.getId3v2Tag();
+				artistName =  id3v2tag.getArtist();
+				albumName = id3v2tag.getAlbum();
+				byte[] imageData = id3v2tag.getAlbumImage();
+				System.out.println(imageData);
+				if(imageData != null){
+					RandomAccessFile file = new RandomAccessFile("album-artwork", "rw");
+				    file.write(imageData);
+				    file.close();
+				}
+			}
+			
+			if(artistName == null){
+				artistName = "Unknown Artist";
+			}
+			
+			if(albumName == null){
+				albumName = "Unknown Album";
+			}
+			
 		} catch (UnsupportedTagException | InvalidDataException | IOException e) {
 			e.printStackTrace();
 		}
@@ -360,6 +391,7 @@ public class NewMusicPlayer {
 			FileInputStream fis = new FileInputStream(songFile);
 			player = new AdvancedPlayer(fis);
 			sp = new SongPlayer(player, this, startTime);
+			getSongData(songFile);
 			songThread = new Thread(sp);
 			songThread.start();
 			countTime = true;

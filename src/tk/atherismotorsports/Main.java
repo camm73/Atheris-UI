@@ -1,6 +1,8 @@
 package tk.atherismotorsports;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -14,9 +16,11 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import javafx.application.Application;
 import tk.atherismotorsports.music.NewMusicPlayer;
@@ -24,6 +28,7 @@ import tk.atherismotorsports.music.NewMusicPlayer;
 public class Main implements Runnable{
 
 	public JFrame frame;
+	public JPanel panel;
 	
 	public static final int WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;
 	public static final int HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height;
@@ -35,8 +40,10 @@ public class Main implements Runnable{
 	public BufferedImage speedImage;
 	public BufferedImage settingImage;
 	public BufferedImage backImage;
+	public BufferedImage mapImage;
 	public JLabel background;
 	public static JLabel timeLabel;
+	public JLabel songLabel = new JLabel();
 	public JButton exitButton = new JButton("Exit");
 	
 	public boolean running = false;
@@ -53,6 +60,7 @@ public class Main implements Runnable{
 	public Main main;
 	public Time time;
 	public MainPanel mp;
+	public Map map;
 	
 	public Main(){
 		main = this;
@@ -62,6 +70,7 @@ public class Main implements Runnable{
 		start();
 		loadImages();
 		mp = new MainPanel();
+		loadPanel();
 		createFrame();
 	}
 	
@@ -84,12 +93,37 @@ public class Main implements Runnable{
 		frame.setSize(WIDTH, HEIGHT);
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(mp);
+		frame.add(panel);
 		frame.setUndecorated(true);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
 	
+	public void loadPanel(){
+		panel = new JPanel(new BorderLayout());
+		panel.add(mp, BorderLayout.CENTER);
+		panel.add(getBottomPanel(), BorderLayout.SOUTH);
+	}
+	
+	public JComponent getBottomPanel(){
+		JPanel bottomPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.CENTER;
+		bottomPanel.setBackground(NewMusicPlayer.grayBack);
+		
+		Dimension songLabelSize = new Dimension(700,30);
+		songLabel.setForeground(Color.red);
+		songLabel.setPreferredSize(songLabelSize);
+		songLabel.setMinimumSize(songLabelSize);
+		songLabel.setMaximumSize(songLabelSize);
+		songLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		songLabel.setFont(new Font("STENCIL", Font.PLAIN, 24));
+		bottomPanel.add(songLabel, c);
+		
+		return bottomPanel;
+	}
 	
 	
 	private void loadImages(){
@@ -100,6 +134,7 @@ public class Main implements Runnable{
 		speedImage = ImageIO.read(Main.class.getResource("/images/speed image.png"));
 		settingImage = ImageIO.read(Main.class.getResource("/images/setting image.png"));
 		backImage = ImageIO.read(Main.class.getResource("/images/back arrow.png"));
+		mapImage = ImageIO.read(Main.class.getResource("/images/map image.png"));
 		}catch(IOException e){
 			e.printStackTrace();
 		}
@@ -115,6 +150,9 @@ public class Main implements Runnable{
 		}
 		if(musicOpen){
 			musicPlayer.update();
+		}
+		if(musicOpen){
+			songLabel.setText("Now Playing: " + NewMusicPlayer.songTitle + " -- " + musicPlayer.artistName);
 		}
 		//System.out.println(time.hours + ":" + time.minutes + ":" + time.seconds);
 	}
@@ -151,6 +189,7 @@ public class Main implements Runnable{
 			JButton weatherButton = new JButton();
 			JButton speed = new JButton();
 			JButton settingsButton = new JButton();
+			JButton mapButton = new JButton();
 			GridBagConstraints c = new GridBagConstraints();
 			c.gridx = 0;
 			c.gridy = 1;
@@ -192,6 +231,22 @@ public class Main implements Runnable{
 					}
 					frame.setAlwaysOnTop(false);
 					weather.weatherFrame.setAlwaysOnTop(true);
+				}
+			});
+			
+			c.gridy = 1;
+			c.gridx = 1;
+			
+			mapButton.setBackground(new Color(56, 56, 56, alpha));
+			mapButton.setOpaque(true);
+			mapButton.setBorderPainted(false);
+			mapButton.setIcon(new ImageIcon(mapImage));
+			add(mapButton, c);
+			mapButton.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					map.mapFrame.setVisible(true);
+					map.mapFrame.setAlwaysOnTop(true);
+					frame.setAlwaysOnTop(false);
 				}
 			});
 			
@@ -238,6 +293,11 @@ public class Main implements Runnable{
 					System.exit(0);
 				}
 			});
+			
+			c.gridy = 4;
+			c.gridx = 1;
+			
+			
 		}
 		
 		public void paintComponent(Graphics g){
