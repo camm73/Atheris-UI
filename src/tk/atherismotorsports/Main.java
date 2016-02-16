@@ -30,8 +30,8 @@ public class Main implements Runnable{
 	public JFrame frame;
 	public JPanel panel;
 	
-	public static final int WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;
-	public static final int HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height;
+	public static final int WIDTH = 1366;
+	public static final int HEIGHT = 768;
 	private final String title = "Atheris Motorsports";
 	
 	public BufferedImage backgroundImage;
@@ -49,6 +49,7 @@ public class Main implements Runnable{
 	public boolean running = false;
 	public boolean settingsOpen = false;
 	public boolean musicOpen = false;
+	public boolean mapOpen = false;
 	public Thread thread;
 	
 	public int alpha = 25;
@@ -148,6 +149,11 @@ public class Main implements Runnable{
 		if(settingsOpen){
 			settings.update();
 		}
+		
+		if(mapOpen){
+			map.update();
+		}
+		
 		if(musicOpen){
 			musicPlayer.update();
 		}
@@ -246,6 +252,7 @@ public class Main implements Runnable{
 			add(mapButton, c);
 			mapButton.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent e){
+					mapOpen = true;
 					map.mapFrame.setAlwaysOnTop(true);
 					frame.setAlwaysOnTop(false);
 				}
