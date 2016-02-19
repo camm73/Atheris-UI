@@ -45,13 +45,17 @@ public class NewMusicPlayer {
 	public JPanel panel;
 	public JPanel leftPanel;
 	public JPanel musicPanel;
+	public JPanel playlistPanel;
 	public JScrollPane songScroll;
+	public JScrollPane playlistScroll;
 	public JLabel timeLabel;
 	public JLabel titleLabel = new JLabel();
 	public JButton backButton = new JButton();
 	public JButton skipButton = new JButton();
 	public JButton playToggle = new JButton();
 	public JButton stopButton = new JButton();
+	public JButton playlistViewButton = new JButton("Playlists");
+	public JButton songListViewButton = new JButton("Songs");
 	public JProgressBar seekBar;
 
 	public File musicDirectory;
@@ -128,6 +132,7 @@ public class NewMusicPlayer {
 
 	public JComponent getLeftPanel() {
 		leftPanel = new JPanel(new BorderLayout());
+		leftPanel.add(getSwitchPanel(), BorderLayout.NORTH);
 		leftPanel.add(songScroll, BorderLayout.CENTER);
 		// TODO possibly a button in the west to shrink down this list
 		return leftPanel;
@@ -188,6 +193,34 @@ public class NewMusicPlayer {
 			songPanel.add(songButtons.get(i), c);
 			c.gridy++;
 		}
+	}
+	
+	public JComponent getSwitchPanel(){
+		JPanel switchPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.weightx = 1.0;
+		switchPanel.add(songListViewButton, c);
+		songListViewButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				songListViewButton.setEnabled(false);
+				playlistViewButton.setEnabled(true);
+				switchToSongView();
+			}
+		});
+		
+		c.gridx++;
+		
+		switchPanel.add(playlistViewButton, c);
+		playlistViewButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				songListViewButton.setEnabled(true);
+				playlistViewButton.setEnabled(false);
+				switchToPlaylistView();
+			}
+		});
+		return switchPanel;
 	}
 
 	public JComponent getTopBar() {
@@ -331,6 +364,30 @@ public class NewMusicPlayer {
 		panel.revalidate();
 		// System.out.println(songFrames);
 		//System.out.println("songFrames: " + songFrames + "   songFPS: " + songFPS + "   runtime: " + runtime);
+	}
+	
+	public void switchToSongView(){
+		
+	}
+	
+	public void switchToPlaylistView(){
+		leftPanel.remove(songScroll);
+		leftPanel.add(getPlaylistPanel(), BorderLayout.CENTER);
+	}
+	
+	public JComponent getPlaylistPanel(){
+		playlistPanel = new JPanel();
+		playlistPanel.add(playlistScroll);
+		JPanel internalPanel = new JPanel(new GridBagLayout());
+		
+		playlistScroll.add(internalPanel);
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.weightx = 1.0;
+		
+		return playlistPanel;
 	}
 
 	public void getSongData(File song) {
