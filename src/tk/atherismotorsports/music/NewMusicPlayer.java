@@ -54,6 +54,7 @@ public class NewMusicPlayer {
 	public JButton skipButton = new JButton();
 	public JButton playToggle = new JButton();
 	public JButton stopButton = new JButton();
+	public JButton createPlaylistButton = new JButton("Create Playist");
 	public JButton playlistViewButton = new JButton("Playlists");
 	public JButton songListViewButton = new JButton("Songs");
 	public JProgressBar seekBar;
@@ -367,25 +368,47 @@ public class NewMusicPlayer {
 	}
 	
 	public void switchToSongView(){
-		
+		leftPanel.remove(getPlaylistPanel());
+		leftPanel.add(songScroll);
+		leftPanel.repaint();
+		leftPanel.revalidate();
 	}
 	
 	public void switchToPlaylistView(){
 		leftPanel.remove(songScroll);
 		leftPanel.add(getPlaylistPanel(), BorderLayout.CENTER);
+		leftPanel.repaint();
+		leftPanel.revalidate();
 	}
 	
 	public JComponent getPlaylistPanel(){
-		playlistPanel = new JPanel();
-		playlistPanel.add(playlistScroll);
+		playlistPanel = new JPanel(new BorderLayout());
+		JPanel buttonPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints c1 = new GridBagConstraints();
+		c1.gridx = 0;
+		c1.gridy = 0;
+		c1.weightx = 1.0;
+		
+		buttonPanel.add(createPlaylistButton, c);
+		createPlaylistButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				new PlaylistManager();
+			}
+		});
+		
+		//TODO add way to edit these by renaming and deleting
+		
+		playlistPanel.add(buttonPanel, BorderLayout.NORTH);
+		
+		playlistPanel.add(playlistScroll, BorderLayout.CENTER);
 		JPanel internalPanel = new JPanel(new GridBagLayout());
 		
 		playlistScroll.add(internalPanel);
 		
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = 0;
-		c.weightx = 1.0;
+		GridBagConstraints gc = new GridBagConstraints();
+		gc.gridx = 0;
+		gc.gridy = 0;
+		gc.weightx = 1.0;
 		
 		return playlistPanel;
 	}
