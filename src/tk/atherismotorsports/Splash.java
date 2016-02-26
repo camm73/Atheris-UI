@@ -20,7 +20,7 @@ public class Splash extends Canvas {
 	protected BufferedImage splash;
 	private JFrame splashWindow;
 	public boolean splashEnabled = true;
-	public double splashDuration = 9000;
+	public double splashDuration = 2500;
 	public boolean initial = true;
 	public boolean threadInitial = true;
 	public Thread initThread;
@@ -111,7 +111,7 @@ public class Splash extends Canvas {
 				main.frame.setVisible(false);
 				main.musicPlayer = new NewMusicPlayer(main);
 				main.musicPlayer.frame.setVisible(false);
-				main.map = new Map(main);
+				//main.map = new Map(main);
 				System.out.println("Done loading all preliminary things");
 			}
 			threadInitial = false;

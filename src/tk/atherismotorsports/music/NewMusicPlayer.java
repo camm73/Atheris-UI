@@ -47,6 +47,7 @@ public class NewMusicPlayer {
 	public JPanel leftPanel;
 	public JPanel musicPanel;
 	public JPanel playlistPanel;
+	public JPanel internalPanel;
 	public JScrollPane songScroll;
 	public JScrollPane playlistScroll;
 	public JLabel timeLabel;
@@ -88,11 +89,14 @@ public class NewMusicPlayer {
 	public AdvancedPlayer player;
 	public File songFile;
 	public SongPlayer sp;
+	public NewMusicPlayer musicPlayer;
+	public PlaylistManager manager;
 
 	public NewMusicPlayer(Main main) {
 		this.main = main;
 		WIDTH = main.WIDTH;
 		HEIGHT = main.HEIGHT;
+		this.musicPlayer = this;
 
 		timeLabel = new JLabel(Time.timeString);
 		timeLabel.setForeground(Color.white);
@@ -107,6 +111,7 @@ public class NewMusicPlayer {
 		loadSongButtons();
 		setSongTitle();
 		setSongScroll();
+		getPlaylistPanel();
 		content();
 		createFrame();
 		panel.repaint();
@@ -369,7 +374,8 @@ public class NewMusicPlayer {
 	}
 	
 	public void switchToSongView(){
-		leftPanel.remove(getPlaylistPanel());
+		leftPanel.remove(playlistPanel);
+		playlistPanel.repaint();
 		leftPanel.add(songScroll);
 		leftPanel.repaint();
 		leftPanel.revalidate();
@@ -377,23 +383,27 @@ public class NewMusicPlayer {
 	
 	public void switchToPlaylistView(){
 		leftPanel.remove(songScroll);
-		leftPanel.add(getPlaylistPanel(), BorderLayout.CENTER);
+		leftPanel.add(playlistPanel, BorderLayout.CENTER);
+		playlistPanel.repaint();
 		leftPanel.repaint();
 		leftPanel.revalidate();
 	}
 	
-	public JComponent getPlaylistPanel(){
+	public void getPlaylistPanel(){
 		playlistPanel = new JPanel(new BorderLayout());
+		internalPanel = new JPanel(new GridBagLayout());
+		playlistScroll = new JScrollPane(internalPanel);
 		JPanel buttonPanel = new JPanel(new GridBagLayout());
 		GridBagConstraints c1 = new GridBagConstraints();
 		c1.gridx = 0;
 		c1.gridy = 0;
 		c1.weightx = 1.0;
 		
-		buttonPanel.add(createPlaylistButton, c);
+		buttonPanel.add(createPlaylistButton, c1);
 		createPlaylistButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				new PlaylistManager(this);
+				manager = new PlaylistManager(musicPlayer);
+				frame.setAlwaysOnTop(false);
 			}
 		});
 		
@@ -402,16 +412,6 @@ public class NewMusicPlayer {
 		playlistPanel.add(buttonPanel, BorderLayout.NORTH);
 		
 		playlistPanel.add(playlistScroll, BorderLayout.CENTER);
-		JPanel internalPanel = new JPanel(new GridBagLayout());
-		
-		playlistScroll.add(internalPanel);
-		
-		GridBagConstraints gc = new GridBagConstraints();
-		gc.gridx = 0;
-		gc.gridy = 0;
-		gc.weightx = 1.0;
-		
-		return playlistPanel;
 	}
 
 	public void getSongData(File song) {

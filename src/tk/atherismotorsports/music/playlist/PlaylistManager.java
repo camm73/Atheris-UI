@@ -2,16 +2,17 @@ package tk.atherismotorsports.music.playlist;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import tk.atherismotorsports.Main;
@@ -29,7 +30,10 @@ public class PlaylistManager {
 	public JPanel topPanel;
 	public JPanel buttonPanel;
 	public JPanel songPanel;
+	public JPanel playlistPanel;
 	
+	public JScrollPane localSongScroll;
+	public JScrollPane playlistScroll;
 	public ArrayList<JButton> localSongButtons = new ArrayList<JButton>();
 	public ArrayList<String> playlistSongs = new ArrayList<String>();
 	public JTextField playlistNameField = new JTextField(40);
@@ -46,6 +50,7 @@ public class PlaylistManager {
 		frame.setResizable(false);
 		frame.setUndecorated(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setAlwaysOnTop(true);
 		frame.setLocationRelativeTo(null);
 		frame.add(panel);
 		frame.setVisible(true);
@@ -61,18 +66,22 @@ public class PlaylistManager {
 	
 	public JComponent getTopBar(){
 		topPanel = new JPanel(new BorderLayout());
+		topPanel.setBackground(musicPlayer.grayBack);
 		
 		return topPanel;
 	}
 	
 	public JComponent getCenterPanel(){
 		centerPanel = new JPanel(new GridBagLayout());
+		centerPanel.setBackground(musicPlayer.grayBack);
 		GridBagConstraints c  = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = 0;
-		c.weightx = 1.0;
 		
-		
+		Dimension nameSize = new Dimension(210, 25);
+		playlistNameField.setPreferredSize(nameSize);
+		playlistNameField.setMaximumSize(nameSize);
+		playlistNameField.setMinimumSize(nameSize);
 		playlistNameField.setBackground(musicPlayer.grayBack);
 		playlistNameField.setForeground(Color.red);
 		centerPanel.add(playlistNameField, c);
@@ -98,6 +107,7 @@ public class PlaylistManager {
 	
 	public JComponent getButtonBar(){
 		buttonPanel = new JPanel(new GridBagLayout());
+		buttonPanel.setBackground(musicPlayer.grayBack);
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
@@ -109,10 +119,16 @@ public class PlaylistManager {
 		//TODO just return the song scroll from the musicplayer class except this time
 		//I need to clone it to another variable and change what check boxes do.
 		songPanel = new JPanel(new GridBagLayout());
+		Dimension songSize = new Dimension(400, 700);
+		songPanel.setPreferredSize(songSize);
+		songPanel.setMaximumSize(songSize);
+		songPanel.setMinimumSize(songSize);
+		songPanel.setBackground(musicPlayer.grayBack);
+		localSongScroll = new JScrollPane(songPanel);
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
-		c.weightx = 1.0;
+		c.weighty = 1.0;
 		
 		for(int i = 0; i < musicPlayer.songButtons.size(); i++){
 			localSongButtons.add(new PlaylistButton(musicPlayer, this, musicPlayer.songButtons.get(i).getText()));
@@ -121,13 +137,23 @@ public class PlaylistManager {
 			c.gridy++;
 		}
 		
-		return null;
+		return localSongScroll;
 	}
 	
 	public JComponent getPlaylistScroll(){
-		//TODO add all of the selected songs to this list
+		playlistPanel = new JPanel(new GridBagLayout());
+		playlistPanel.setBackground(musicPlayer.grayBack);
+		playlistScroll = new JScrollPane(playlistPanel);
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.weighty = 1.0;
 		
-		return null;
+		for(int i = 0; i < playlistSongs.size(); i++){
+			playlistPanel.add(new JLabel(playlistSongs.get(i)));
+		}
+		
+		return playlistScroll;
 	}
 
 }
