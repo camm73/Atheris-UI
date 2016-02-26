@@ -1,16 +1,21 @@
-package tk.atherismotorsports.music;
+package tk.atherismotorsports.music.playlist;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import tk.atherismotorsports.Main;
+import tk.atherismotorsports.music.NewMusicPlayer;
 
 public class PlaylistManager {
 	
@@ -22,7 +27,11 @@ public class PlaylistManager {
 	public JPanel panel;
 	public JPanel centerPanel;
 	public JPanel topPanel;
+	public JPanel buttonPanel;
+	public JPanel songPanel;
 	
+	public ArrayList<JButton> localSongButtons = new ArrayList<JButton>();
+	public ArrayList<String> playlistSongs = new ArrayList<String>();
 	public JTextField playlistNameField = new JTextField(40);
 	
 	public PlaylistManager(NewMusicPlayer musicPlayer){
@@ -47,6 +56,7 @@ public class PlaylistManager {
 		panel.setBackground(musicPlayer.grayBack);
 		panel.add(getTopBar(), BorderLayout.NORTH);
 		panel.add(getCenterPanel(), BorderLayout.CENTER);
+		panel.add(getButtonBar(), BorderLayout.SOUTH);
 	}
 	
 	public JComponent getTopBar(){
@@ -76,6 +86,8 @@ public class PlaylistManager {
 		
 		centerPanel.add(getPlaylistScroll(), c);
 		
+
+		
 		//on top will be a jtextfield where you can name the playlist
 		//then to the left there will be a jscrollpane with all the songs
 		//then to the right you will see what is in the new playlist
@@ -84,9 +96,30 @@ public class PlaylistManager {
 		return centerPanel;
 	}
 	
+	public JComponent getButtonBar(){
+		buttonPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.weightx = 1.0;
+		return buttonPanel;
+	}
+	
 	public JComponent getSongScroll(){
 		//TODO just return the song scroll from the musicplayer class except this time
 		//I need to clone it to another variable and change what check boxes do.
+		songPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.weightx = 1.0;
+		
+		for(int i = 0; i < musicPlayer.songButtons.size(); i++){
+			localSongButtons.add(new PlaylistButton(musicPlayer, this, musicPlayer.songButtons.get(i).getText()));
+			
+			songPanel.add(localSongButtons.get(i));
+			c.gridy++;
+		}
 		
 		return null;
 	}

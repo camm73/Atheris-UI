@@ -35,6 +35,7 @@ import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.advanced.AdvancedPlayer;
 import tk.atherismotorsports.Main;
 import tk.atherismotorsports.Time;
+import tk.atherismotorsports.music.playlist.PlaylistManager;
 
 public class NewMusicPlayer {
 
@@ -392,7 +393,7 @@ public class NewMusicPlayer {
 		buttonPanel.add(createPlaylistButton, c);
 		createPlaylistButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				new PlaylistManager();
+				new PlaylistManager(this);
 			}
 		});
 		
