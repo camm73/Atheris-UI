@@ -31,7 +31,7 @@ public class PlaylistButton extends JButton{
 				manager.playlistSongs.add(buttonText);
 				System.out.println("Added " + buttonText + " to playlist");
 				setEnabled(false);
-				//TODO update playlistScrollPanel
+				manager.updatePlaylistScroll();
 			}
 		});
 	}

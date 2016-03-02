@@ -39,7 +39,7 @@ public class Main implements Runnable{
 	public BufferedImage weatherImage;
 	public BufferedImage speedImage;
 	public BufferedImage settingImage;
-	public BufferedImage backImage;
+	public static BufferedImage backImage;
 	public BufferedImage mapImage;
 	public JLabel background;
 	public static JLabel timeLabel;

@@ -105,6 +105,7 @@ public class NewMusicPlayer {
 		backButton.setBorderPainted(false);
 		backButton.setIcon(new ImageIcon(main.backImage));
 		seekBar = new JProgressBar(0, 400);
+		songListViewButton.setEnabled(false);
 
 		makeDirectories();
 		loadFiles();
@@ -204,6 +205,11 @@ public class NewMusicPlayer {
 	
 	public JComponent getSwitchPanel(){
 		JPanel switchPanel = new JPanel(new GridBagLayout());
+		switchPanel.setBackground(grayBack);
+		songListViewButton.setBackground(grayBack);
+		playlistViewButton.setBackground(grayBack);
+		songListViewButton.setForeground(Color.red);
+		playlistViewButton.setForeground(Color.red);
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
@@ -391,9 +397,11 @@ public class NewMusicPlayer {
 	
 	public void getPlaylistPanel(){
 		playlistPanel = new JPanel(new BorderLayout());
+		playlistPanel.setBackground(grayBack);
 		internalPanel = new JPanel(new GridBagLayout());
 		playlistScroll = new JScrollPane(internalPanel);
 		JPanel buttonPanel = new JPanel(new GridBagLayout());
+		buttonPanel.setBackground(grayBack);
 		GridBagConstraints c1 = new GridBagConstraints();
 		c1.gridx = 0;
 		c1.gridy = 0;

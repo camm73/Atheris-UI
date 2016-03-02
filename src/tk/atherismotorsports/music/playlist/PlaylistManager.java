@@ -3,10 +3,14 @@ package tk.atherismotorsports.music.playlist;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -31,15 +35,21 @@ public class PlaylistManager {
 	public JPanel buttonPanel;
 	public JPanel songPanel;
 	public JPanel playlistPanel;
+	public JButton backButton = new JButton();
 	
 	public JScrollPane localSongScroll;
 	public JScrollPane playlistScroll;
+	public GridBagConstraints playlistC;
 	public ArrayList<JButton> localSongButtons = new ArrayList<JButton>();
 	public ArrayList<String> playlistSongs = new ArrayList<String>();
-	public JTextField playlistNameField = new JTextField(40);
+	public JTextField playlistNameField = new JTextField(30);
 	
 	public PlaylistManager(NewMusicPlayer musicPlayer){
 		this.musicPlayer = musicPlayer;
+		backButton.setBackground(new Color(56, 56, 56));
+		backButton.setBorderPainted(false);
+		backButton.setIcon(new ImageIcon(Main.backImage));
+		
 		content();
 		createFrame();
 	}
@@ -49,7 +59,7 @@ public class PlaylistManager {
 		frame.setSize(WIDTH, HEIGHT);
 		frame.setResizable(false);
 		frame.setUndecorated(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setAlwaysOnTop(true);
 		frame.setLocationRelativeTo(null);
 		frame.add(panel);
@@ -68,6 +78,15 @@ public class PlaylistManager {
 		topPanel = new JPanel(new BorderLayout());
 		topPanel.setBackground(musicPlayer.grayBack);
 		
+		topPanel.add(backButton, BorderLayout.WEST);
+		backButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				musicPlayer.frame.setAlwaysOnTop(true);
+				frame.dispose();
+				//TODO add confirmation that you want to exit without saving playlist
+			}
+		});
+		
 		return topPanel;
 	}
 	
@@ -78,10 +97,10 @@ public class PlaylistManager {
 		c.gridx = 1;
 		c.gridy = 0;
 		
-		Dimension nameSize = new Dimension(210, 25);
+		/*Dimension nameSize = new Dimension(175, 25);
 		playlistNameField.setPreferredSize(nameSize);
 		playlistNameField.setMaximumSize(nameSize);
-		playlistNameField.setMinimumSize(nameSize);
+		playlistNameField.setMinimumSize(nameSize);*/
 		playlistNameField.setBackground(musicPlayer.grayBack);
 		playlistNameField.setForeground(Color.red);
 		centerPanel.add(playlistNameField, c);
@@ -112,6 +131,8 @@ public class PlaylistManager {
 		c.gridx = 0;
 		c.gridy = 0;
 		c.weightx = 1.0;
+		
+		
 		return buttonPanel;
 	}
 	
@@ -128,12 +149,11 @@ public class PlaylistManager {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
-		c.weighty = 1.0;
 		
 		for(int i = 0; i < musicPlayer.songButtons.size(); i++){
 			localSongButtons.add(new PlaylistButton(musicPlayer, this, musicPlayer.songButtons.get(i).getText()));
-			
-			songPanel.add(localSongButtons.get(i));
+			System.out.println(i);
+			songPanel.add(localSongButtons.get(i), c);
 			c.gridy++;
 		}
 		
@@ -143,17 +163,41 @@ public class PlaylistManager {
 	public JComponent getPlaylistScroll(){
 		playlistPanel = new JPanel(new GridBagLayout());
 		playlistPanel.setBackground(musicPlayer.grayBack);
+		Dimension playlistSize = new Dimension(400, 700);
+		playlistPanel.setMaximumSize(playlistSize);
+		playlistPanel.setPreferredSize(playlistSize);
+		playlistPanel.setMinimumSize(playlistSize);
 		playlistScroll = new JScrollPane(playlistPanel);
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = 0;
-		c.weighty = 1.0;
+		playlistScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		playlistC = new GridBagConstraints();
+		playlistC.gridx = 0;
+		playlistC.gridy = 0;
 		
 		for(int i = 0; i < playlistSongs.size(); i++){
-			playlistPanel.add(new JLabel(playlistSongs.get(i)));
+			playlistPanel.add(new JLabel(playlistSongs.get(i)), playlistC);
+			playlistC.gridy++;
 		}
 		
 		return playlistScroll;
+	}
+	
+	public void updatePlaylistScroll(){
+		playlistPanel.removeAll();
+		playlistC.gridy = 0;
+		for(int i = 0; i < playlistSongs.size(); i++){
+			JLabel tempLabel = new JLabel(playlistSongs.get(i));
+			tempLabel.setForeground(Color.red);
+			tempLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+			Dimension labelSize = new Dimension(250, 35);
+			tempLabel.setPreferredSize(labelSize);
+			tempLabel.setMaximumSize(labelSize);
+			tempLabel.setMinimumSize(labelSize);
+			playlistPanel.add(tempLabel, playlistC);
+			playlistC.gridy++;
+		}
+		playlistPanel.repaint();
+		playlistPanel.revalidate();
+		playlistScroll.repaint();
 	}
 
 }
