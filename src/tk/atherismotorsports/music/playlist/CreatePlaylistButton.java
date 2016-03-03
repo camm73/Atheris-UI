@@ -9,15 +9,16 @@ import javax.swing.JButton;
 
 import tk.atherismotorsports.music.NewMusicPlayer;
 
-public class PlaylistButton extends JButton{
-	
+public class CreatePlaylistButton extends JButton{
+
+	private static final long serialVersionUID = 1L;
 	public String buttonText = "";
 	public NewMusicPlayer musicPlayer;
 	public PlaylistManager manager;
 	protected Dimension buttonSize = new Dimension(250, 30);
 	
 	
-	public PlaylistButton(NewMusicPlayer musicPlayer, PlaylistManager pm, String text){
+	public CreatePlaylistButton(NewMusicPlayer musicPlayer, PlaylistManager pm, String text){
 		this.buttonText = text;
 		this.musicPlayer = musicPlayer;
 		this.manager = pm;

@@ -2,6 +2,7 @@ package tk.atherismotorsports.music;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -22,6 +23,7 @@ public class SongButton extends JButton{
 		buttonText = text;
 		this.setText(buttonText);
 		//System.out.println(text);
+		setFont(new Font("Arial", Font.BOLD, 14));
 		setMaximumSize(buttonSize);
 		setPreferredSize(buttonSize);
 		this.setBackground(musicPlayer.grayBack);

@@ -62,11 +62,15 @@ public class NewMusicPlayer {
 	public JProgressBar seekBar;
 
 	public File musicDirectory;
+	public File playlistDirectory;
 
 	public static Color grayBack = new Color(56, 56, 56);
 
-	public ArrayList<File> songList = new ArrayList<File>();
+	public ArrayList<File> songList;
 	public ArrayList<JButton> songButtons = new ArrayList<JButton>();
+	public ArrayList<File> playlistFolders;
+	public ArrayList<JButton> playlistButtons = new ArrayList<JButton>();
+	public ArrayList<String> playlistFolderNames = new ArrayList<String>();
 
 	public Thread songThread;
 	public int songNum = 0;
@@ -81,7 +85,6 @@ public class NewMusicPlayer {
 	public int songTime = 0;
 	public int resumeFrame;
 	public boolean countTime = false;
-	
 
 	public boolean pause = false;
 
@@ -110,6 +113,8 @@ public class NewMusicPlayer {
 		makeDirectories();
 		loadFiles();
 		loadSongButtons();
+		getPlaylistButtons();
+		getPlaylistButtons();
 		setSongTitle();
 		setSongScroll();
 		getPlaylistPanel();
@@ -158,21 +163,42 @@ public class NewMusicPlayer {
 		directory = jfc.getCurrentDirectory().toString();
 
 		musicDirectory = new File(directory + "/Atheris Music/");
+		playlistDirectory = new File(directory + "/Atheris Playlists/");
 
 		if (!musicDirectory.mkdirs()) {
 			System.out.println("Error creating Atheris Music directory or it already exists");
 		} else {
 			System.out.println("Successfully created Atheris Music directory!");
 		}
+
+		if (playlistDirectory.mkdirs()) {
+			System.out.println("Successfully create Atheris Playlist directory!");
+		} else {
+			System.out.println("Error creating Atheris Playlist directory or it already exists");
+		}
 	}
 
 	public void loadFiles() {
 		songList = new ArrayList<File>(Arrays.asList(musicDirectory.listFiles()));
+		playlistFolders = new ArrayList<File>(Arrays.asList(playlistDirectory.listFiles()));
+		
+		playlistFolderNames.clear();
+		for(int i =0; i<playlistFolders.size(); i++){
+			playlistFolderNames.add(playlistFolders.get(i).getName());
+		}
 	}
 
 	public void loadSongButtons() {
 		for (int i = 0; i < songList.size(); i++) {
 			songButtons.add(new SongButton(this, songList.get(i).getName(), i));
+		}
+	}
+
+	public void getPlaylistButtons() {
+		// TODO for loop getting all of the playlist folders
+		playlistButtons.clear();
+		for (int i = 0; i < playlistFolders.size(); i++) {
+			playlistButtons.add(new OpenPlaylistButton(this, playlistFolders.get(i).getName()));
 		}
 	}
 
@@ -202,8 +228,8 @@ public class NewMusicPlayer {
 			c.gridy++;
 		}
 	}
-	
-	public JComponent getSwitchPanel(){
+
+	public JComponent getSwitchPanel() {
 		JPanel switchPanel = new JPanel(new GridBagLayout());
 		switchPanel.setBackground(grayBack);
 		songListViewButton.setBackground(grayBack);
@@ -215,19 +241,19 @@ public class NewMusicPlayer {
 		c.gridy = 0;
 		c.weightx = 1.0;
 		switchPanel.add(songListViewButton, c);
-		songListViewButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+		songListViewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				songListViewButton.setEnabled(false);
 				playlistViewButton.setEnabled(true);
 				switchToSongView();
 			}
 		});
-		
+
 		c.gridx++;
-		
+
 		switchPanel.add(playlistViewButton, c);
-		playlistViewButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+		playlistViewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				songListViewButton.setEnabled(true);
 				playlistViewButton.setEnabled(false);
 				switchToPlaylistView();
@@ -270,14 +296,14 @@ public class NewMusicPlayer {
 		titleLabel.setMaximumSize(titleSize);
 		titleLabel.setFont(new Font("Stencil", Font.PLAIN, 34));
 		infoPanel.add(titleLabel, c);
-		
+
 		c.gridy++;
-		if(albumCover != null){
+		if (albumCover != null) {
 			JLabel temp = new JLabel(new ImageIcon(albumCover));
 			infoPanel.add(temp, c);
 			c.gridy++;
 		}
-		
+
 		Dimension seekSize = new Dimension(400, 30);
 		seekBar.setValue(0);
 		seekBar.setStringPainted(true);
@@ -297,32 +323,32 @@ public class NewMusicPlayer {
 		skipButton.setForeground(Color.red);
 		skipButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(!pause){
+				if (!pause) {
 					player.stop();
 					seekBar.setValue(0);
-				}else{
+				} else {
 					playToggle.setText("Pause");
 					songTime = 0;
 					seekBar.setValue(0);
-					if(songNum < (songList.size() - 1)){
+					if (songNum < (songList.size() - 1)) {
 						songNum++;
 						playSong(songList.get(songNum).getName(), 0);
-					}else if(songNum == (songList.size() - 1)){
+					} else if (songNum == (songList.size() - 1)) {
 						songNum = 0;
 						playSong(songList.get(songNum).getName(), 0);
 					}
 				}
 			}
 		});
-		
+
 		c.gridy++;
-		
+
 		stopButton.setText("Stop");
 		stopButton.setBackground(grayBack);
 		stopButton.setForeground(Color.red);
 		infoPanel.add(stopButton, c);
-		stopButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+		stopButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				player.stop();
 				player.close();
 				songTime = 0;
@@ -350,8 +376,8 @@ public class NewMusicPlayer {
 				} else {
 					playToggle.setText("Pause");
 					pause = false;
-					playSong(songFile.getName(), (int) (songTime*songFPS));
-					System.out.println("First: " + songTime*songFPS + "    Rounded: "+ (int) (songTime*songFPS));
+					playSong(songFile.getName(), (int) (songTime * songFPS));
+					System.out.println("First: " + songTime * songFPS + "    Rounded: " + (int) (songTime * songFPS));
 					countTime = true;
 				}
 			}
@@ -363,63 +389,85 @@ public class NewMusicPlayer {
 	int time = 0;
 
 	public void update() {
-		if(countTime){
+		if (countTime) {
 			getSongTime();
 		}
-		//System.out.println(songTime);
-		
+		// System.out.println(songTime);
+
 		seekBar.setString("Song Length");
-		seekBar.setValue((int) ((songTime/runtime)*400));
-		
+		seekBar.setValue((int) ((songTime / runtime) * 400));
+
 		timeLabel.setText(Time.timeString);
 		setSongTitle();
 		panel.repaint();
 		panel.revalidate();
 		// System.out.println(songFrames);
-		//System.out.println("songFrames: " + songFrames + "   songFPS: " + songFPS + "   runtime: " + runtime);
+		// System.out.println("songFrames: " + songFrames + " songFPS: " +
+		// songFPS + " runtime: " + runtime);
 	}
-	
-	public void switchToSongView(){
+
+	public void switchToSongView() {
 		leftPanel.remove(playlistPanel);
 		playlistPanel.repaint();
 		leftPanel.add(songScroll);
 		leftPanel.repaint();
 		leftPanel.revalidate();
 	}
-	
-	public void switchToPlaylistView(){
+
+	public void switchToPlaylistView() {
 		leftPanel.remove(songScroll);
 		leftPanel.add(playlistPanel, BorderLayout.CENTER);
 		playlistPanel.repaint();
 		leftPanel.repaint();
 		leftPanel.revalidate();
 	}
-	
-	public void getPlaylistPanel(){
+
+	public void getPlaylistPanel() {
 		playlistPanel = new JPanel(new BorderLayout());
 		playlistPanel.setBackground(grayBack);
 		internalPanel = new JPanel(new GridBagLayout());
 		playlistScroll = new JScrollPane(internalPanel);
+		playlistScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		JPanel buttonPanel = new JPanel(new GridBagLayout());
+
+		internalPanel.setBackground(NewMusicPlayer.grayBack);
+
 		buttonPanel.setBackground(grayBack);
 		GridBagConstraints c1 = new GridBagConstraints();
 		c1.gridx = 0;
 		c1.gridy = 0;
 		c1.weightx = 1.0;
-		
+
+		createPlaylistButton.setForeground(Color.red);
+		createPlaylistButton.setBackground(NewMusicPlayer.grayBack);
 		buttonPanel.add(createPlaylistButton, c1);
-		createPlaylistButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+		createPlaylistButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				manager = new PlaylistManager(musicPlayer);
 				frame.setAlwaysOnTop(false);
 			}
 		});
-		
-		//TODO add way to edit these by renaming and deleting
-		
+
+		// TODO add way to edit these by renaming and deleting
+
 		playlistPanel.add(buttonPanel, BorderLayout.NORTH);
-		
+
+		getPlaylistScroll();
 		playlistPanel.add(playlistScroll, BorderLayout.CENTER);
+	}
+
+	public void getPlaylistScroll() {
+		// playlistScroll is scroll pane with is contained in playlistPanel
+		// internal panel is the JPanel that is contained in playlistScroll
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.weighty = 1.0;
+		for (int i = 0; i < playlistButtons.size(); i++) {
+			internalPanel.add(playlistButtons.get(i), c);
+			c.gridy++;
+		}
 	}
 
 	public void getSongData(File song) {
@@ -428,40 +476,41 @@ public class NewMusicPlayer {
 			songFrames = (long) currentSong.getFrameCount();
 			runtime = currentSong.getLengthInSeconds();
 			songFPS = (songFrames / runtime);
-			
-			if(currentSong.hasId3v2Tag()){
+
+			if (currentSong.hasId3v2Tag()) {
 				ID3v2 id3v2tag = currentSong.getId3v2Tag();
-				artistName =  id3v2tag.getArtist();
+				artistName = id3v2tag.getArtist();
 				albumName = id3v2tag.getAlbum();
 				byte[] imageData = id3v2tag.getAlbumImage();
 				System.out.println(imageData);
-				if(imageData != null){
+				if (imageData != null) {
 					RandomAccessFile file = new RandomAccessFile("album-artwork", "rw");
-				    file.write(imageData);
-				    file.close();
+					file.write(imageData);
+					file.close();
 				}
 			}
-			
-			if(artistName == null){
+
+			if (artistName == null) {
 				artistName = "Unknown Artist";
 			}
-			
-			if(albumName == null){
+
+			if (albumName == null) {
 				albumName = "Unknown Album";
 			}
-			
+
 		} catch (UnsupportedTagException | InvalidDataException | IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	long prev = System.currentTimeMillis() / 1000;
-	public void getSongTime(){
+
+	public void getSongTime() {
 		long now = System.currentTimeMillis() / 1000;
-		if(now-prev >= 1){
+		if (now - prev >= 1) {
 			prev = now;
 			songTime++;
-			
+
 		}
 	}
 
