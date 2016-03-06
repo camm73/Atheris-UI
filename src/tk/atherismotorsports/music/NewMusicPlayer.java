@@ -4,18 +4,24 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -35,6 +41,8 @@ import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.advanced.AdvancedPlayer;
 import tk.atherismotorsports.Main;
 import tk.atherismotorsports.Time;
+import tk.atherismotorsports.json.JSONException;
+import tk.atherismotorsports.json.JSONObject;
 import tk.atherismotorsports.music.playlist.PlaylistManager;
 
 public class NewMusicPlayer {
@@ -48,9 +56,11 @@ public class NewMusicPlayer {
 	public JPanel musicPanel;
 	public JPanel playlistPanel;
 	public JPanel internalPanel;
+	public JPanel infoPanel;
 	public JScrollPane songScroll;
 	public JScrollPane playlistScroll;
 	public JLabel timeLabel;
+	public JLabel albumLabel;
 	public JLabel titleLabel = new JLabel();
 	public JButton backButton = new JButton();
 	public JButton skipButton = new JButton();
@@ -63,6 +73,9 @@ public class NewMusicPlayer {
 
 	public File musicDirectory;
 	public File playlistDirectory;
+	public File artDirectory;
+	
+	public BufferedImage albumCover;
 
 	public static Color grayBack = new Color(56, 56, 56);
 
@@ -71,6 +84,8 @@ public class NewMusicPlayer {
 	public ArrayList<File> playlistFolders;
 	public ArrayList<JButton> playlistButtons = new ArrayList<JButton>();
 	public ArrayList<String> playlistFolderNames = new ArrayList<String>();
+	public ArrayList<File> albumArtFiles;
+	public ArrayList<String> albumArtNames = new ArrayList<String>();
 
 	public Thread songThread;
 	public int songNum = 0;
@@ -81,7 +96,6 @@ public class NewMusicPlayer {
 	public double songFPS = 0.0;
 	public String albumName = "";
 	public String artistName = "";
-	public BufferedImage albumCover;
 	public int songTime = 0;
 	public int resumeFrame;
 	public boolean countTime = false;
@@ -112,6 +126,7 @@ public class NewMusicPlayer {
 
 		makeDirectories();
 		loadFiles();
+		loadArtwork();
 		loadSongButtons();
 		getPlaylistButtons();
 		getPlaylistButtons();
@@ -164,6 +179,7 @@ public class NewMusicPlayer {
 
 		musicDirectory = new File(directory + "/Atheris Music/");
 		playlistDirectory = new File(directory + "/Atheris Playlists/");
+		artDirectory = new File(directory + "/Atheris Artwork/");
 
 		if (!musicDirectory.mkdirs()) {
 			System.out.println("Error creating Atheris Music directory or it already exists");
@@ -176,6 +192,12 @@ public class NewMusicPlayer {
 		} else {
 			System.out.println("Error creating Atheris Playlist directory or it already exists");
 		}
+		
+		if(artDirectory.mkdirs()){
+			System.out.println("Successfully created Atheris Artwork directory");
+		}else{
+			System.out.println("Error creating Atheris Artwork directory or it already exists");
+		}
 	}
 
 	public void loadFiles() {
@@ -185,6 +207,14 @@ public class NewMusicPlayer {
 		playlistFolderNames.clear();
 		for(int i =0; i<playlistFolders.size(); i++){
 			playlistFolderNames.add(playlistFolders.get(i).getName());
+		}
+	}
+	
+	public void loadArtwork(){
+		albumArtFiles = new ArrayList<File>(Arrays.asList(artDirectory.listFiles()));
+		
+		for(int i = 0; i < albumArtFiles.size(); i++){
+			albumArtNames.add(albumArtFiles.get(i).getName());
 		}
 	}
 
@@ -280,7 +310,7 @@ public class NewMusicPlayer {
 	}
 
 	public JComponent getInfoPanel() {
-		JPanel infoPanel = new JPanel(new GridBagLayout());
+		infoPanel = new JPanel(new GridBagLayout());
 		infoPanel.setBackground(grayBack);
 
 		GridBagConstraints c = new GridBagConstraints();
@@ -291,16 +321,18 @@ public class NewMusicPlayer {
 		titleLabel.setForeground(Color.RED);
 		titleLabel.setHorizontalAlignment(JLabel.CENTER);
 
-		Dimension titleSize = new Dimension(500, 300);
+		Dimension titleSize = new Dimension(500, 100);
 		titleLabel.setPreferredSize(titleSize);
 		titleLabel.setMaximumSize(titleSize);
 		titleLabel.setFont(new Font("Stencil", Font.PLAIN, 34));
 		infoPanel.add(titleLabel, c);
 
 		c.gridy++;
-		if (albumCover != null) {
-			JLabel temp = new JLabel(new ImageIcon(albumCover));
-			infoPanel.add(temp, c);
+		
+		if(albumLabel != null){
+			System.out.println("here");
+			System.out.println(albumCover);
+			infoPanel.add(albumLabel, c);
 			c.gridy++;
 		}
 
@@ -469,6 +501,75 @@ public class NewMusicPlayer {
 			c.gridy++;
 		}
 	}
+	
+	public void getArtwork(){
+		try{
+			String editedName = albumName.replace(" ", "+");
+			URL url = new URL("https://itunes.apple.com/search?term="+ editedName + "&entity=album");
+	        URLConnection connection = url.openConnection();
+	
+	        String line;
+	        StringBuilder builder = new StringBuilder();
+	        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+	        while((line = reader.readLine()) != null) {
+	            builder.append(line);
+	        }
+	
+	        JSONObject json = new JSONObject(builder.toString());
+	        String imageUrl = json.getJSONArray("results").getJSONObject(0).getString("artworkUrl100");
+	        BufferedImage image = ImageIO.read(new URL(imageUrl));
+	        
+	        File albumArt = new File(artDirectory + "/" + albumName + ".jpg");
+	        BufferedImage resizedArt = resizeArtwork(image, BufferedImage.TYPE_INT_RGB);
+	        ImageIO.write(resizedArt, "jpg", albumArt);
+	        
+	        updateAlbumArtList();
+	        albumCover = resizedArt;
+	        albumLabel = new JLabel(new ImageIcon(albumCover));
+	        albumLabel.repaint();
+	        panel.remove(infoPanel);
+	        panel.add(getInfoPanel());
+	        panel.repaint();
+	        panel.revalidate();
+		}catch(JSONException | IOException e){
+			e.printStackTrace();
+		}
+	}
+	
+	 private BufferedImage resizeArtwork(BufferedImage originalImage, int type){
+		int imgSize = 150;
+		BufferedImage resizedImage = new BufferedImage(imgSize, imgSize, type);
+		Graphics2D g = resizedImage.createGraphics();
+		g.drawImage(originalImage, 0, 0, imgSize, imgSize, null);
+		g.dispose();
+				
+		return resizedImage;
+	 }
+	 
+	 public void setArtwork(String album){
+		 File cover = new File(artDirectory + "/" + album + ".jpg");
+		 try {
+			albumCover = ImageIO.read(cover);
+			albumLabel = new JLabel(new ImageIcon(albumCover));
+			albumLabel.repaint();
+			panel.remove(infoPanel);
+	        panel.add(getInfoPanel());
+	        panel.repaint();
+	        panel.revalidate();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	 }
+	 
+	 public void updateAlbumArtList(){
+		 albumArtNames.clear();
+		 albumArtFiles.clear();
+		 albumArtFiles = new ArrayList<File>(Arrays.asList(artDirectory.listFiles()));
+		 
+		 for(int i = 0; i < albumArtFiles.size(); i++){
+			 albumArtNames.add(albumArtFiles.get(i).getName());
+		 }
+	 }
 
 	public void getSongData(File song) {
 		try {
@@ -481,21 +582,20 @@ public class NewMusicPlayer {
 				ID3v2 id3v2tag = currentSong.getId3v2Tag();
 				artistName = id3v2tag.getArtist();
 				albumName = id3v2tag.getAlbum();
-				byte[] imageData = id3v2tag.getAlbumImage();
-				System.out.println(imageData);
-				if (imageData != null) {
-					RandomAccessFile file = new RandomAccessFile("album-artwork", "rw");
-					file.write(imageData);
-					file.close();
-				}
 			}
 
-			if (artistName == null) {
+			if (artistName == null || artistName == "") {
 				artistName = "Unknown Artist";
 			}
 
-			if (albumName == null) {
+			if (albumName == null || albumName == "") {
 				albumName = "Unknown Album";
+			}else{
+				if(!albumArtNames.contains(albumName)){
+					getArtwork();
+				}else{
+					setArtwork(albumName);
+				}
 			}
 
 		} catch (UnsupportedTagException | InvalidDataException | IOException e) {
@@ -517,7 +617,6 @@ public class NewMusicPlayer {
 	public void playSong(String text, int startTime) {
 		songFile = new File(musicDirectory + "/" + text);
 		System.out.println("Song File: " + songFile);
-		// getAlbumArt(songFile);
 
 		if (player != null) {
 			player.close();
@@ -527,9 +626,14 @@ public class NewMusicPlayer {
 			FileInputStream fis = new FileInputStream(songFile);
 			player = new AdvancedPlayer(fis);
 			sp = new SongPlayer(player, this, startTime);
-			getSongData(songFile);
 			songThread = new Thread(sp);
 			songThread.start();
+			Thread songDataThread = new Thread(new Runnable(){
+				public void run(){
+					getSongData(songFile);
+				}
+			});
+			songDataThread.start();
 			countTime = true;
 		} catch (IOException | JavaLayerException e) {
 			e.printStackTrace();

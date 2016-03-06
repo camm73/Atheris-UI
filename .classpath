@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="lib/jxbrowser-6.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jxbrowser-win-6.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/license.jar"/>
+	<classpathentry kind="lib" path="lib/coverartarchive-api-2.1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
