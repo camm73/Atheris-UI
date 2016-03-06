@@ -56,6 +56,8 @@ public class NewMusicPlayer {
 	public JPanel playlistPanel;
 	public JPanel internalPanel;
 	public JPanel infoPanel;
+	public JPanel playlistSongPanel;
+	public JPanel playlistTopPanel;
 	public JScrollPane songScroll;
 	public JScrollPane playlistScroll;
 	public JLabel timeLabel;
@@ -458,7 +460,58 @@ public class NewMusicPlayer {
 		leftPanel.repaint();
 		leftPanel.revalidate();
 	}
+	
+	public void viewPlaylistContents(String playlist){
+		leftPanel.remove(playlistPanel);
+		getPlaylistSongPanel(playlist);
+		leftPanel.add(playlistSongPanel, BorderLayout.CENTER);
+		playlistSongPanel.repaint();
+		leftPanel.repaint();
+		leftPanel.revalidate();
+	}
 
+	boolean playlistInitial = true;
+	public void getPlaylistSongPanel(String playlist){
+		playlistSongPanel = new JPanel(new BorderLayout());
+		playlistSongPanel.add(playlistTopPanel, BorderLayout.NORTH);
+		
+		//top panel
+		JButton songEditButton = new JButton("Edit Playlist");
+		JButton returnButton = new JButton("Back");
+		playlistTopPanel = new JPanel(new BorderLayout());
+		
+		songEditButton.setBackground(grayBack);
+		songEditButton.setForeground(Color.red);
+		songEditButton.setFont(new Font("Arial", Font.BOLD, 14));
+		playlistTopPanel.add(songEditButton, BorderLayout.EAST);
+		if(playlistInitial){
+			songEditButton.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					//TODO add actions here >> delete songs from playlist
+				}
+			});
+		}
+		
+		returnButton.setBackground(grayBack);
+		returnButton.setForeground(Color.red);
+		returnButton.setFont(new Font("Arial", Font.BOLD, 14));
+		playlistTopPanel.add(returnButton, BorderLayout.WEST);
+		if(playlistInitial){
+			leftPanel.remove(playlistSongPanel);
+			leftPanel.add(playlistPanel, BorderLayout.CENTER);
+			playlistPanel.repaint();
+			leftPanel.repaint();
+			leftPanel.revalidate();
+		}
+		
+		
+		//center panel
+		
+		//TODO playlistSongScroll with all songs in playlist
+		
+		playlistInitial = false;
+	}
+	
 	public void getPlaylistPanel() {
 		playlistPanel = new JPanel(new BorderLayout());
 		playlistPanel.setBackground(grayBack);
