@@ -77,7 +77,9 @@ public class NewMusicPlayer {
 	public File artDirectory;
 
 	public BufferedImage albumCover;
-
+	public BufferedImage iconCover;
+	public int iconSize = 40;
+	
 	public static Color grayBack = new Color(56, 56, 56);
 
 	public ArrayList<File> songList;
@@ -579,11 +581,12 @@ public class NewMusicPlayer {
 		        BufferedImage image = ImageIO.read(new URL(imageUrl));
 		        
 		        File albumArt = new File(artDirectory + "/" + albumName + ".jpg");
-		        BufferedImage resizedArt = resizeArtwork(image, BufferedImage.TYPE_INT_RGB);
+		        BufferedImage resizedArt = resizeArtwork(image, BufferedImage.TYPE_INT_RGB, 110);
 		        ImageIO.write(resizedArt, "jpg", albumArt);
 		        
 		        updateAlbumArtList();
 		        albumCover = resizedArt;
+		        iconCover = resizeArtwork(image, BufferedImage.TYPE_INT_RGB, iconSize);
 		        albumLabel = new JLabel(new ImageIcon(albumCover));
 		        albumLabel.repaint();
 		        panel.remove(infoPanel);
@@ -596,8 +599,7 @@ public class NewMusicPlayer {
 		}
 	}
 
-	private BufferedImage resizeArtwork(BufferedImage originalImage, int type) {
-		int imgSize = 150;
+	private BufferedImage resizeArtwork(BufferedImage originalImage, int type, int imgSize) {
 		BufferedImage resizedImage = new BufferedImage(imgSize, imgSize, type);
 		Graphics2D g = resizedImage.createGraphics();
 		g.drawImage(originalImage, 0, 0, imgSize, imgSize, null);
@@ -610,6 +612,7 @@ public class NewMusicPlayer {
 		File cover = new File(artDirectory + "/" + album + ".jpg");
 		try {
 			albumCover = ImageIO.read(cover);
+			iconCover = resizeArtwork(ImageIO.read(cover), BufferedImage.TYPE_INT_RGB, iconSize);
 			albumLabel = new JLabel(new ImageIcon(albumCover));
 			albumLabel.repaint();
 			panel.remove(infoPanel);

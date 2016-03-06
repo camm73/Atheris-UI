@@ -114,7 +114,7 @@ public class Main implements Runnable{
 		c.anchor = GridBagConstraints.CENTER;
 		bottomPanel.setBackground(NewMusicPlayer.grayBack);
 		
-		Dimension songLabelSize = new Dimension(700,30);
+		Dimension songLabelSize = new Dimension(700,40);
 		songLabel.setForeground(Color.red);
 		songLabel.setPreferredSize(songLabelSize);
 		songLabel.setMinimumSize(songLabelSize);
@@ -158,6 +158,9 @@ public class Main implements Runnable{
 			musicPlayer.update();
 		}
 		if(musicOpen){
+			if(musicPlayer.iconCover!=null){
+				songLabel.setIcon(new ImageIcon(musicPlayer.iconCover));
+			}
 			songLabel.setText("Now Playing: " + NewMusicPlayer.songTitle + " -- " + musicPlayer.artistName);
 		}
 		//System.out.println(time.hours + ":" + time.minutes + ":" + time.seconds);

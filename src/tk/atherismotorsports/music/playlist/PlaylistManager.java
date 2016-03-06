@@ -14,6 +14,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.sound.sampled.Port;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -160,7 +161,7 @@ public class PlaylistManager {
 		buttonPanel.add(createPlaylist, c);
 		createPlaylist.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				if(playlistNameField.getText().trim() != ""){
+				if(playlistNameField.getText().trim() != "" && !musicPlayer.playlistFolderNames.contains(playlistNameField.getText().trim())){
 					createPlaylistFolder();
 					updateMusicPlaylist();
 					frame.dispose();
@@ -178,14 +179,17 @@ public class PlaylistManager {
 	public JComponent getSongScroll(){
 		songPanel = new JPanel(new GridBagLayout());
 		Dimension songSize = new Dimension(400, 600);
-		songPanel.setPreferredSize(songSize);
-		songPanel.setMaximumSize(songSize);
-		songPanel.setMinimumSize(songSize);
 		songPanel.setBackground(musicPlayer.grayBack);
 		localSongScroll = new JScrollPane(songPanel);
+		localSongScroll.setViewportView(songPanel);
+		localSongScroll.setPreferredSize(songSize);
+		localSongScroll.setMaximumSize(songSize);
+		localSongScroll.setMinimumSize(songSize);
+		localSongScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
+		c.weighty = 1.0;
 		
 		for(int i = 0; i < musicPlayer.songButtons.size(); i++){
 			localSongButtons.add(new CreatePlaylistButton(musicPlayer, this, musicPlayer.songButtons.get(i).getText()));
@@ -193,6 +197,7 @@ public class PlaylistManager {
 			songPanel.add(localSongButtons.get(i), c);
 			c.gridy++;
 		}
+		localSongScroll.repaint();
 		
 		return localSongScroll;
 	}
@@ -201,10 +206,10 @@ public class PlaylistManager {
 		playlistPanel = new JPanel(new GridBagLayout());
 		playlistPanel.setBackground(musicPlayer.grayBack);
 		Dimension playlistSize = new Dimension(400, 600);
-		playlistPanel.setMaximumSize(playlistSize);
-		playlistPanel.setPreferredSize(playlistSize);
-		playlistPanel.setMinimumSize(playlistSize);
 		playlistScroll = new JScrollPane(playlistPanel);
+		playlistScroll.setMaximumSize(playlistSize);
+		playlistScroll.setPreferredSize(playlistSize);
+		playlistScroll.setMinimumSize(playlistSize);
 		playlistScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		playlistC = new GridBagConstraints();
 		playlistC.gridx = 0;

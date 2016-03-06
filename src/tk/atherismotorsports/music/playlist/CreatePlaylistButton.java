@@ -25,6 +25,7 @@ public class CreatePlaylistButton extends JButton{
 		setText(buttonText);
 		setMaximumSize(buttonSize);
 		setPreferredSize(buttonSize);
+		setMinimumSize(buttonSize);
 		this.setBackground(musicPlayer.grayBack);
 		this.setForeground(Color.red);
 		this.addActionListener(new ActionListener(){
