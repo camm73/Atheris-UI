@@ -51,10 +51,9 @@ public class SongPlayer implements Runnable{
 	public void run() {
 		try {
 			player.play(startTime, Integer.MAX_VALUE);
-
 		} catch (JavaLayerException e) {
 			e.printStackTrace();
-			player.stop();
+			player.close();
 		}
 		//player.close();
 	}

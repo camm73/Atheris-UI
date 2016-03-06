@@ -69,7 +69,7 @@ public class Splash extends Canvas {
 		}
 		
 		while(threadInitial){
-			//System.out.println("Waiting for thread to finish loading songs");
+			System.out.println("Waiting for thread to finish loading songs");
 		}
 		
 		main.frame.setVisible(true);

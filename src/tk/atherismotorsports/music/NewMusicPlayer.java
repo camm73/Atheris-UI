@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.RandomAccessFile;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -74,7 +73,7 @@ public class NewMusicPlayer {
 	public File musicDirectory;
 	public File playlistDirectory;
 	public File artDirectory;
-	
+
 	public BufferedImage albumCover;
 
 	public static Color grayBack = new Color(56, 56, 56);
@@ -101,6 +100,7 @@ public class NewMusicPlayer {
 	public boolean countTime = false;
 
 	public boolean pause = false;
+	public boolean initial = true;
 
 	public Main main;
 	public AdvancedPlayer player;
@@ -192,10 +192,10 @@ public class NewMusicPlayer {
 		} else {
 			System.out.println("Error creating Atheris Playlist directory or it already exists");
 		}
-		
-		if(artDirectory.mkdirs()){
+
+		if (artDirectory.mkdirs()) {
 			System.out.println("Successfully created Atheris Artwork directory");
-		}else{
+		} else {
 			System.out.println("Error creating Atheris Artwork directory or it already exists");
 		}
 	}
@@ -203,17 +203,17 @@ public class NewMusicPlayer {
 	public void loadFiles() {
 		songList = new ArrayList<File>(Arrays.asList(musicDirectory.listFiles()));
 		playlistFolders = new ArrayList<File>(Arrays.asList(playlistDirectory.listFiles()));
-		
+
 		playlistFolderNames.clear();
-		for(int i =0; i<playlistFolders.size(); i++){
+		for (int i = 0; i < playlistFolders.size(); i++) {
 			playlistFolderNames.add(playlistFolders.get(i).getName());
 		}
 	}
-	
-	public void loadArtwork(){
+
+	public void loadArtwork() {
 		albumArtFiles = new ArrayList<File>(Arrays.asList(artDirectory.listFiles()));
-		
-		for(int i = 0; i < albumArtFiles.size(); i++){
+
+		for (int i = 0; i < albumArtFiles.size(); i++) {
 			albumArtNames.add(albumArtFiles.get(i).getName());
 		}
 	}
@@ -328,10 +328,8 @@ public class NewMusicPlayer {
 		infoPanel.add(titleLabel, c);
 
 		c.gridy++;
-		
-		if(albumLabel != null){
-			System.out.println("here");
-			System.out.println(albumCover);
+
+		if (albumLabel != null) {
 			infoPanel.add(albumLabel, c);
 			c.gridy++;
 		}
@@ -353,25 +351,27 @@ public class NewMusicPlayer {
 		skipButton.setText("Skip");
 		skipButton.setBackground(grayBack);
 		skipButton.setForeground(Color.red);
-		skipButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!pause) {
-					player.stop();
-					seekBar.setValue(0);
-				} else {
-					playToggle.setText("Pause");
-					songTime = 0;
-					seekBar.setValue(0);
-					if (songNum < (songList.size() - 1)) {
-						songNum++;
-						playSong(songList.get(songNum).getName(), 0);
-					} else if (songNum == (songList.size() - 1)) {
-						songNum = 0;
-						playSong(songList.get(songNum).getName(), 0);
+		if(initial){
+			skipButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (!pause) {
+						player.stop();
+						seekBar.setValue(0);
+					} else {
+						playToggle.setText("Pause");
+						songTime = 0;
+						seekBar.setValue(0);
+						if (songNum < (songList.size() - 1)) {
+							songNum++;
+							playSong(songList.get(songNum).getName(), 0);
+						} else if (songNum == (songList.size() - 1)) {
+							songNum = 0;
+							playSong(songList.get(songNum).getName(), 0);
+						}
 					}
 				}
-			}
-		});
+			});
+		}
 
 		c.gridy++;
 
@@ -379,18 +379,20 @@ public class NewMusicPlayer {
 		stopButton.setBackground(grayBack);
 		stopButton.setForeground(Color.red);
 		infoPanel.add(stopButton, c);
-		stopButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				player.stop();
-				player.close();
-				songTime = 0;
-				seekBar.setValue(0);
-				countTime = false;
-				playToggle.setText("Play");
-				titleLabel.setText("");
-				titleLabel.repaint();
-			}
-		});
+		if(initial){
+			stopButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					player.stop();
+					player.close();
+					songTime = 0;
+					seekBar.setValue(0);
+					countTime = false;
+					playToggle.setText("Play");
+					titleLabel.setText("");
+					titleLabel.repaint();
+				}
+			});
+		}
 
 		c.gridy--;
 		c.gridx = 2;
@@ -399,21 +401,24 @@ public class NewMusicPlayer {
 		playToggle.setText("Pause");
 		playToggle.setBackground(grayBack);
 		playToggle.setForeground(Color.red);
-		playToggle.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (playToggle.getText().equals("Pause")) {
-					playToggle.setText("Play");
-					pause = true;
-					player.stop();
-				} else {
-					playToggle.setText("Pause");
-					pause = false;
-					playSong(songFile.getName(), (int) (songTime * songFPS));
-					System.out.println("First: " + songTime * songFPS + "    Rounded: " + (int) (songTime * songFPS));
-					countTime = true;
+		if(initial){
+			playToggle.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (playToggle.getText().equals("Pause")) {
+						playToggle.setText("Play");
+						pause = true;
+						player.stop();
+					} else {
+						playToggle.setText("Pause");
+						pause = false;
+						playSong(songFile.getName(), (int) (songTime * songFPS));
+						System.out.println("First: " + songTime * songFPS + "    Rounded: " + (int) (songTime * songFPS));
+						countTime = true;
+					}
 				}
-			}
-		});
+			});
+		}
+		initial = false;
 
 		return infoPanel;
 	}
@@ -491,7 +496,7 @@ public class NewMusicPlayer {
 	public void getPlaylistScroll() {
 		// playlistScroll is scroll pane with is contained in playlistPanel
 		// internal panel is the JPanel that is contained in playlistScroll
-		
+
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
@@ -501,7 +506,7 @@ public class NewMusicPlayer {
 			c.gridy++;
 		}
 	}
-	
+
 	public void getArtwork(){
 		try{
 			String editedName = albumName.replace(" ", "+");
@@ -516,60 +521,62 @@ public class NewMusicPlayer {
 	        }
 	
 	        JSONObject json = new JSONObject(builder.toString());
-	        String imageUrl = json.getJSONArray("results").getJSONObject(0).getString("artworkUrl100");
-	        BufferedImage image = ImageIO.read(new URL(imageUrl));
-	        
-	        File albumArt = new File(artDirectory + "/" + albumName + ".jpg");
-	        BufferedImage resizedArt = resizeArtwork(image, BufferedImage.TYPE_INT_RGB);
-	        ImageIO.write(resizedArt, "jpg", albumArt);
-	        
-	        updateAlbumArtList();
-	        albumCover = resizedArt;
-	        albumLabel = new JLabel(new ImageIcon(albumCover));
-	        albumLabel.repaint();
-	        panel.remove(infoPanel);
-	        panel.add(getInfoPanel());
-	        panel.repaint();
-	        panel.revalidate();
+	        if(json.getJSONArray("results").length() > 0){
+		        String imageUrl = json.getJSONArray("results").getJSONObject(0).getString("artworkUrl100");
+		        BufferedImage image = ImageIO.read(new URL(imageUrl));
+		        
+		        File albumArt = new File(artDirectory + "/" + albumName + ".jpg");
+		        BufferedImage resizedArt = resizeArtwork(image, BufferedImage.TYPE_INT_RGB);
+		        ImageIO.write(resizedArt, "jpg", albumArt);
+		        
+		        updateAlbumArtList();
+		        albumCover = resizedArt;
+		        albumLabel = new JLabel(new ImageIcon(albumCover));
+		        albumLabel.repaint();
+		        panel.remove(infoPanel);
+		        panel.add(getInfoPanel());
+		        panel.repaint();
+		        panel.revalidate();
+	        }
 		}catch(JSONException | IOException e){
 			e.printStackTrace();
 		}
 	}
-	
-	 private BufferedImage resizeArtwork(BufferedImage originalImage, int type){
+
+	private BufferedImage resizeArtwork(BufferedImage originalImage, int type) {
 		int imgSize = 150;
 		BufferedImage resizedImage = new BufferedImage(imgSize, imgSize, type);
 		Graphics2D g = resizedImage.createGraphics();
 		g.drawImage(originalImage, 0, 0, imgSize, imgSize, null);
 		g.dispose();
-				
+
 		return resizedImage;
-	 }
-	 
-	 public void setArtwork(String album){
-		 File cover = new File(artDirectory + "/" + album + ".jpg");
-		 try {
+	}
+
+	public void setArtwork(String album) {
+		File cover = new File(artDirectory + "/" + album + ".jpg");
+		try {
 			albumCover = ImageIO.read(cover);
 			albumLabel = new JLabel(new ImageIcon(albumCover));
 			albumLabel.repaint();
 			panel.remove(infoPanel);
-	        panel.add(getInfoPanel());
-	        panel.repaint();
-	        panel.revalidate();
+			panel.add(getInfoPanel());
+			panel.repaint();
+			panel.revalidate();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	 }
-	 
-	 public void updateAlbumArtList(){
-		 albumArtNames.clear();
-		 albumArtFiles.clear();
-		 albumArtFiles = new ArrayList<File>(Arrays.asList(artDirectory.listFiles()));
-		 
-		 for(int i = 0; i < albumArtFiles.size(); i++){
-			 albumArtNames.add(albumArtFiles.get(i).getName());
-		 }
-	 }
+	}
+
+	public void updateAlbumArtList() {
+		albumArtNames.clear();
+		albumArtFiles.clear();
+		albumArtFiles = new ArrayList<File>(Arrays.asList(artDirectory.listFiles()));
+
+		for (int i = 0; i < albumArtFiles.size(); i++) {
+			albumArtNames.add(albumArtFiles.get(i).getName());
+		}
+	}
 
 	public void getSongData(File song) {
 		try {
@@ -590,10 +597,10 @@ public class NewMusicPlayer {
 
 			if (albumName == null || albumName == "") {
 				albumName = "Unknown Album";
-			}else{
-				if(!albumArtNames.contains(albumName)){
+			} else {
+				if (!albumArtNames.contains(albumName)) {
 					getArtwork();
-				}else{
+				} else {
 					setArtwork(albumName);
 				}
 			}
@@ -628,8 +635,8 @@ public class NewMusicPlayer {
 			sp = new SongPlayer(player, this, startTime);
 			songThread = new Thread(sp);
 			songThread.start();
-			Thread songDataThread = new Thread(new Runnable(){
-				public void run(){
+			Thread songDataThread = new Thread(new Runnable() {
+				public void run() {
 					getSongData(songFile);
 				}
 			});
