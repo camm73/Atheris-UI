@@ -88,9 +88,9 @@ public class BackupCamera {
 				
 				webcamPanel = new WebcamPanel(webcam);
 				//make written stuff only available if it is enabled in settings
-				webcamPanel.setFPSDisplayed(true);
-				webcamPanel.setDisplayDebugInfo(true);
-				webcamPanel.setImageSizeDisplayed(true);
+				webcamPanel.setFPSDisplayed(false);
+				webcamPanel.setDisplayDebugInfo(false);
+				webcamPanel.setImageSizeDisplayed(false);
 				webcamPanel.setMirrored(true);
 				centerPanel.add(webcamPanel, BorderLayout.CENTER);
 			}
