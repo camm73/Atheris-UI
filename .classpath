@@ -9,6 +9,8 @@
 	<classpathentry kind="lib" path="lib/jxbrowser-6.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jxbrowser-win-6.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/license.jar"/>
-	<classpathentry kind="lib" path="lib/coverartarchive-api-2.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/webcam-capture-0.3.10.jar"/>
+	<classpathentry kind="lib" path="lib/bridj-0.6.2.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.7.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

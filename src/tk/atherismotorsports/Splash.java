@@ -9,6 +9,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+
+import tk.atherismotorsports.camera.BackupCamera;
 import tk.atherismotorsports.music.NewMusicPlayer;
 
 public class Splash extends Canvas {
@@ -17,7 +19,7 @@ public class Splash extends Canvas {
 	protected BufferedImage splash;
 	private JFrame splashWindow;
 	public boolean splashEnabled = true;
-	public double splashDuration = 3000;
+	public double splashDuration = 4000;
 	public boolean initial = true;
 	public boolean threadInitial = true;
 	public Thread initThread;
@@ -108,7 +110,8 @@ public class Splash extends Canvas {
 				main.frame.setVisible(false);
 				main.musicPlayer = new NewMusicPlayer(main);
 				main.musicPlayer.frame.setVisible(false);
-				//main.map = new Map(main);
+				main.map = new Map(main);
+				main.camera = new BackupCamera(main);
 				System.out.println("Done loading all preliminary things");
 			}
 			threadInitial = false;
