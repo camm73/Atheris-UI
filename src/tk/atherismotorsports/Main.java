@@ -24,6 +24,8 @@ import javax.swing.SwingConstants;
 import com.github.sarxos.webcam.Webcam;
 
 import tk.atherismotorsports.camera.BackupCamera;
+import tk.atherismotorsports.map.FxMap;
+import tk.atherismotorsports.map.Map;
 import tk.atherismotorsports.music.NewMusicPlayer;
 
 public class Main implements Runnable {
@@ -66,6 +68,7 @@ public class Main implements Runnable {
 	public Time time;
 	public MainPanel mp;
 	public Map map;
+	public FxMap fxmap;
 
 	public Main() {
 		main = this;
@@ -155,7 +158,13 @@ public class Main implements Runnable {
 		}
 
 		if (mapOpen) {
-			map.update();
+			if(map!=null){
+				map.update();
+			}
+			if(fxmap != null){
+				fxmap.update();
+			}
+			
 		}
 
 		if (musicOpen) {
@@ -267,7 +276,11 @@ public class Main implements Runnable {
 			mapButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					mapOpen = true;
-					map.mapFrame.setAlwaysOnTop(true);
+					if(map!=null){
+						map.mapFrame.setAlwaysOnTop(true);
+					}else{
+						fxmap.frame.setAlwaysOnTop(true);
+					}
 					frame.setAlwaysOnTop(false);
 				}
 			});

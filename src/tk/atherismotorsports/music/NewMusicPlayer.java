@@ -386,7 +386,7 @@ public class NewMusicPlayer {
 		if(initial){
 			stopButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					player.stop();
+					//player.stop();
 					player.close();
 					songTime = 0;
 					seekBar.setValue(0);
