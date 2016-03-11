@@ -27,6 +27,7 @@ import tk.atherismotorsports.camera.BackupCamera;
 import tk.atherismotorsports.map.FxMap;
 import tk.atherismotorsports.map.Map;
 import tk.atherismotorsports.music.NewMusicPlayer;
+import tk.atherismotorsports.music.TuneIn;
 
 public class Main implements Runnable {
 
@@ -69,6 +70,7 @@ public class Main implements Runnable {
 	public MainPanel mp;
 	public Map map;
 	public FxMap fxmap;
+	public TuneIn tuneIn;
 
 	public Main() {
 		main = this;
@@ -206,6 +208,7 @@ public class Main implements Runnable {
 	}
 
 	class MainPanel extends JPanel {
+		private static final long serialVersionUID = 1L;
 
 		public MainPanel() {
 			setLayout(new GridBagLayout());
