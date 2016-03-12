@@ -42,45 +42,7 @@ public class TuneIn {
 	
 	public TuneIn(Main main){
 		this.main = main;
-		timeLabel = new JLabel(Time.timeString);
-		timeLabel.setForeground(Color.white);
-		timeLabel.setFont(new Font("Stencil", Font.PLAIN, 28));
-		backButton.setBackground(new Color(56, 56, 56));
-		backButton.setBorderPainted(false);
-		backButton.setIcon(new ImageIcon(main.backImage));
 		initComponents();
-		content();
-		createFrame();
-	}
-	
-	public void content(){
-		panel = new JPanel(new BorderLayout());
-		panel.add(getTopBar(), BorderLayout.NORTH);
-		panel.add(jfxPanel, BorderLayout.CENTER);
-	}
-	
-	public JComponent getTopBar(){
-		JPanel top = new JPanel(new BorderLayout());
-		//TODO finish this with time and backButton
-		top.setBackground(NewMusicPlayer.grayBack);
-		
-		top.add(backButton, BorderLayout.WEST);
-		backButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				frame.setAlwaysOnTop(false);
-				main.frame.setAlwaysOnTop(true);
-			}
-		});
-		
-		timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		top.add(timeLabel, BorderLayout.CENTER);
-		
-		return top;
-	}
-	
-	public void update(){
-		timeLabel.setText(Time.timeString);
-		timeLabel.repaint();
 	}
 	
 	public void initComponents(){
@@ -115,16 +77,8 @@ public class TuneIn {
         });  
     }
 	
-	public void createFrame(){
-		frame = new JFrame();
-		frame = new JFrame();
-		frame.setSize(WIDTH, HEIGHT);
-		frame.setResizable(false);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLocationRelativeTo(null);
-		frame.setUndecorated(true);
-		frame.add(panel);
-		frame.setVisible(true);
+	public JFXPanel getRadioPanel(){
+		return jfxPanel;
 	}
 
 

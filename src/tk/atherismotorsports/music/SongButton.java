@@ -11,13 +11,12 @@ import javax.swing.JButton;
 public class SongButton extends JButton{
 	private static final long serialVersionUID = -3753774576995824513L;
 	
-	private NewMusicPlayer musicPlayer;
-	private MusicPlayer fxmp;
+	private MusicPlayer musicPlayer;
 	private String buttonText;
 	protected Dimension buttonSize = new Dimension(250, 30);
 	public final int id;
 
-	public SongButton(NewMusicPlayer mp, String text, final int id){
+	public SongButton(MusicPlayer mp, String text, final int id){
 		this.musicPlayer = mp;
 		this.id = id;
 		buttonText = text;

@@ -2,8 +2,6 @@ package tk.atherismotorsports;
 
 import javax.swing.SwingUtilities;
 
-import tk.atherismotorsports.music.MusicPlayer;
-
 public class Start {
 
 	

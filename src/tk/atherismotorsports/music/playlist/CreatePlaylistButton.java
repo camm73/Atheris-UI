@@ -7,18 +7,18 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 
-import tk.atherismotorsports.music.NewMusicPlayer;
+import tk.atherismotorsports.music.MusicPlayer;
 
 public class CreatePlaylistButton extends JButton{
 
 	private static final long serialVersionUID = 1L;
 	public String buttonText = "";
-	public NewMusicPlayer musicPlayer;
+	public MusicPlayer musicPlayer;
 	public PlaylistManager manager;
 	protected Dimension buttonSize = new Dimension(250, 30);
 	
 	
-	public CreatePlaylistButton(NewMusicPlayer musicPlayer, PlaylistManager pm, String text){
+	public CreatePlaylistButton(MusicPlayer musicPlayer, PlaylistManager pm, String text){
 		this.buttonText = text;
 		this.musicPlayer = musicPlayer;
 		this.manager = pm;

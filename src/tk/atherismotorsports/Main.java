@@ -26,7 +26,7 @@ import com.github.sarxos.webcam.Webcam;
 import tk.atherismotorsports.camera.BackupCamera;
 import tk.atherismotorsports.map.FxMap;
 import tk.atherismotorsports.map.Map;
-import tk.atherismotorsports.music.NewMusicPlayer;
+import tk.atherismotorsports.music.MusicPlayer;
 import tk.atherismotorsports.music.TuneIn;
 
 public class Main implements Runnable {
@@ -62,7 +62,7 @@ public class Main implements Runnable {
 	public boolean initial = true;
 
 	public Weather weather;
-	public NewMusicPlayer musicPlayer;
+	public MusicPlayer musicPlayer;
 	public Settings settings;
 	public BackupCamera camera;
 	public Main main;
@@ -121,7 +121,7 @@ public class Main implements Runnable {
 		c.gridx = 0;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.CENTER;
-		bottomPanel.setBackground(NewMusicPlayer.grayBack);
+		bottomPanel.setBackground(MusicPlayer.grayBack);
 
 		Dimension songLabelSize = new Dimension(700, 40);
 		songLabel.setForeground(Color.red);
@@ -181,7 +181,7 @@ public class Main implements Runnable {
 			if (musicPlayer.iconCover != null) {
 				songLabel.setIcon(new ImageIcon(musicPlayer.iconCover));
 			}
-			songLabel.setText("Now Playing: " + NewMusicPlayer.songTitle + " -- " + musicPlayer.artistName);
+			songLabel.setText("Now Playing: " + MusicPlayer.songTitle + " -- " + musicPlayer.artistName);
 		}
 		// System.out.println(time.hours + ":" + time.minutes + ":" +
 		// time.seconds);

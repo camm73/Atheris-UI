@@ -8,7 +8,7 @@ import javazoom.jl.player.advanced.PlaybackListener;
 public class SongPlayer implements Runnable{
 	
 	protected AdvancedPlayer player;
-	public NewMusicPlayer musicPlayer;
+	public MusicPlayer musicPlayer;
 	public int startTime;
 	
 	public Thread pauseThread;
@@ -17,7 +17,7 @@ public class SongPlayer implements Runnable{
 		
 	}
 	
-	public SongPlayer(AdvancedPlayer player, NewMusicPlayer mp, int startTime){
+	public SongPlayer(AdvancedPlayer player, MusicPlayer mp, int startTime){
 		this.player = player;
 		this.musicPlayer = mp;
 		this.startTime = startTime;

@@ -25,14 +25,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import tk.atherismotorsports.Main;
-import tk.atherismotorsports.music.NewMusicPlayer;
+import tk.atherismotorsports.music.MusicPlayer;
 
 public class PlaylistManager {
 	
 	public final int WIDTH = Main.WIDTH;
 	public final int HEIGHT = Main.HEIGHT;
 	
-	public NewMusicPlayer musicPlayer;
+	public MusicPlayer musicPlayer;
 	public PlaylistManager manager;
 	public JFrame frame;
 	public JPanel panel;
@@ -53,7 +53,7 @@ public class PlaylistManager {
 	public ArrayList<String> playlistSongs = new ArrayList<String>();
 	public JTextField playlistNameField = new JTextField(30);
 	
-	public PlaylistManager(NewMusicPlayer musicPlayer){
+	public PlaylistManager(MusicPlayer musicPlayer){
 		this.musicPlayer = musicPlayer;
 		this.manager = this;
 		backButton.setBackground(new Color(56, 56, 56));
@@ -157,7 +157,7 @@ public class PlaylistManager {
 		c.anchor = GridBagConstraints.CENTER;
 		
 		createPlaylist.setForeground(Color.red);
-		createPlaylist.setBackground(NewMusicPlayer.grayBack);
+		createPlaylist.setBackground(MusicPlayer.grayBack);
 		buttonPanel.add(createPlaylist, c);
 		createPlaylist.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){

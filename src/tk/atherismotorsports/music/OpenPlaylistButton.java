@@ -10,11 +10,11 @@ public class OpenPlaylistButton extends JButton {
 
 	protected Dimension buttonSize = new Dimension(250, 30);
 
-	public OpenPlaylistButton(NewMusicPlayer musicPlayer, String text) {
+	public OpenPlaylistButton(MusicPlayer musicPlayer, String text) {
 		setText(text);
 		setFont(new Font("Arial", Font.BOLD, 14));
 		setForeground(Color.red);
-		setBackground(NewMusicPlayer.grayBack);
+		setBackground(MusicPlayer.grayBack);
 		setMaximumSize(buttonSize);
 		setMinimumSize(buttonSize);
 		setPreferredSize(buttonSize);

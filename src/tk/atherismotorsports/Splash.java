@@ -12,7 +12,7 @@ import javax.swing.JFrame;
 
 import tk.atherismotorsports.camera.BackupCamera;
 import tk.atherismotorsports.map.FxMap;
-import tk.atherismotorsports.music.NewMusicPlayer;
+import tk.atherismotorsports.music.MusicPlayer;
 import tk.atherismotorsports.music.TuneIn;
 
 public class Splash extends Canvas {
@@ -110,11 +110,11 @@ public class Splash extends Canvas {
 		public void run() {
 			if(threadInitial){
 				main.frame.setVisible(false);
-				main.musicPlayer = new NewMusicPlayer(main);
+				//main.tuneIn = new TuneIn(main);
+				main.musicPlayer = new MusicPlayer(main);
 				main.musicPlayer.frame.setVisible(false);
 				main.fxmap = new FxMap(main);
 				//main.map = new Map(main);
-				main.tuneIn = new TuneIn(main);
 				main.camera = new BackupCamera(main);
 				System.out.println("Done loading all preliminary things");
 			}

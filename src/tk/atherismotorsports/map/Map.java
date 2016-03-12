@@ -19,7 +19,7 @@ import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 
 import tk.atherismotorsports.Main;
 import tk.atherismotorsports.Time;
-import tk.atherismotorsports.music.NewMusicPlayer;
+import tk.atherismotorsports.music.MusicPlayer;
 
 public class Map {
 	
@@ -77,7 +77,7 @@ public class Map {
 	public JComponent getTopBar(){
 		JPanel top = new JPanel(new BorderLayout());
 		//TODO finish this with time and backButton
-		top.setBackground(NewMusicPlayer.grayBack);
+		top.setBackground(MusicPlayer.grayBack);
 		
 		top.add(backButton, BorderLayout.WEST);
 		backButton.addActionListener(new ActionListener(){

@@ -12,14 +12,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import tk.atherismotorsports.music.NewMusicPlayer;
+import tk.atherismotorsports.music.MusicPlayer;
 
 public class PlaylistPrompt {
 	
 	public final int WIDTH = 680;
 	public final int HEIGHT = 300;
 	
-	public NewMusicPlayer musicPlayer;
+	public MusicPlayer musicPlayer;
 	public PlaylistManager manager;
 	public JFrame frame;
 	public JPanel panel;
@@ -60,7 +60,7 @@ public class PlaylistPrompt {
 		c.gridx = 2;
 		
 		yesButton.setForeground(Color.red);
-		yesButton.setBackground(NewMusicPlayer.grayBack);
+		yesButton.setBackground(MusicPlayer.grayBack);
 		panel.add(yesButton, c);
 		yesButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
@@ -73,7 +73,7 @@ public class PlaylistPrompt {
 		c.gridx = 0;
 		
 		noButton.setForeground(Color.red);
-		noButton.setBackground(NewMusicPlayer.grayBack);
+		noButton.setBackground(MusicPlayer.grayBack);
 		panel.add(noButton, c);
 		noButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){

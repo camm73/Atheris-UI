@@ -20,7 +20,7 @@ import com.github.sarxos.webcam.WebcamResolution;
 
 import tk.atherismotorsports.Main;
 import tk.atherismotorsports.Time;
-import tk.atherismotorsports.music.NewMusicPlayer;
+import tk.atherismotorsports.music.MusicPlayer;
 
 public class BackupCamera {
 	
@@ -53,14 +53,14 @@ public class BackupCamera {
 	
 	public void content(){
 		panel = new JPanel(new BorderLayout());
-		panel.setBackground(NewMusicPlayer.grayBack);
+		panel.setBackground(MusicPlayer.grayBack);
 		panel.add(getTopBar(), BorderLayout.NORTH);
 		panel.add(getCenterPanel(), BorderLayout.CENTER);
 	}
 	
 	public JComponent getTopBar(){
 		JPanel topPanel = new JPanel(new BorderLayout());
-		topPanel.setBackground(NewMusicPlayer.grayBack);
+		topPanel.setBackground(MusicPlayer.grayBack);
 		topPanel.add(timeLabel, BorderLayout.CENTER);
 		topPanel.add(backButton, BorderLayout.WEST);
 		backButton.addActionListener(new ActionListener(){
