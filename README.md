@@ -14,7 +14,7 @@ Features:
   
 Included Libraries:
   - JLayer
-  - JxBrowswer
+  - JxBrowser
   - Mp3agic
   - Slf4j
   - Bridj
