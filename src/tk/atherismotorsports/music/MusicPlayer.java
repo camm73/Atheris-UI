@@ -703,6 +703,10 @@ public class MusicPlayer {
 
 			if (albumName == null || albumName == "") {
 				albumName = "Unknown Album";
+				albumCover = defaultCoverImage;
+		    	albumLabel = new JLabel(new ImageIcon(albumCover));
+		    	iconCover = resizeArtwork(defaultCoverImage, BufferedImage.TYPE_INT_RGB, iconSize);
+		    	coverUpdate();
 			} else {
 				if (!albumArtNames.contains(albumName)) {
 					getArtwork();
