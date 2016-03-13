@@ -112,7 +112,7 @@ public class Splash extends Canvas {
 				main.musicPlayer = new MusicPlayer(main);
 				main.musicPlayer.frame.setVisible(false);
 				//main.fxmap = new FxMap(main);
-				//main.map = new Map(main);
+				main.map = new Map(main);
 				main.camera = new BackupCamera(main);
 				System.out.println("Done loading all preliminary things");
 			}

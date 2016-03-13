@@ -72,7 +72,6 @@ public class MusicPlayer {
 	public JButton skipButton = new JButton();
 	public JButton playToggle = new JButton();
 	public JButton stopButton = new JButton();
-	public JButton sourceButton = new JButton();
 	public JButton createPlaylistButton = new JButton("Create Playist");
 	public JButton playlistViewButton = new JButton("Playlists");
 	public JButton songListViewButton = new JButton("Songs");
@@ -333,35 +332,6 @@ public class MusicPlayer {
 		timeLabel.setHorizontalAlignment(JLabel.CENTER);
 		topPanel.add(timeLabel, BorderLayout.CENTER);
 
-		sourceButton.setText("Radio"); // TODO change later based on item in
-										// settings
-		sourceButton.setBackground(grayBack);
-		sourceButton.setForeground(Color.red);
-		sourceButton.setEnabled(false);
-		topPanel.add(sourceButton, BorderLayout.EAST);
-		if (initial) {
-			sourceButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					if (sourceButton.getText().equals("Radio")) {
-						sourceButton.setText("MP3 Player");
-						panel.remove(infoPanel);
-						panel.remove(leftPanel);
-						// panel.add(tuneIn.getRadioPanel(),
-						// BorderLayout.CENTER);
-						panel.repaint();
-						panel.revalidate();
-					} else if (sourceButton.getText().equals("MP3 Player")) {
-						sourceButton.setText("Radio");
-						// panel.remove(tuneIn.jfxPanel);
-						panel.add(leftPanel, BorderLayout.WEST);
-						panel.add(infoPanel, BorderLayout.CENTER);
-						panel.repaint();
-						panel.revalidate();
-					}
-				}
-			});
-		}
-
 		return topPanel;
 	}
 
@@ -527,13 +497,13 @@ public class MusicPlayer {
 	}
 
 	public void switchToSongView() {
-		if(!openPlaylist){
+		if (!openPlaylist) {
 			leftPanel.remove(playlistPanel);
 			playlistPanel.repaint();
 			leftPanel.add(songScroll, BorderLayout.CENTER);
 			leftPanel.repaint();
 			leftPanel.revalidate();
-		}else{
+		} else {
 			openPlaylist = false;
 			leftPanel.remove(playlistSongPanel);
 			playlistPanel.repaint();
@@ -565,7 +535,7 @@ public class MusicPlayer {
 	public void getPlaylistSongPanel(String playlist) {
 		playlistSongPanel = new JPanel(new BorderLayout());
 		playlistTopPanel = new JPanel(new BorderLayout());
-		
+
 		playlistTopPanel.setBackground(MusicPlayer.grayBack);
 		playlistSongPanel.setBackground(MusicPlayer.grayBack);
 
@@ -626,8 +596,8 @@ public class MusicPlayer {
 		for (int i = 0; i < playlistSongs.size(); i++) {
 			playlistSongButtons.add(new PlaylistSongButton(this, playlistSongs.get(i), i));
 		}
-		
-		for(int i = 0; i < playlistSongButtons.size(); i++){
+
+		for (int i = 0; i < playlistSongButtons.size(); i++) {
 			songPanel.add(playlistSongButtons.get(i), c);
 			c.gridy++;
 		}
@@ -649,6 +619,7 @@ public class MusicPlayer {
 	}
 
 	boolean createPlaylistInitial = true;
+
 	public void getPlaylistPanel() {
 		playlistPanel = new JPanel(new BorderLayout());
 		playlistPanel.setBackground(grayBack);
@@ -668,7 +639,7 @@ public class MusicPlayer {
 		createPlaylistButton.setForeground(Color.red);
 		createPlaylistButton.setBackground(MusicPlayer.grayBack);
 		playlistButtonPanel.add(createPlaylistButton, c1);
-		if(createPlaylistInitial){
+		if (createPlaylistInitial) {
 			createPlaylistButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					manager = new PlaylistManager(musicPlayer);
@@ -736,15 +707,7 @@ public class MusicPlayer {
 	public void getArtwork() {
 		try {
 			String editedName = albumName.replace(" ", "+");
-			URL url = new URL("http://itunes.apple.com/search?term=" + editedName + "&entity=album"); // this
-																										// must
-																										// be
-																										// http
-																										// to
-																										// avoid
-																										// timestamp
-																										// ssl
-																										// error
+			URL url = new URL("http://itunes.apple.com/search?term=" + editedName + "&entity=album"); // this must be http to avoid timestamp ssl error
 			URLConnection connection = url.openConnection();
 
 			String line;
