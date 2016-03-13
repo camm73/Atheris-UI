@@ -79,6 +79,7 @@ public class MusicPlayer {
 
 	public BufferedImage albumCover;
 	public BufferedImage iconCover;
+	public BufferedImage defaultCoverImage;
 	public int iconSize = 40;
 	
 	public static Color grayBack = new Color(56, 56, 56);
@@ -113,14 +114,12 @@ public class MusicPlayer {
 	public SongPlayer sp;
 	public MusicPlayer musicPlayer;
 	public PlaylistManager manager;
-	public TuneIn tuneIn;
 
 	public MusicPlayer(Main main) {
 		this.main = main;
 		WIDTH = main.WIDTH;
 		HEIGHT = main.HEIGHT;
 		this.musicPlayer = this;
-		this.tuneIn = main.tuneIn;
 
 		timeLabel = new JLabel(Time.timeString);
 		timeLabel.setForeground(Color.white);
@@ -223,6 +222,12 @@ public class MusicPlayer {
 
 		for (int i = 0; i < albumArtFiles.size(); i++) {
 			albumArtNames.add(albumArtFiles.get(i).getName());
+		}
+		
+		try {
+			defaultCoverImage = ImageIO.read(Main.class.getResource("/images/defaultCover.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -332,12 +337,12 @@ public class MusicPlayer {
 						sourceButton.setText("MP3 Player");
 						panel.remove(infoPanel);
 						panel.remove(leftPanel);
-						panel.add(tuneIn.getRadioPanel(), BorderLayout.CENTER);
+						//panel.add(tuneIn.getRadioPanel(), BorderLayout.CENTER);
 						panel.repaint();
 						panel.revalidate();
 					}else if(sourceButton.getText().equals("MP3 Player")){
 						sourceButton.setText("Radio");
-						panel.remove(tuneIn.jfxPanel);
+						//panel.remove(tuneIn.jfxPanel);
 						panel.add(leftPanel, BorderLayout.WEST);
 						panel.add(infoPanel, BorderLayout.CENTER);
 						panel.repaint();
@@ -624,15 +629,28 @@ public class MusicPlayer {
 		        albumCover = resizedArt;
 		        iconCover = resizeArtwork(image, BufferedImage.TYPE_INT_RGB, iconSize);
 		        albumLabel = new JLabel(new ImageIcon(albumCover));
-		        albumLabel.repaint();
-		        panel.remove(infoPanel);
-		        panel.add(getInfoPanel());
-		        panel.repaint();
-		        panel.revalidate();
+		        coverUpdate();
+	        }else{
+	        	albumCover = defaultCoverImage;
+	        	albumLabel = new JLabel(new ImageIcon(albumCover));
+	        	iconCover = resizeArtwork(defaultCoverImage, BufferedImage.TYPE_INT_RGB, iconSize);
+	        	coverUpdate();
 	        }
 		}catch(JSONException | IOException e){
+			albumCover = defaultCoverImage;
+        	albumLabel = new JLabel(new ImageIcon(albumCover));
+        	iconCover = resizeArtwork(defaultCoverImage, BufferedImage.TYPE_INT_RGB, iconSize);
+        	coverUpdate();
 			e.printStackTrace();
 		}
+	}
+	
+	public void coverUpdate(){
+		panel.remove(infoPanel);
+        panel.add(getInfoPanel());
+        panel.repaint();
+        panel.revalidate();
+        albumLabel.repaint();
 	}
 
 	private BufferedImage resizeArtwork(BufferedImage originalImage, int type, int imgSize) {
@@ -650,11 +668,7 @@ public class MusicPlayer {
 			albumCover = ImageIO.read(cover);
 			iconCover = resizeArtwork(ImageIO.read(cover), BufferedImage.TYPE_INT_RGB, iconSize);
 			albumLabel = new JLabel(new ImageIcon(albumCover));
-			albumLabel.repaint();
-			panel.remove(infoPanel);
-			panel.add(getInfoPanel());
-			panel.repaint();
-			panel.revalidate();
+			coverUpdate();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

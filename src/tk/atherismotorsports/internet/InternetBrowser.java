@@ -1,4 +1,4 @@
-package tk.atherismotorsports.music;
+package tk.atherismotorsports.internet;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -25,7 +25,7 @@ import javafx.stage.Stage;
 import tk.atherismotorsports.Main;
 import tk.atherismotorsports.Time;
 
-public class TuneIn {
+public class InternetBrowser {
 	public final int WIDTH = Main.WIDTH;
 	public final int HEIGHT = Main.HEIGHT;
 	
@@ -40,7 +40,7 @@ public class TuneIn {
 	public JLabel timeLabel;
 	public Main main;
 	
-	public TuneIn(Main main){
+	public InternetBrowser(Main main){
 		this.main = main;
 		initComponents();
 	}
@@ -70,7 +70,7 @@ public class TuneIn {
                  
                 // Set up the embedded browser:
                 webEngine = browser.getEngine();
-                webEngine.load("http://tunein.com/radio/local/");
+                webEngine.load("http://www.iheart.com/");
                 
                 jfxPanel.setScene(scene);
             }  

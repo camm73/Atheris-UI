@@ -13,7 +13,6 @@ import javax.swing.JFrame;
 import tk.atherismotorsports.camera.BackupCamera;
 import tk.atherismotorsports.map.FxMap;
 import tk.atherismotorsports.music.MusicPlayer;
-import tk.atherismotorsports.music.TuneIn;
 
 public class Splash extends Canvas {
 
@@ -110,7 +109,6 @@ public class Splash extends Canvas {
 		public void run() {
 			if(threadInitial){
 				main.frame.setVisible(false);
-				//main.tuneIn = new TuneIn(main);
 				main.musicPlayer = new MusicPlayer(main);
 				main.musicPlayer.frame.setVisible(false);
 				main.fxmap = new FxMap(main);

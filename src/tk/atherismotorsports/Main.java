@@ -27,7 +27,6 @@ import tk.atherismotorsports.camera.BackupCamera;
 import tk.atherismotorsports.map.FxMap;
 import tk.atherismotorsports.map.Map;
 import tk.atherismotorsports.music.MusicPlayer;
-import tk.atherismotorsports.music.TuneIn;
 
 public class Main implements Runnable {
 
@@ -44,8 +43,11 @@ public class Main implements Runnable {
 	public BufferedImage speedImage;
 	public BufferedImage settingImage;
 	public BufferedImage cameraImage;
+	public BufferedImage leftImage;
+	public BufferedImage rightImage;
 	public static BufferedImage backImage;
 	public BufferedImage mapImage;
+	public BufferedImage internetImage;
 	public JLabel background;
 	public static JLabel timeLabel;
 	public JLabel songLabel = new JLabel();
@@ -67,10 +69,10 @@ public class Main implements Runnable {
 	public BackupCamera camera;
 	public Main main;
 	public Time time;
-	public MainPanel mp;
+	public AppPanel1 app1;
+	public AppPanel2 app2;
 	public Map map;
 	public FxMap fxmap;
-	public TuneIn tuneIn;
 
 	public Main() {
 		main = this;
@@ -79,7 +81,8 @@ public class Main implements Runnable {
 		frame = new JFrame(title);
 		start();
 		loadImages();
-		mp = new MainPanel();
+		app1 = new AppPanel1();
+		app2 = new AppPanel2();
 		loadPanel();
 		createFrame();
 	}
@@ -111,8 +114,30 @@ public class Main implements Runnable {
 
 	public void loadPanel() {
 		panel = new JPanel(new BorderLayout());
-		panel.add(mp, BorderLayout.CENTER);
+		panel.add(getTopBar(), BorderLayout.NORTH);
+		panel.add(app1, BorderLayout.CENTER);
 		panel.add(getBottomPanel(), BorderLayout.SOUTH);
+	}
+	
+	public JComponent getTopBar(){
+		JPanel topPanel = new JPanel(new BorderLayout());
+		topPanel.setBackground(MusicPlayer.grayBack);
+		
+		timeLabel.setForeground(Color.white);
+		timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		timeLabel.setFont(new Font("Stencil", Font.PLAIN, 32));
+		topPanel.add(timeLabel, BorderLayout.CENTER);
+		
+		exitButton.setBackground(musicPlayer.grayBack);
+		exitButton.setForeground(Color.red);
+		topPanel.add(exitButton, BorderLayout.EAST);
+		exitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		
+		return topPanel;
 	}
 
 	public JComponent getBottomPanel() {
@@ -145,6 +170,9 @@ public class Main implements Runnable {
 			backImage = ImageIO.read(Main.class.getResource("/images/back arrow.png"));
 			mapImage = ImageIO.read(Main.class.getResource("/images/map image.png"));
 			cameraImage = ImageIO.read(Main.class.getResource("/images/camera.png"));
+			rightImage = ImageIO.read(Main.class.getResource("/images/right arrow.png"));
+			leftImage = ImageIO.read(Main.class.getResource("/images/left arrow.png"));
+			internetImage = ImageIO.read(Main.class.getResource("/images/internet image.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -207,10 +235,10 @@ public class Main implements Runnable {
 		stop();
 	}
 
-	class MainPanel extends JPanel {
+	class AppPanel1 extends JPanel {
 		private static final long serialVersionUID = 1L;
 
-		public MainPanel() {
+		public AppPanel1() {
 			setLayout(new GridBagLayout());
 			content();
 		}
@@ -222,9 +250,11 @@ public class Main implements Runnable {
 			JButton settingsButton = new JButton();
 			JButton mapButton = new JButton();
 			JButton cameraButton = new JButton();
+			JButton rightButton=  new JButton();
+			JButton leftButton = new JButton();
 			GridBagConstraints c = new GridBagConstraints();
-			c.gridx = 0;
-			c.gridy = 1;
+			c.gridx = 1;
+			c.gridy = 0;
 			c.weightx = 1.0;
 			c.weighty = 1.0;
 
@@ -249,7 +279,7 @@ public class Main implements Runnable {
 				}
 			});
 
-			c.gridy++;
+			c.gridy = 2;
 
 			weatherButton.setBackground(new Color(56, 56, 56, alpha));
 			weatherButton.setBorderPainted(false);
@@ -268,8 +298,8 @@ public class Main implements Runnable {
 				}
 			});
 
-			c.gridy = 1;
-			c.gridx = 1;
+			c.gridy = 0;
+			c.gridx = 2;
 
 			mapButton.setBackground(new Color(56, 56, 56, alpha));
 			mapButton.setOpaque(true);
@@ -309,8 +339,8 @@ public class Main implements Runnable {
 			
 			
 
-			c.gridy = 1;
-			c.gridx = 2;
+			c.gridy = 0;
+			c.gridx = 3;
 
 			speed.setBackground(new Color(56, 56, 56, alpha));
 			speed.setOpaque(true);
@@ -318,7 +348,7 @@ public class Main implements Runnable {
 			speed.setIcon(new ImageIcon((speedImage)));
 			add(speed, c);
 
-			c.gridy++;
+			c.gridy = 2;
 
 			settingsButton.setBackground(new Color(56, 56, 56, alpha));
 			settingsButton.setBorderPainted(false);
@@ -332,32 +362,71 @@ public class Main implements Runnable {
 					settingsOpen = true;
 				}
 			});
-
-			c.gridx = 1;
-			c.gridy = 0;
-			c.weighty = 0.0;
-
-			timeLabel.setForeground(Color.white);
-			timeLabel.setFont(new Font("Stencil", Font.PLAIN, 32));
-			add(timeLabel, c);
-
-
-			c.gridx = 3;
+			
+			c.gridx = 4;
+			c.gridy = 1;
 			c.weightx = 0.0;
 			c.weighty = 0.0;
-			c.gridy = 0;
-
-			exitButton.setBackground(musicPlayer.grayBack);
-			exitButton.setForeground(Color.red);
-			add(exitButton, c);
-			exitButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					System.exit(0);
+			
+			rightButton.setBackground(musicPlayer.grayBack);
+			rightButton.setIcon(new ImageIcon(rightImage));
+			add(rightButton, c);
+			rightButton.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					panel.remove(app1);
+					panel.add(app2);
+					panel.repaint();
 				}
 			});
 
 		}
 
+		public void paintComponent(Graphics g) {
+			g.drawImage(backgroundImage, 0, 0, null);
+		}
+	}
+	
+	
+	class AppPanel2 extends JPanel{
+		
+		public AppPanel2(){
+			setLayout(new GridBagLayout());
+			getApp2();
+		}
+		
+		public void getApp2(){
+			JButton leftButton = new JButton();
+			JButton browserButton = new JButton();
+			GridBagConstraints c = new GridBagConstraints();
+			c.gridx = 0;
+			c.gridy = 1;
+			c.weightx = 0.0;
+			c.weighty = 0.0;
+			
+			leftButton.setBackground(MusicPlayer.grayBack);
+			leftButton.setIcon(new ImageIcon(leftImage));
+			add(leftButton, c);
+			leftButton.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					panel.remove(app2);
+					panel.add(app1);
+					panel.repaint();
+				}
+			});
+			
+			c.gridx = 1;
+			c.gridy = 0;
+			c.weightx = 1.0;
+			c.weighty = 1.0;
+			
+			browserButton.setBackground(new Color(56, 56, 56, alpha));
+			browserButton.setIcon(new ImageIcon(internetImage));
+			browserButton.setBorderPainted(false);
+			browserButton.setOpaque(true);
+			add(browserButton, c);
+			
+		}
+		
 		public void paintComponent(Graphics g) {
 			g.drawImage(backgroundImage, 0, 0, null);
 		}
