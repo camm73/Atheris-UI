@@ -185,7 +185,7 @@ public class Main implements Runnable {
 
 	public void update() {
 		time.update();
-		System.out.println("Threads: " + Thread.activeCount());
+		//System.out.println("Threads: " + Thread.activeCount());
 
 		if (settingsOpen) {
 			settings.update();
@@ -423,7 +423,7 @@ public class Main implements Runnable {
 			c.gridy = 0;
 			c.weightx = 1.0;
 			c.weighty = 1.0;
-			c.anchor = GridBagConstraints.WEST; //TEMPORARY
+			c.anchor = GridBagConstraints.WEST;
 
 			browserButton.setBackground(new Color(56, 56, 56, alpha));
 			browserButton.setIcon(new ImageIcon(internetImage));

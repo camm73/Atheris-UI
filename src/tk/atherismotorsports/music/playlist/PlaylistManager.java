@@ -51,6 +51,7 @@ public class PlaylistManager {
 	public GridBagConstraints playlistC;
 	public ArrayList<JButton> localSongButtons = new ArrayList<JButton>();
 	public ArrayList<String> playlistSongs = new ArrayList<String>();
+	public ArrayList<JLabel> playlistLabels = new ArrayList<JLabel>();
 	public JTextField playlistNameField = new JTextField(30);
 	
 	public PlaylistManager(MusicPlayer musicPlayer){
@@ -102,8 +103,8 @@ public class PlaylistManager {
 	}
 	
 	public void changeBackground(boolean prompt){
-		Color lightColor = new Color(68, 68, 68);
-		if(prompt){//darkens all panels
+		Color lightColor = new Color(72, 72, 72);
+		if(prompt){ //lightens all panels
 			topPanel.setBackground(lightColor);
 			centerPanel.setBackground(lightColor);
 			songPanel.setBackground(lightColor);
@@ -119,7 +120,7 @@ public class PlaylistManager {
 			createPlaylist.setBackground(lightColor);
 			playlistNameField.setBackground(lightColor);
 			
-		}else{
+		}else{ //darkens panels again
 			topPanel.setBackground(MusicPlayer.grayBack);
 			centerPanel.setBackground(MusicPlayer.grayBack);
 			songPanel.setBackground(MusicPlayer.grayBack);
@@ -157,6 +158,7 @@ public class PlaylistManager {
 		playlistNameField.setMinimumSize(nameSize);
 		playlistNameField.setBackground(musicPlayer.grayBack);
 		playlistNameField.setForeground(Color.red);
+		playlistNameField.setFont(new Font("Verdana", Font.PLAIN, 18));
 		centerPanel.add(playlistNameField, c);
 		
 		c.gridx++;
@@ -253,7 +255,9 @@ public class PlaylistManager {
 		playlistC.gridy = 0;
 		
 		for(int i = 0; i < playlistSongs.size(); i++){
-			playlistPanel.add(new JLabel(playlistSongs.get(i)), playlistC);
+			playlistLabels.add(new JLabel(playlistSongs.get(i)));
+			playlistPanel.add(playlistLabels.get(i), playlistC);
+			playlistC.gridx = 0;
 			
 			playlistC.gridx++;
 			
@@ -267,16 +271,24 @@ public class PlaylistManager {
 	
 	public void updatePlaylistScroll(){
 		playlistPanel.removeAll();
+		playlistLabels.clear();
 		playlistC.gridy = 0;
 		for(int i = 0; i < playlistSongs.size(); i++){
+			playlistC.gridx = 0;
 			JLabel tempLabel = new JLabel(playlistSongs.get(i));
 			tempLabel.setForeground(Color.red);
-			tempLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+			tempLabel.setFont(new Font("Arial", Font.PLAIN, 16));
 			Dimension labelSize = new Dimension(250, 35);
 			tempLabel.setPreferredSize(labelSize);
 			tempLabel.setMaximumSize(labelSize);
 			tempLabel.setMinimumSize(labelSize);
-			playlistPanel.add(tempLabel, playlistC);
+			playlistLabels.add(tempLabel);
+			playlistPanel.add(playlistLabels.get(i), playlistC);
+			
+			playlistC.gridx++;
+			
+			playlistPanel.add(new RemoveSongButton(this, tempLabel.getText()), playlistC);
+			
 			playlistC.gridy++;
 		}
 		playlistPanel.repaint();

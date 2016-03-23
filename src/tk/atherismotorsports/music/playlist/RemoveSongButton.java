@@ -54,8 +54,15 @@ public class RemoveSongButton extends JButton {
 	
 	public void makeChanges(int num){
 			manager.localSongButtons.get(num).setEnabled(true);
-			manager.playlistPanel.remove(new JLabel(songName));
-			manager.playlistPanel.repaint();
+			for(int i = 0; i < manager.playlistLabels.size(); i++){
+				if(manager.playlistLabels.get(i).getText().equals(manager.localSongButtons.get(num).getText())){
+					System.out.println("Removing " + manager.playlistSongs.get(i));
+					manager.playlistSongs.remove(i);
+					break;
+				}
+			}
+			manager.playlistPanel.remove(this);
+			manager.updatePlaylistScroll();
 		
 	}
 	

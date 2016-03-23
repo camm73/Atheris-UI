@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 
 import tk.atherismotorsports.music.MusicPlayer;
 
@@ -15,7 +16,7 @@ public class CreatePlaylistButton extends JButton{
 	public String buttonText = "";
 	public MusicPlayer musicPlayer;
 	public PlaylistManager manager;
-	protected Dimension buttonSize = new Dimension(250, 30);
+	protected Dimension buttonSize = new Dimension(375, 30);
 	
 	
 	public CreatePlaylistButton(MusicPlayer musicPlayer, PlaylistManager pm, String text){
@@ -31,6 +32,7 @@ public class CreatePlaylistButton extends JButton{
 		this.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				manager.playlistSongs.add(buttonText);
+				manager.playlistLabels.add(new JLabel(buttonText));
 				System.out.println("Added " + buttonText + " to playlist");
 				setEnabled(false);
 				manager.updatePlaylistScroll();
