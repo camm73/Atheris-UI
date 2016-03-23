@@ -92,6 +92,7 @@ public class PlaylistManager {
 		backButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				PlaylistPrompt prompt = new PlaylistPrompt(manager);
+				changeBackground(true);
 				frame.setEnabled(false);
 				//TODO add confirmation that you want to exit without saving playlist
 			}
@@ -100,9 +101,45 @@ public class PlaylistManager {
 		return topPanel;
 	}
 	
+	public void changeBackground(boolean prompt){
+		Color lightColor = new Color(68, 68, 68);
+		if(prompt){//darkens all panels
+			topPanel.setBackground(lightColor);
+			centerPanel.setBackground(lightColor);
+			songPanel.setBackground(lightColor);
+			playlistPanel.setBackground(lightColor);
+			buttonPanel.setBackground(lightColor);
+			
+			for(int i = 0; i < localSongButtons.size(); i++){
+				localSongButtons.get(i).setBackground(lightColor);
+				localSongButtons.get(i).repaint();
+			}
+			
+			backButton.setBackground(lightColor);
+			createPlaylist.setBackground(lightColor);
+			playlistNameField.setBackground(lightColor);
+			
+		}else{
+			topPanel.setBackground(MusicPlayer.grayBack);
+			centerPanel.setBackground(MusicPlayer.grayBack);
+			songPanel.setBackground(MusicPlayer.grayBack);
+			playlistPanel.setBackground(MusicPlayer.grayBack);
+			buttonPanel.setBackground(MusicPlayer.grayBack);
+			
+			for(int i = 0; i < localSongButtons.size(); i++){
+				localSongButtons.get(i).setBackground(MusicPlayer.grayBack);
+				localSongButtons.get(i).repaint();
+			}
+			
+			backButton.setBackground(MusicPlayer.grayBack);
+			createPlaylist.setBackground(MusicPlayer.grayBack);
+			playlistNameField.setBackground(MusicPlayer.grayBack);
+		}
+	}
+	
 	public JComponent getCenterPanel(){
 		centerPanel = new JPanel(new GridBagLayout());
-		centerPanel.setBackground(musicPlayer.grayBack);
+		centerPanel.setBackground(MusicPlayer.grayBack);
 		GridBagConstraints c  = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
@@ -217,6 +254,11 @@ public class PlaylistManager {
 		
 		for(int i = 0; i < playlistSongs.size(); i++){
 			playlistPanel.add(new JLabel(playlistSongs.get(i)), playlistC);
+			
+			playlistC.gridx++;
+			
+			playlistPanel.add(new RemoveSongButton(this, playlistSongs.get(i)), playlistC);
+			
 			playlistC.gridy++;
 		}
 		
