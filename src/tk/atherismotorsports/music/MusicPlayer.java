@@ -9,6 +9,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -58,8 +60,10 @@ public class MusicPlayer {
 	public JPanel infoPanel;
 	public JPanel playlistSongPanel;
 	public JPanel playlistTopPanel;
+	public JPanel playlistButtonPanel;
 	public JScrollPane songScroll;
 	public JScrollPane playlistScroll;
+	public JScrollPane playlistSongScroll;
 	public JLabel timeLabel;
 	public JLabel albumLabel;
 	public JLabel titleLabel = new JLabel();
@@ -78,10 +82,10 @@ public class MusicPlayer {
 	public File artDirectory;
 
 	public BufferedImage albumCover;
-	public BufferedImage iconCover;
 	public BufferedImage defaultCoverImage;
+	public BufferedImage iconCover;
 	public int iconSize = 40;
-	
+
 	public static Color grayBack = new Color(56, 56, 56);
 
 	public ArrayList<File> songList;
@@ -107,6 +111,7 @@ public class MusicPlayer {
 
 	public boolean pause = false;
 	public boolean initial = true;
+	public boolean playing = false;
 
 	public Main main;
 	public AdvancedPlayer player;
@@ -134,7 +139,6 @@ public class MusicPlayer {
 		loadFiles();
 		loadArtwork();
 		loadSongButtons();
-		getPlaylistButtons();
 		getPlaylistButtons();
 		setSongTitle();
 		setSongScroll();
@@ -223,7 +227,7 @@ public class MusicPlayer {
 		for (int i = 0; i < albumArtFiles.size(); i++) {
 			albumArtNames.add(albumArtFiles.get(i).getName());
 		}
-		
+
 		try {
 			defaultCoverImage = ImageIO.read(Main.class.getResource("/images/defaultCover.png"));
 		} catch (IOException e) {
@@ -238,7 +242,6 @@ public class MusicPlayer {
 	}
 
 	public void getPlaylistButtons() {
-		// TODO for loop getting all of the playlist folders
 		playlistButtons.clear();
 		for (int i = 0; i < playlistFolders.size(); i++) {
 			playlistButtons.add(new OpenPlaylistButton(this, playlistFolders.get(i).getName()));
@@ -284,7 +287,7 @@ public class MusicPlayer {
 		c.gridy = 0;
 		c.weightx = 1.0;
 		switchPanel.add(songListViewButton, c);
-		if(initial){
+		if (initial) {
 			songListViewButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					songListViewButton.setEnabled(false);
@@ -297,7 +300,7 @@ public class MusicPlayer {
 		c.gridx++;
 
 		switchPanel.add(playlistViewButton, c);
-		if(initial){
+		if (initial) {
 			playlistViewButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					songListViewButton.setEnabled(true);
@@ -313,7 +316,7 @@ public class MusicPlayer {
 		JPanel topPanel = new JPanel(new BorderLayout());
 		topPanel.setBackground(grayBack);
 		topPanel.add(backButton, BorderLayout.WEST);
-		if(initial){
+		if (initial) {
 			backButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					frame.setVisible(false);
@@ -324,25 +327,27 @@ public class MusicPlayer {
 
 		timeLabel.setHorizontalAlignment(JLabel.CENTER);
 		topPanel.add(timeLabel, BorderLayout.CENTER);
-		
-		sourceButton.setText("Radio"); //TODO change later based on item in settings
+
+		sourceButton.setText("Radio"); // TODO change later based on item in
+										// settings
 		sourceButton.setBackground(grayBack);
 		sourceButton.setForeground(Color.red);
 		sourceButton.setEnabled(false);
 		topPanel.add(sourceButton, BorderLayout.EAST);
-		if(initial){
-			sourceButton.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e){
-					if(sourceButton.getText().equals("Radio")){
+		if (initial) {
+			sourceButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (sourceButton.getText().equals("Radio")) {
 						sourceButton.setText("MP3 Player");
 						panel.remove(infoPanel);
 						panel.remove(leftPanel);
-						//panel.add(tuneIn.getRadioPanel(), BorderLayout.CENTER);
+						// panel.add(tuneIn.getRadioPanel(),
+						// BorderLayout.CENTER);
 						panel.repaint();
 						panel.revalidate();
-					}else if(sourceButton.getText().equals("MP3 Player")){
+					} else if (sourceButton.getText().equals("MP3 Player")) {
 						sourceButton.setText("Radio");
-						//panel.remove(tuneIn.jfxPanel);
+						// panel.remove(tuneIn.jfxPanel);
 						panel.add(leftPanel, BorderLayout.WEST);
 						panel.add(infoPanel, BorderLayout.CENTER);
 						panel.repaint();
@@ -379,6 +384,10 @@ public class MusicPlayer {
 			infoPanel.add(albumLabel, c);
 			c.gridy++;
 		}
+		if (playing) {
+			infoPanel.add(getSongInfo(), c);
+			c.gridy++;
+		}
 
 		Dimension seekSize = new Dimension(400, 30);
 		seekBar.setValue(0);
@@ -397,7 +406,7 @@ public class MusicPlayer {
 		skipButton.setText("Skip");
 		skipButton.setBackground(grayBack);
 		skipButton.setForeground(Color.red);
-		if(initial){
+		if (initial) {
 			skipButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (!pause) {
@@ -425,10 +434,10 @@ public class MusicPlayer {
 		stopButton.setBackground(grayBack);
 		stopButton.setForeground(Color.red);
 		infoPanel.add(stopButton, c);
-		if(initial){
+		if (initial) {
 			stopButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					//player.stop();
+					// player.stop();
 					player.close();
 					songTime = 0;
 					seekBar.setValue(0);
@@ -447,7 +456,7 @@ public class MusicPlayer {
 		playToggle.setText("Pause");
 		playToggle.setBackground(grayBack);
 		playToggle.setForeground(Color.red);
-		if(initial){
+		if (initial) {
 			playToggle.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (playToggle.getText().equals("Pause")) {
@@ -503,8 +512,8 @@ public class MusicPlayer {
 		leftPanel.repaint();
 		leftPanel.revalidate();
 	}
-	
-	public void viewPlaylistContents(String playlist){
+
+	public void viewPlaylistContents(String playlist) {
 		leftPanel.remove(playlistPanel);
 		getPlaylistSongPanel(playlist);
 		leftPanel.add(playlistSongPanel, BorderLayout.CENTER);
@@ -514,58 +523,79 @@ public class MusicPlayer {
 	}
 
 	boolean playlistInitial = true;
-	public void getPlaylistSongPanel(String playlist){
+
+	public void getPlaylistSongPanel(String playlist) {
 		playlistSongPanel = new JPanel(new BorderLayout());
+		playlistTopPanel = new JPanel(new BorderLayout());
+
 		playlistSongPanel.add(playlistTopPanel, BorderLayout.NORTH);
-		
-		//top panel
+
+		// top panel
 		JButton songEditButton = new JButton("Edit Playlist");
 		JButton returnButton = new JButton("Back");
-		playlistTopPanel = new JPanel(new BorderLayout());
-		
+
 		songEditButton.setBackground(grayBack);
 		songEditButton.setForeground(Color.red);
 		songEditButton.setFont(new Font("Arial", Font.BOLD, 14));
 		playlistTopPanel.add(songEditButton, BorderLayout.EAST);
-		if(playlistInitial){
-			songEditButton.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e){
-					//TODO add actions here >> delete songs from playlist
+		if (playlistInitial) {
+			songEditButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					// TODO add actions here >> delete songs from playlist
 				}
 			});
 		}
-		
+
 		returnButton.setBackground(grayBack);
 		returnButton.setForeground(Color.red);
 		returnButton.setFont(new Font("Arial", Font.BOLD, 14));
 		playlistTopPanel.add(returnButton, BorderLayout.WEST);
-		if(playlistInitial){
-			leftPanel.remove(playlistSongPanel);
-			leftPanel.add(playlistPanel, BorderLayout.CENTER);
-			playlistPanel.repaint();
-			leftPanel.repaint();
-			leftPanel.revalidate();
-		}
+		returnButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				leftPanel.remove(playlistSongPanel);
+				getPlaylistPanel();
+				leftPanel.add(playlistPanel, BorderLayout.CENTER);
+				playlistPanel.repaint();
+				leftPanel.repaint();
+				leftPanel.revalidate();
+			}
+		});
+
+		// center panel
+
+		// TODO playlistSongScroll with all songs in playlist
 		
-		
-		//center panel
-		
-		//TODO playlistSongScroll with all songs in playlist
-		
+		getPlaylistSongScroll();
+		playlistSongPanel.add(playlistSongScroll, BorderLayout.CENTER);
+
 		playlistInitial = false;
 	}
 	
+	public void getPlaylistSongScroll(){
+		JPanel songPanel = new JPanel(new GridBagLayout());
+		playlistSongScroll = new JScrollPane(songPanel);
+		playlistSongScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		
+		//TODO finish by adding songs to songPanel as jbuttons
+		//TODO give these buttons their own class
+		//test it out
+	}
+
 	public void getPlaylistPanel() {
 		playlistPanel = new JPanel(new BorderLayout());
 		playlistPanel.setBackground(grayBack);
 		internalPanel = new JPanel(new GridBagLayout());
 		playlistScroll = new JScrollPane(internalPanel);
 		playlistScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		JPanel buttonPanel = new JPanel(new GridBagLayout());
+		playlistButtonPanel = new JPanel(new GridBagLayout());
 
 		internalPanel.setBackground(MusicPlayer.grayBack);
 
-		buttonPanel.setBackground(grayBack);
+		playlistButtonPanel.setBackground(grayBack);
 		GridBagConstraints c1 = new GridBagConstraints();
 		c1.gridx = 0;
 		c1.gridy = 0;
@@ -573,7 +603,7 @@ public class MusicPlayer {
 
 		createPlaylistButton.setForeground(Color.red);
 		createPlaylistButton.setBackground(MusicPlayer.grayBack);
-		buttonPanel.add(createPlaylistButton, c1);
+		playlistButtonPanel.add(createPlaylistButton, c1);
 		createPlaylistButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				manager = new PlaylistManager(musicPlayer);
@@ -583,7 +613,7 @@ public class MusicPlayer {
 
 		// TODO add way to edit these by renaming and deleting
 
-		playlistPanel.add(buttonPanel, BorderLayout.NORTH);
+		playlistPanel.add(playlistButtonPanel, BorderLayout.NORTH);
 
 		getPlaylistScroll();
 		playlistPanel.add(playlistScroll, BorderLayout.CENTER);
@@ -603,54 +633,95 @@ public class MusicPlayer {
 		}
 	}
 
-	public void getArtwork(){
-		try{
+	public JComponent getSongInfo() {
+		JPanel songInfoPanel = new JPanel(new GridBagLayout());
+		songInfoPanel.setBackground(MusicPlayer.grayBack);
+
+		JLabel albumNameLabel = new JLabel();
+		JLabel artistLabel = new JLabel();
+
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		if (artistName != null) {
+			artistLabel = new JLabel("Artist: " + artistName);
+			artistLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+			artistLabel.setForeground(Color.red);
+			songInfoPanel.add(artistLabel, c);
+			c.gridy++;
+		} else {
+			artistLabel.setText("");
+		}
+
+		if (albumName != null) {
+			albumNameLabel = new JLabel("Album: " + albumName);
+			albumNameLabel.setForeground(Color.red);
+			albumNameLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+			songInfoPanel.add(albumNameLabel, c);
+			c.gridy++;
+		} else {
+			albumNameLabel.setText("");
+		}
+
+		return songInfoPanel;
+	}
+
+	public void getArtwork() {
+		try {
 			String editedName = albumName.replace(" ", "+");
-			URL url = new URL("http://itunes.apple.com/search?term="+ editedName + "&entity=album"); //this must be http to avoid timestamp ssl error
-	        URLConnection connection = url.openConnection();
-	
-	        String line;
-	        StringBuilder builder = new StringBuilder();
-	        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-	        while((line = reader.readLine()) != null) {
-	            builder.append(line);
-	        }
-	
-	        JSONObject json = new JSONObject(builder.toString());
-	        if(json.getJSONArray("results").length() > 0){
-		        String imageUrl = json.getJSONArray("results").getJSONObject(0).getString("artworkUrl100");
-		        BufferedImage image = ImageIO.read(new URL(imageUrl));
-		        
-		        File albumArt = new File(artDirectory + "/" + albumName + ".jpg");
-		        BufferedImage resizedArt = resizeArtwork(image, BufferedImage.TYPE_INT_RGB, 110);
-		        ImageIO.write(resizedArt, "jpg", albumArt);
-		        
-		        updateAlbumArtList();
-		        albumCover = resizedArt;
-		        iconCover = resizeArtwork(image, BufferedImage.TYPE_INT_RGB, iconSize);
-		        albumLabel = new JLabel(new ImageIcon(albumCover));
-		        coverUpdate();
-	        }else{
-	        	albumCover = defaultCoverImage;
-	        	albumLabel = new JLabel(new ImageIcon(albumCover));
-	        	iconCover = resizeArtwork(defaultCoverImage, BufferedImage.TYPE_INT_RGB, iconSize);
-	        	coverUpdate();
-	        }
-		}catch(JSONException | IOException e){
+			URL url = new URL("http://itunes.apple.com/search?term=" + editedName + "&entity=album"); // this
+																										// must
+																										// be
+																										// http
+																										// to
+																										// avoid
+																										// timestamp
+																										// ssl
+																										// error
+			URLConnection connection = url.openConnection();
+
+			String line;
+			StringBuilder builder = new StringBuilder();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			while ((line = reader.readLine()) != null) {
+				builder.append(line);
+			}
+
+			JSONObject json = new JSONObject(builder.toString());
+			if (json.getJSONArray("results").length() > 0) {
+				String imageUrl = json.getJSONArray("results").getJSONObject(0).getString("artworkUrl100");
+				BufferedImage image = ImageIO.read(new URL(imageUrl));
+
+				File albumArt = new File(artDirectory + "/" + albumName + ".jpg");
+				BufferedImage resizedArt = resizeArtwork(image, BufferedImage.TYPE_INT_RGB, 110);
+				ImageIO.write(resizedArt, "jpg", albumArt);
+
+				updateAlbumArtList();
+				albumCover = resizedArt;
+				iconCover = resizeArtwork(image, BufferedImage.TYPE_INT_RGB, iconSize);
+				albumLabel = new JLabel(new ImageIcon(albumCover));
+				coverUpdate();
+			} else {
+				albumCover = defaultCoverImage;
+				albumLabel = new JLabel(new ImageIcon(albumCover));
+				iconCover = resizeArtwork(defaultCoverImage, BufferedImage.TYPE_INT_RGB, iconSize);
+				coverUpdate();
+			}
+		} catch (JSONException | IOException e) {
 			albumCover = defaultCoverImage;
-        	albumLabel = new JLabel(new ImageIcon(albumCover));
-        	iconCover = resizeArtwork(defaultCoverImage, BufferedImage.TYPE_INT_RGB, iconSize);
-        	coverUpdate();
+			albumLabel = new JLabel(new ImageIcon(albumCover));
+			iconCover = resizeArtwork(defaultCoverImage, BufferedImage.TYPE_INT_RGB, iconSize);
+			coverUpdate();
 			e.printStackTrace();
 		}
 	}
-	
-	public void coverUpdate(){
+
+	public void coverUpdate() {
 		panel.remove(infoPanel);
-        panel.add(getInfoPanel());
-        panel.repaint();
-        panel.revalidate();
-        albumLabel.repaint();
+		panel.add(getInfoPanel());
+		panel.repaint();
+		panel.revalidate();
+		albumLabel.repaint();
 	}
 
 	public BufferedImage resizeArtwork(BufferedImage originalImage, int type, int imgSize) {
@@ -701,12 +772,12 @@ public class MusicPlayer {
 				artistName = "Unknown Artist";
 			}
 
-			if (albumName == null || albumName == "") {
+			if (albumName == null || albumName == "" || albumName == "Unknown Album") {
 				albumName = "Unknown Album";
 				albumCover = defaultCoverImage;
-		    	albumLabel = new JLabel(new ImageIcon(albumCover));
-		    	iconCover = resizeArtwork(defaultCoverImage, BufferedImage.TYPE_INT_RGB, iconSize);
-		    	coverUpdate();
+				albumLabel = new JLabel(new ImageIcon(albumCover));
+				iconCover = resizeArtwork(defaultCoverImage, BufferedImage.TYPE_INT_RGB, iconSize);
+				coverUpdate();
 			} else {
 				if (!albumArtNames.contains(albumName)) {
 					getArtwork();
@@ -732,6 +803,7 @@ public class MusicPlayer {
 	}
 
 	public void playSong(String text, int startTime) {
+		playing = true;
 		songFile = new File(musicDirectory + "/" + text);
 		System.out.println("Song File: " + songFile);
 
