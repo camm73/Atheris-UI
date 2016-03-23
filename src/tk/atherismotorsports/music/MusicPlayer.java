@@ -653,7 +653,7 @@ public class MusicPlayer {
         albumLabel.repaint();
 	}
 
-	private BufferedImage resizeArtwork(BufferedImage originalImage, int type, int imgSize) {
+	public BufferedImage resizeArtwork(BufferedImage originalImage, int type, int imgSize) {
 		BufferedImage resizedImage = new BufferedImage(imgSize, imgSize, type);
 		Graphics2D g = resizedImage.createGraphics();
 		g.drawImage(originalImage, 0, 0, imgSize, imgSize, null);

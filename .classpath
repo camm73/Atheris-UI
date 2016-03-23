@@ -5,7 +5,6 @@
 	<classpathentry kind="lib" path="res"/>
 	<classpathentry kind="lib" path="lib/jl1.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/mp3agic.jar"/>
-	<classpathentry kind="lib" path="lib/AmazonUtils.jar"/>
 	<classpathentry kind="lib" path="lib/jxbrowser-6.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jxbrowser-win-6.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/license.jar"/>

@@ -24,6 +24,7 @@ import javax.swing.SwingConstants;
 import com.github.sarxos.webcam.Webcam;
 
 import tk.atherismotorsports.camera.BackupCamera;
+import tk.atherismotorsports.internet.InternetBrowser;
 import tk.atherismotorsports.map.FxMap;
 import tk.atherismotorsports.map.Map;
 import tk.atherismotorsports.music.MusicPlayer;
@@ -58,6 +59,7 @@ public class Main implements Runnable {
 	public boolean musicOpen = false;
 	public boolean mapOpen = false;
 	public boolean cameraOpen = false;
+	public boolean browserOpen = false;
 	public Thread thread;
 
 	public int alpha = 25;
@@ -73,6 +75,7 @@ public class Main implements Runnable {
 	public AppPanel2 app2;
 	public Map map;
 	public FxMap fxmap;
+	public InternetBrowser inetBrowser;
 
 	public Main() {
 		main = this;
@@ -118,16 +121,16 @@ public class Main implements Runnable {
 		panel.add(app1, BorderLayout.CENTER);
 		panel.add(getBottomPanel(), BorderLayout.SOUTH);
 	}
-	
-	public JComponent getTopBar(){
+
+	public JComponent getTopBar() {
 		JPanel topPanel = new JPanel(new BorderLayout());
 		topPanel.setBackground(MusicPlayer.grayBack);
-		
+
 		timeLabel.setForeground(Color.white);
 		timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		timeLabel.setFont(new Font("Stencil", Font.PLAIN, 32));
 		topPanel.add(timeLabel, BorderLayout.CENTER);
-		
+
 		exitButton.setBackground(musicPlayer.grayBack);
 		exitButton.setForeground(Color.red);
 		topPanel.add(exitButton, BorderLayout.EAST);
@@ -136,7 +139,7 @@ public class Main implements Runnable {
 				System.exit(0);
 			}
 		});
-		
+
 		return topPanel;
 	}
 
@@ -182,35 +185,41 @@ public class Main implements Runnable {
 
 	public void update() {
 		time.update();
+		System.out.println("Threads: " + Thread.activeCount());
 
 		if (settingsOpen) {
 			settings.update();
 		}
 
 		if (mapOpen) {
-			if(map!=null){
+			if (map != null) {
 				map.update();
 			}
-			if(fxmap != null){
+			if (fxmap != null) {
 				fxmap.update();
 			}
-			
+
 		}
 
 		if (musicOpen) {
 			musicPlayer.update();
 		}
-		
-		if(cameraOpen){
+
+		if (cameraOpen) {
 			camera.update();
 		}
-		
+
 		if (musicOpen) {
 			if (musicPlayer.iconCover != null) {
 				songLabel.setIcon(new ImageIcon(musicPlayer.iconCover));
 			}
 			songLabel.setText("Now Playing: " + MusicPlayer.songTitle + " -- " + musicPlayer.artistName);
 		}
+
+		if (browserOpen) {
+			inetBrowser.update();
+		}
+
 		// System.out.println(time.hours + ":" + time.minutes + ":" +
 		// time.seconds);
 	}
@@ -250,8 +259,7 @@ public class Main implements Runnable {
 			JButton settingsButton = new JButton();
 			JButton mapButton = new JButton();
 			JButton cameraButton = new JButton();
-			JButton rightButton=  new JButton();
-			JButton leftButton = new JButton();
+			JButton rightButton = new JButton();
 			GridBagConstraints c = new GridBagConstraints();
 			c.gridx = 1;
 			c.gridy = 0;
@@ -309,35 +317,33 @@ public class Main implements Runnable {
 			mapButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					mapOpen = true;
-					if(map!=null){
+					if (map != null) {
 						map.mapFrame.setAlwaysOnTop(true);
-					}else{
+					} else {
 						fxmap.frame.setAlwaysOnTop(true);
 					}
 					frame.setAlwaysOnTop(false);
 				}
 			});
-			
+
 			c.gridy = 2;
-			
+
 			cameraButton.setBackground(new Color(56, 56, 56, alpha));
 			cameraButton.setBorderPainted(false);
 			cameraButton.setOpaque(true);
 			cameraButton.setIcon(new ImageIcon(cameraImage));
 			add(cameraButton, c);
-			cameraButton.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e){
+			cameraButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
 					frame.setAlwaysOnTop(false);
 					camera.frame.setAlwaysOnTop(true);
 					cameraOpen = true;
 				}
 			});
 			Webcam wc = Webcam.getDefault();
-			if(wc==null){
+			if (wc == null) {
 				cameraButton.setEnabled(false);
 			}
-			
-			
 
 			c.gridy = 0;
 			c.gridx = 3;
@@ -362,17 +368,17 @@ public class Main implements Runnable {
 					settingsOpen = true;
 				}
 			});
-			
+
 			c.gridx = 4;
 			c.gridy = 1;
 			c.weightx = 0.0;
 			c.weighty = 0.0;
-			
+
 			rightButton.setBackground(musicPlayer.grayBack);
 			rightButton.setIcon(new ImageIcon(rightImage));
 			add(rightButton, c);
-			rightButton.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e){
+			rightButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
 					panel.remove(app1);
 					panel.add(app2);
 					panel.repaint();
@@ -385,16 +391,15 @@ public class Main implements Runnable {
 			g.drawImage(backgroundImage, 0, 0, null);
 		}
 	}
-	
-	
-	class AppPanel2 extends JPanel{
-		
-		public AppPanel2(){
+
+	class AppPanel2 extends JPanel {
+
+		public AppPanel2() {
 			setLayout(new GridBagLayout());
 			getApp2();
 		}
-		
-		public void getApp2(){
+
+		public void getApp2() {
 			JButton leftButton = new JButton();
 			JButton browserButton = new JButton();
 			GridBagConstraints c = new GridBagConstraints();
@@ -402,31 +407,43 @@ public class Main implements Runnable {
 			c.gridy = 1;
 			c.weightx = 0.0;
 			c.weighty = 0.0;
-			
+
 			leftButton.setBackground(MusicPlayer.grayBack);
 			leftButton.setIcon(new ImageIcon(leftImage));
 			add(leftButton, c);
-			leftButton.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e){
+			leftButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
 					panel.remove(app2);
 					panel.add(app1);
 					panel.repaint();
 				}
 			});
-			
+
 			c.gridx = 1;
 			c.gridy = 0;
 			c.weightx = 1.0;
 			c.weighty = 1.0;
-			
+			c.anchor = GridBagConstraints.WEST; //TEMPORARY
+
 			browserButton.setBackground(new Color(56, 56, 56, alpha));
 			browserButton.setIcon(new ImageIcon(internetImage));
 			browserButton.setBorderPainted(false);
 			browserButton.setOpaque(true);
 			add(browserButton, c);
-			
+			browserButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					frame.setAlwaysOnTop(false);
+					if (inetBrowser == null) {
+						inetBrowser = new InternetBrowser(main);
+					} else {
+						inetBrowser.frame.setVisible(true);
+					}
+					browserOpen = true;
+				}
+			});
+
 		}
-		
+
 		public void paintComponent(Graphics g) {
 			g.drawImage(backgroundImage, 0, 0, null);
 		}
