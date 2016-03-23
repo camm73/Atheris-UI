@@ -197,6 +197,7 @@ public class PlaylistManager {
 		
 		createPlaylist.setForeground(Color.red);
 		createPlaylist.setBackground(MusicPlayer.grayBack);
+		createPlaylist.setFont(new Font("Arial", Font.PLAIN, 18));
 		buttonPanel.add(createPlaylist, c);
 		createPlaylist.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){

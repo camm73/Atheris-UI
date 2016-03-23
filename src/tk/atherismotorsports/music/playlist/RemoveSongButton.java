@@ -13,7 +13,7 @@ import javax.swing.JLabel;
 
 import tk.atherismotorsports.music.MusicPlayer;
 
-public class RemoveSongButton extends JButton {  //	MAY RENAME THIS CLASS IF I ADD A MORE GENERAL BUTTON TO REMOVE
+public class RemoveSongButton extends JButton {  //	MAY RENAME THIS CLASS IF I ADD A MORE GENERAL BUTTON TO REMOVE SONGS
 	private static final long serialVersionUID = 1L;
 	
 	private BufferedImage iconImage;

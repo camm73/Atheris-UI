@@ -1,4 +1,4 @@
-package tk.atherismotorsports.music;
+package tk.atherismotorsports.music.playlist;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+
+import tk.atherismotorsports.music.MusicPlayer;
 
 public class OpenPlaylistButton extends JButton {
 
@@ -31,10 +33,7 @@ public class OpenPlaylistButton extends JButton {
 		addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				musicPlayer.viewPlaylistContents(getText());
-				/*System.out.println("Opening Playlist: " + getText());
-				musicPlayer.playlistPanel.remove(musicPlayer.playlistButtonPanel);
-				musicPlayer.internalPanel.removeAll();
-				*/
+				musicPlayer.openPlaylist = true;
 				
 			}
 		});

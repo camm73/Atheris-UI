@@ -21,6 +21,7 @@ public class SongButton extends JButton{
 		this.id = id;
 		buttonText = text;
 		this.setText(buttonText);
+		musicPlayer.inPlaylist = false;
 		//System.out.println(text);
 		setFont(new Font("Arial", Font.BOLD, 14));
 		setMaximumSize(buttonSize);
@@ -30,7 +31,7 @@ public class SongButton extends JButton{
 		this.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				//System.out.println(buttonText);
-				musicPlayer.playSong(buttonText, 0);
+				musicPlayer.playSong(buttonText, 0, false);
 				musicPlayer.songNum = id;
 				musicPlayer.seekBar.setValue(0);
 				musicPlayer.songTime = 0;

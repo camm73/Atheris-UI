@@ -9,12 +9,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -44,7 +43,9 @@ import tk.atherismotorsports.Main;
 import tk.atherismotorsports.Time;
 import tk.atherismotorsports.json.JSONException;
 import tk.atherismotorsports.json.JSONObject;
+import tk.atherismotorsports.music.playlist.OpenPlaylistButton;
 import tk.atherismotorsports.music.playlist.PlaylistManager;
+import tk.atherismotorsports.music.playlist.PlaylistSongButton;
 
 public class MusicPlayer {
 
@@ -93,6 +94,8 @@ public class MusicPlayer {
 	public ArrayList<File> playlistFolders;
 	public ArrayList<JButton> playlistButtons = new ArrayList<JButton>();
 	public ArrayList<String> playlistFolderNames = new ArrayList<String>();
+	public ArrayList<String> playlistSongs = new ArrayList<String>();
+	public ArrayList<JButton> playlistSongButtons = new ArrayList<JButton>();
 	public ArrayList<File> albumArtFiles;
 	public ArrayList<String> albumArtNames = new ArrayList<String>();
 
@@ -112,6 +115,8 @@ public class MusicPlayer {
 	public boolean pause = false;
 	public boolean initial = true;
 	public boolean playing = false;
+	public boolean inPlaylist = false;
+	public boolean openPlaylist = false;
 
 	public Main main;
 	public AdvancedPlayer player;
@@ -409,19 +414,37 @@ public class MusicPlayer {
 		if (initial) {
 			skipButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					if (!pause) {
-						player.stop();
-						seekBar.setValue(0);
+					if (!inPlaylist) {
+						if (!pause) {
+							player.stop();
+							seekBar.setValue(0);
+						} else {
+							playToggle.setText("Pause");
+							songTime = 0;
+							seekBar.setValue(0);
+							if (songNum < (songList.size() - 1)) {
+								songNum++;
+								playSong(songList.get(songNum).getName(), 0, false);
+							} else if (songNum == (songList.size() - 1)) {
+								songNum = 0;
+								playSong(songList.get(songNum).getName(), 0, false);
+							}
+						}
 					} else {
-						playToggle.setText("Pause");
-						songTime = 0;
-						seekBar.setValue(0);
-						if (songNum < (songList.size() - 1)) {
-							songNum++;
-							playSong(songList.get(songNum).getName(), 0);
-						} else if (songNum == (songList.size() - 1)) {
-							songNum = 0;
-							playSong(songList.get(songNum).getName(), 0);
+						if (!pause) {
+							player.stop();
+							seekBar.setValue(0); //may not be necessary
+						} else {
+							playToggle.setText("Pause");
+							songTime = 0;
+							seekBar.setValue(0);
+							if (songNum < (songList.size() - 1)) {
+								songNum++;
+								playSong(songList.get(songNum).getName(), 0, true);
+							} else if (songNum == (songList.size() - 1)) {
+								songNum = 0;
+								playSong(songList.get(songNum).getName(), 0, true);
+							}
 						}
 					}
 				}
@@ -466,7 +489,13 @@ public class MusicPlayer {
 					} else {
 						playToggle.setText("Pause");
 						pause = false;
-						playSong(songFile.getName(), (int) (songTime * songFPS));
+
+						if (!inPlaylist) {
+							playSong(songFile.getName(), (int) (songTime * songFPS), false);
+						} else {
+							playSong(songFile.getName(), (int) (songTime * songFPS), true);
+						}
+
 						System.out.println("First: " + songTime * songFPS + "    Rounded: " + (int) (songTime * songFPS));
 						countTime = true;
 					}
@@ -498,11 +527,20 @@ public class MusicPlayer {
 	}
 
 	public void switchToSongView() {
-		leftPanel.remove(playlistPanel);
-		playlistPanel.repaint();
-		leftPanel.add(songScroll);
-		leftPanel.repaint();
-		leftPanel.revalidate();
+		if(!openPlaylist){
+			leftPanel.remove(playlistPanel);
+			playlistPanel.repaint();
+			leftPanel.add(songScroll, BorderLayout.CENTER);
+			leftPanel.repaint();
+			leftPanel.revalidate();
+		}else{
+			openPlaylist = false;
+			leftPanel.remove(playlistSongPanel);
+			playlistPanel.repaint();
+			leftPanel.add(songScroll, BorderLayout.CENTER);
+			leftPanel.repaint();
+			leftPanel.revalidate();
+		}
 	}
 
 	public void switchToPlaylistView() {
@@ -527,6 +565,9 @@ public class MusicPlayer {
 	public void getPlaylistSongPanel(String playlist) {
 		playlistSongPanel = new JPanel(new BorderLayout());
 		playlistTopPanel = new JPanel(new BorderLayout());
+		
+		playlistTopPanel.setBackground(MusicPlayer.grayBack);
+		playlistSongPanel.setBackground(MusicPlayer.grayBack);
 
 		playlistSongPanel.add(playlistTopPanel, BorderLayout.NORTH);
 
@@ -550,8 +591,9 @@ public class MusicPlayer {
 		returnButton.setForeground(Color.red);
 		returnButton.setFont(new Font("Arial", Font.BOLD, 14));
 		playlistTopPanel.add(returnButton, BorderLayout.WEST);
-		returnButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+		returnButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				openPlaylist = false;
 				leftPanel.remove(playlistSongPanel);
 				getPlaylistPanel();
 				leftPanel.add(playlistPanel, BorderLayout.CENTER);
@@ -563,28 +605,50 @@ public class MusicPlayer {
 
 		// center panel
 
-		// TODO playlistSongScroll with all songs in playlist
-		
-		getPlaylistSongScroll();
+		getPlaylistSongScroll(playlist);
 		playlistSongPanel.add(playlistSongScroll, BorderLayout.CENTER);
 
 		playlistInitial = false;
 	}
-	
-	public void getPlaylistSongScroll(){
+
+	public void getPlaylistSongScroll(String playlist) {
 		JPanel songPanel = new JPanel(new GridBagLayout());
+		songPanel.setBackground(MusicPlayer.grayBack);
 		playlistSongScroll = new JScrollPane(songPanel);
 		playlistSongScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		
+
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
+
+		loadPlaylist(playlist);
+
+		for (int i = 0; i < playlistSongs.size(); i++) {
+			playlistSongButtons.add(new PlaylistSongButton(this, playlistSongs.get(i), i));
+		}
 		
-		//TODO finish by adding songs to songPanel as jbuttons
-		//TODO give these buttons their own class
-		//test it out
+		for(int i = 0; i < playlistSongButtons.size(); i++){
+			songPanel.add(playlistSongButtons.get(i), c);
+			c.gridy++;
+		}
 	}
 
+	public void loadPlaylist(String playlist) {
+		playlistSongs.clear();
+		playlistSongButtons.clear();
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(playlistDirectory + "/" + playlist + "/playlistContent.txt"));
+			String line = "";
+			while ((line = reader.readLine()) != null) {
+				playlistSongs.add(line);
+			}
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	boolean createPlaylistInitial = true;
 	public void getPlaylistPanel() {
 		playlistPanel = new JPanel(new BorderLayout());
 		playlistPanel.setBackground(grayBack);
@@ -604,12 +668,15 @@ public class MusicPlayer {
 		createPlaylistButton.setForeground(Color.red);
 		createPlaylistButton.setBackground(MusicPlayer.grayBack);
 		playlistButtonPanel.add(createPlaylistButton, c1);
-		createPlaylistButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				manager = new PlaylistManager(musicPlayer);
-				frame.setAlwaysOnTop(false);
-			}
-		});
+		if(createPlaylistInitial){
+			createPlaylistButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					manager = new PlaylistManager(musicPlayer);
+					frame.setAlwaysOnTop(false);
+				}
+			});
+		}
+		createPlaylistInitial = false;
 
 		// TODO add way to edit these by renaming and deleting
 
@@ -802,7 +869,7 @@ public class MusicPlayer {
 		}
 	}
 
-	public void playSong(String text, int startTime) {
+	public void playSong(String text, int startTime, boolean inPlaylist) {
 		playing = true;
 		songFile = new File(musicDirectory + "/" + text);
 		System.out.println("Song File: " + songFile);
@@ -814,7 +881,7 @@ public class MusicPlayer {
 		try {
 			FileInputStream fis = new FileInputStream(songFile);
 			player = new AdvancedPlayer(fis);
-			sp = new SongPlayer(player, this, startTime);
+			sp = new SongPlayer(player, this, startTime, inPlaylist);
 			songThread = new Thread(sp);
 			songThread.start();
 			Thread songDataThread = new Thread(new Runnable() {
@@ -830,28 +897,18 @@ public class MusicPlayer {
 	}
 
 	/*
-	 * public void getAlbumArt(File song){ // build the search request that
-	 * looks for images of music. ItemSearchRequest request = new
-	 * ItemSearchRequest(); request.setSearchIndex("Music");
-	 * request.setResponseGroup(Arrays.asList("Images"));
-	 * request.setArtist(artist); request.setTitle(album);
+	 * public void getAlbumArt(File song){ // build the search request that looks for images of music. ItemSearchRequest request = new ItemSearchRequest(); request.setSearchIndex("Music"); request.setResponseGroup(Arrays.asList("Images")); request.setArtist(artist); request.setTitle(album);
 	 * 
-	 * // create a new amazon client using the access key. sign up for an //
-	 * amazon web services account here: //
-	 * https://aws-portal.amazon.com/gp/aws/developer/registration/index.html
-	 * AmazonA2SClient client = new AmazonA2SClient(accessKeyId, "");
+	 * // create a new amazon client using the access key. sign up for an // amazon web services account here: // https://aws-portal.amazon.com/gp/aws/developer/registration/index.html AmazonA2SClient client = new AmazonA2SClient(accessKeyId, "");
 	 * 
-	 * // create a search response from the search request. ItemSearchResponse
-	 * response = client.itemSearch(request);
+	 * // create a search response from the search request. ItemSearchResponse response = client.itemSearch(request);
 	 * 
-	 * // get the URL to the amazon image (if one was returned). String url =
-	 * response.getItems().get(0).getItem().get(0).getLargeImage().getURL();
+	 * // get the URL to the amazon image (if one was returned). String url = response.getItems().get(0).getItem().get(0).getLargeImage().getURL();
 	 * 
 	 * 
 	 * ImageIcon icon = null;
 	 * 
-	 * try { icon = url == null ? null : new ImageIcon(new URL(url)); } catch
-	 * (MalformedURLException e) { // do nothing - don't care. }
+	 * try { icon = url == null ? null : new ImageIcon(new URL(url)); } catch (MalformedURLException e) { // do nothing - don't care. }
 	 * 
 	 * }
 	 */
