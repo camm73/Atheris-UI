@@ -16,7 +16,7 @@ import tk.atherismotorsports.music.MusicPlayer;
 
 public class PlaylistPrompt {
 	
-	public final int WIDTH = 680;
+	public final int WIDTH = 720;
 	public final int HEIGHT = 300;
 	
 	public MusicPlayer musicPlayer;
@@ -24,8 +24,8 @@ public class PlaylistPrompt {
 	public JFrame frame;
 	public JPanel panel;
 	public JLabel promptLabel = new JLabel("Are you sure you want to exit without saving?");
-	public JButton yesButton = new JButton("Just fuck it");
-	public JButton noButton = new JButton("Fine...I'll keep it");
+	public JButton yesButton = new JButton("Yes, Exit");
+	public JButton noButton = new JButton("No, Stay");
 	
 	
 	public PlaylistPrompt(PlaylistManager manager){
@@ -42,12 +42,14 @@ public class PlaylistPrompt {
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
 		frame.setAlwaysOnTop(true);
+		frame.setUndecorated(true);
 		frame.add(panel);
 		frame.setVisible(true);
 	}
 	
 	public void content(){
 		panel = new JPanel(new GridBagLayout());
+		panel.setBackground(MusicPlayer.grayBack);
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = 0;
@@ -78,6 +80,8 @@ public class PlaylistPrompt {
 		noButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				frame.dispose();
+				manager.frame.setEnabled(true);
+				manager.changeBackground(false);
 			}
 		});
 		

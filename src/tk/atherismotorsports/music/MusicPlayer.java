@@ -606,7 +606,7 @@ public class MusicPlayer {
 	public void getArtwork(){
 		try{
 			String editedName = albumName.replace(" ", "+");
-			URL url = new URL("https://itunes.apple.com/search?term="+ editedName + "&entity=album");
+			URL url = new URL("http://itunes.apple.com/search?term="+ editedName + "&entity=album"); //this must be http to avoid timestamp ssl error
 	        URLConnection connection = url.openConnection();
 	
 	        String line;
