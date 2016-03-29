@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import tk.atherismotorsports.camera.BackupCamera;
+import tk.atherismotorsports.map.FxMap;
 import tk.atherismotorsports.map.Map;
 import tk.atherismotorsports.music.MusicPlayer;
 
@@ -111,8 +112,8 @@ public class Splash extends Canvas {
 				main.frame.setVisible(false);
 				main.musicPlayer = new MusicPlayer(main);
 				main.musicPlayer.frame.setVisible(false);
-				//main.fxmap = new FxMap(main);
-				main.map = new Map(main);
+				main.fxmap = new FxMap(main);
+				//main.map = new Map(main);
 				main.camera = new BackupCamera(main);
 				System.out.println("Done loading all preliminary things");
 			}

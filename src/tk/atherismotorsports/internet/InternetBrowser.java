@@ -59,7 +59,7 @@ public class InternetBrowser {
 	private JTextField urlField = new JTextField(70);
 
 	private boolean initial = true;
-	public boolean useFx = false;
+	public boolean useFx = true;
 	public Thread bthread;
 
 	public InternetBrowser(Main main) {
@@ -155,7 +155,7 @@ public class InternetBrowser {
 
 				// Set up the embedded browser:
 				webEngine = browser.getEngine();
-				webEngine.load("http://www.google.com/");
+				webEngine.load("https://www.google.com/");
 
 				jfxPanel.setScene(scene);
 			}
