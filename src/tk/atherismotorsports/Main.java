@@ -226,7 +226,7 @@ public class Main implements Runnable {
 
 	public void run() {
 		long prev = System.nanoTime();
-		final double limit = 1000000000.0 / 60.0;
+		final double limit = 1000000000.0 / 20.0;
 		double delta = 0;
 
 		while (running) {

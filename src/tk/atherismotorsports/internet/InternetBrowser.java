@@ -5,9 +5,10 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -52,15 +53,21 @@ public class InternetBrowser {
 	public Main main;
 	public MusicPlayer musicPlayer;
 
+	public ArrayList<String> history = new ArrayList<String>();
+	public int currentPage = 0;
+
 	private JButton goBack = new JButton("Back");
 	private JButton goForward = new JButton("Forward");
 	private JButton loadButton = new JButton("Load");
 	public JButton homeButton = new JButton("Home");
 	private JTextField urlField = new JTextField(70);
 
+	public String homepage = "http://www.google.com";
+
 	private boolean initial = true;
 	public boolean useFx = true;
 	public Thread bthread;
+	public String page = "";
 
 	public InternetBrowser(Main main) {
 		this.main = main;
@@ -71,6 +78,7 @@ public class InternetBrowser {
 		backButton.setBackground(new Color(56, 56, 56));
 		backButton.setBorderPainted(false);
 		backButton.setIcon(new ImageIcon(main.backImage));
+		page = homepage;
 
 		if (useFx) {
 			initComponents();
@@ -91,7 +99,7 @@ public class InternetBrowser {
 		panel = new JPanel(new BorderLayout());
 		panel.add(getTopBar(), BorderLayout.NORTH);
 		if (useFx) {
-			panel.add(jfxPanel, BorderLayout.CENTER);
+			panel.add(getCenterPanel(), BorderLayout.CENTER);
 		} else {
 			panel.add(jxPanel, BorderLayout.CENTER);
 		}
@@ -99,20 +107,58 @@ public class InternetBrowser {
 
 	public void update() {
 		timeLabel.setText(Time.timeString);
+		if (!useFx) {
+			if (jxBrowser != null) {
+				if (!jxBrowser.canGoBack()) {
+					goBack.setEnabled(false);
+				} else {
+					goBack.setEnabled(true);
+				}
 
-		if(jxBrowser != null){
-			if (!jxBrowser.canGoBack()) {
-				goBack.setEnabled(false);
-			} else {
-				goBack.setEnabled(true);
+				if (!jxBrowser.canGoForward()) {
+					goForward.setEnabled(false);
+				} else {
+					goForward.setEnabled(true);
+				}
 			}
-	
-			if (!jxBrowser.canGoForward()) {
+		} else {
+
+			if (history != null && !history.isEmpty() && webEngine != null && webEngine.getLocation() != null && currentPage <= (history.size() - 1)) {
+				if (!history.get(history.size() - 1).equals(webEngine.getLocation()) && !history.get(history.size() - 1).equals(getAlternateUrl(webEngine.getLocation()))) {
+					history.add(webEngine.getLocation());
+					currentPage++;
+
+					//TODO need to fix issue where it adds http and https version of the same site twice
+				}
+			}
+
+			for (int i = 0; i < history.size(); i++) {
+				//System.out.println(i + "   " + history.get(i));
+			}
+
+			if (currentPage <= (history.size() - 1) && !history.isEmpty()) {
 				goForward.setEnabled(false);
 			} else {
 				goForward.setEnabled(true);
 			}
+
+			//System.out.println(currentPage);
+			if (currentPage > 0) {
+				goBack.setEnabled(true);
+			} else {
+				goBack.setEnabled(false);
+			}
+
 		}
+	}
+
+	public JComponent getCenterPanel() {
+		JPanel centerPanel = new JPanel(new BorderLayout());
+
+		centerPanel.add(getControlPanel(), BorderLayout.NORTH);
+		centerPanel.add(jfxPanel, BorderLayout.CENTER);
+
+		return centerPanel;
 	}
 
 	public JComponent getTopBar() {
@@ -135,6 +181,12 @@ public class InternetBrowser {
 		return topBar;
 	}
 
+	public String getAlternateUrl(String url) {
+		String alt = url.replace("http:", "https:");
+		System.out.println(alt);
+		return alt;
+	}
+
 	@SuppressWarnings("restriction")
 	private void createScene() {
 		PlatformImpl.startup(new Runnable() {
@@ -155,7 +207,8 @@ public class InternetBrowser {
 
 				// Set up the embedded browser:
 				webEngine = browser.getEngine();
-				webEngine.load("https://www.google.com/");
+				webEngine.load(page);
+				history.add(webEngine.getLocation());
 
 				jfxPanel.setScene(scene);
 			}
@@ -184,7 +237,7 @@ public class InternetBrowser {
 	public JComponent getControlPanel() {
 		controlPanel = new JPanel(new GridBagLayout());
 		controlPanel.setBackground(MusicPlayer.grayBack);
-		
+
 		//goBack.setIcon(new ImageIcon(musicPlayer.resizeArtwork(main.leftImage, BufferedImage.TYPE_INT_RGB, 30)));
 		goBack.setBackground(MusicPlayer.grayBack);
 		goBack.setForeground(Color.RED);
@@ -200,7 +253,14 @@ public class InternetBrowser {
 		controlPanel.add(goBack, c);
 		goBack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				jxBrowser.goBack();
+				if (!useFx) {
+					jxBrowser.goBack();
+				} else {
+					//if using fx browser
+					currentPage--;
+					page = history.get(currentPage);
+					createScene();
+				}
 			}
 		});
 
@@ -209,36 +269,55 @@ public class InternetBrowser {
 		controlPanel.add(goForward, c);
 		goForward.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				jxBrowser.goForward();
+				if (!useFx) {
+					jxBrowser.goForward();
+				} else {
+					//if using fx browser
+					currentPage++;
+					page = history.get(currentPage);
+					createScene();
+				}
 			}
 		});
 
 		c.gridx++;
-		
+
 		urlField.setBackground(Color.lightGray);
 		urlField.setForeground(Color.red);
 		urlField.setFont(new Font("Arial", Font.PLAIN, 18));
 		controlPanel.add(urlField, c);
-		
+
 		c.gridx++;
-		
+
 		loadButton.setBackground(MusicPlayer.grayBack);
 		loadButton.setForeground(Color.red);
 		controlPanel.add(loadButton, c);
-		loadButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				jxBrowser.loadURL(urlField.getText());
+		loadButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!useFx) {
+					jxBrowser.loadURL(urlField.getText());
+				} else {
+					//if using fx browser
+					page = urlField.getText();
+					createScene();
+					jfxPanel.repaint();
+				}
 			}
 		});
-		
+
 		c.gridx++;
-		
+
 		homeButton.setBackground(MusicPlayer.grayBack);
 		homeButton.setForeground(Color.red);
 		controlPanel.add(homeButton, c);
-		homeButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				jxBrowser.loadURL("http://www.google.com");//TODO need to add this as an option to change homepage
+		homeButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!useFx) {
+					jxBrowser.loadURL(homepage);//TODO need to add this as an option to change homepage
+				} else {
+					page = homepage;
+					createScene();
+				}
 			}
 		});
 
