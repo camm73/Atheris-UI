@@ -62,7 +62,7 @@ public class InternetBrowser {
 	public JButton homeButton = new JButton("Home");
 	private JTextField urlField = new JTextField(70);
 
-	public String homepage = "http://www.google.com";
+	public String homepage = "http://www.google.com/";
 
 	private boolean initial = true;
 	public boolean useFx = true;
@@ -79,6 +79,7 @@ public class InternetBrowser {
 		backButton.setBorderPainted(false);
 		backButton.setIcon(new ImageIcon(main.backImage));
 		page = homepage;
+		history.add(homepage);
 
 		if (useFx) {
 			initComponents();
@@ -104,7 +105,8 @@ public class InternetBrowser {
 			panel.add(jxPanel, BorderLayout.CENTER);
 		}
 	}
-
+	
+	int counter = 0;
 	public void update() {
 		timeLabel.setText(Time.timeString);
 		if (!useFx) {
@@ -122,27 +124,30 @@ public class InternetBrowser {
 				}
 			}
 		} else {
-
-			if (history != null && !history.isEmpty() && webEngine != null && webEngine.getLocation() != null && currentPage <= (history.size() - 1)) {
-				if (!history.get(history.size() - 1).equals(webEngine.getLocation()) && !history.get(history.size() - 1).equals(getAlternateUrl(webEngine.getLocation()))) {
-					history.add(webEngine.getLocation());
-					currentPage++;
-
-					//TODO need to fix issue where it adds http and https version of the same site twice
+			
+			counter++;
+			if(counter % 60 == 0){
+				if (history != null && !history.isEmpty() && webEngine != null && webEngine.getLocation() != null) {
+					String temp;
+					if (!(temp = history.get(history.size() - 1)).equals(webEngine.getLocation()) && !temp.equals(webEngine.getLocation().replace("http:", "https:")) && !temp.equals(webEngine.getLocation().replace("https:", "http:"))) {
+						if(!history.contains(webEngine.getLocation())){
+							history.add(webEngine.getLocation());
+							currentPage++;
+						}
+					}
 				}
 			}
 
 			for (int i = 0; i < history.size(); i++) {
-				//System.out.println(i + "   " + history.get(i));
+				System.out.println(i + "   " + history.get(i));
 			}
 
-			if (currentPage <= (history.size() - 1) && !history.isEmpty()) {
+			if (history.get(history.size()-1).equals(webEngine.getLocation())) {
 				goForward.setEnabled(false);
 			} else {
 				goForward.setEnabled(true);
 			}
 
-			//System.out.println(currentPage);
 			if (currentPage > 0) {
 				goBack.setEnabled(true);
 			} else {
@@ -181,12 +186,6 @@ public class InternetBrowser {
 		return topBar;
 	}
 
-	public String getAlternateUrl(String url) {
-		String alt = url.replace("http:", "https:");
-		System.out.println(alt);
-		return alt;
-	}
-
 	@SuppressWarnings("restriction")
 	private void createScene() {
 		PlatformImpl.startup(new Runnable() {
@@ -208,7 +207,6 @@ public class InternetBrowser {
 				// Set up the embedded browser:
 				webEngine = browser.getEngine();
 				webEngine.load(page);
-				history.add(webEngine.getLocation());
 
 				jfxPanel.setScene(scene);
 			}
