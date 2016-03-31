@@ -14,7 +14,7 @@ public class PlaylistSongButton extends JButton {
 	private static final long serialVersionUID = 1L;
 
 	private MusicPlayer musicPlayer;
-	protected Dimension buttonSize = new Dimension(250, 30);
+	protected Dimension buttonSize = new Dimension(250, 40);
 	protected int id;
 	
 	public PlaylistSongButton(MusicPlayer musicPlayer, String text, int id){

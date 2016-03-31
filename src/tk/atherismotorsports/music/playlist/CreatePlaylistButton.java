@@ -16,7 +16,7 @@ public class CreatePlaylistButton extends JButton{
 	public String buttonText = "";
 	public MusicPlayer musicPlayer;
 	public PlaylistManager manager;
-	protected Dimension buttonSize = new Dimension(375, 30);
+	protected Dimension buttonSize = new Dimension(375, 40);
 	
 	
 	public CreatePlaylistButton(MusicPlayer musicPlayer, PlaylistManager pm, String text){

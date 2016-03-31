@@ -13,7 +13,7 @@ public class SongButton extends JButton{
 	
 	private MusicPlayer musicPlayer;
 	private String buttonText;
-	protected Dimension buttonSize = new Dimension(250, 30);
+	protected Dimension buttonSize = new Dimension(250, 40);
 	public final int id;
 
 	public SongButton(MusicPlayer mp, String text, final int id){

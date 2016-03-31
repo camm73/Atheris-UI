@@ -75,6 +75,7 @@ public class MusicPlayer {
 	public JButton createPlaylistButton = new JButton("Create Playist");
 	public JButton playlistViewButton = new JButton("Playlists");
 	public JButton songListViewButton = new JButton("Songs");
+	public Dimension buttonSize = new Dimension(115, 40);
 	public JProgressBar seekBar;
 
 	public File musicDirectory;
@@ -282,10 +283,17 @@ public class MusicPlayer {
 	public JComponent getSwitchPanel() {
 		JPanel switchPanel = new JPanel(new GridBagLayout());
 		switchPanel.setBackground(grayBack);
+		Dimension buttonSize = new Dimension(115, 40);
 		songListViewButton.setBackground(grayBack);
 		playlistViewButton.setBackground(grayBack);
 		songListViewButton.setForeground(Color.red);
 		playlistViewButton.setForeground(Color.red);
+		
+		songListViewButton.setFont(new Font("Arial", Font.PLAIN, 16));
+		playlistViewButton.setFont(new Font("Arial", Font.PLAIN, 16));
+		
+		playlistViewButton.setPreferredSize(buttonSize);
+		songListViewButton.setPreferredSize(buttonSize);
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
@@ -636,6 +644,11 @@ public class MusicPlayer {
 		c1.gridy = 0;
 		c1.weightx = 1.0;
 
+
+		Dimension buttonSize = new Dimension(140, 40);
+		createPlaylistButton.setPreferredSize(buttonSize);
+		createPlaylistButton.setMinimumSize(buttonSize);
+		createPlaylistButton.setFont(new Font("Arial", Font.PLAIN, 16));
 		createPlaylistButton.setForeground(Color.red);
 		createPlaylistButton.setBackground(MusicPlayer.grayBack);
 		playlistButtonPanel.add(createPlaylistButton, c1);

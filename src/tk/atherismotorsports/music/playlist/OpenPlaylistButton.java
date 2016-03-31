@@ -12,7 +12,7 @@ import tk.atherismotorsports.music.MusicPlayer;
 
 public class OpenPlaylistButton extends JButton {
 
-	protected Dimension buttonSize = new Dimension(250, 30);
+	protected Dimension buttonSize = new Dimension(250, 40);
 	
 	private MusicPlayer musicPlayer;
 

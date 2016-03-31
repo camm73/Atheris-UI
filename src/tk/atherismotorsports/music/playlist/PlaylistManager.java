@@ -159,6 +159,7 @@ public class PlaylistManager {
 		playlistNameField.setBackground(musicPlayer.grayBack);
 		playlistNameField.setForeground(Color.red);
 		playlistNameField.setFont(new Font("Verdana", Font.PLAIN, 18));
+		playlistNameField.setFocusable(true);
 		centerPanel.add(playlistNameField, c);
 		
 		c.gridx++;
