@@ -62,10 +62,10 @@ public class InternetBrowser {
 	public JButton homeButton = new JButton("Home");
 	private JTextField urlField = new JTextField(70);
 
-	public String homepage = "http://www.google.com/";
+	public String homepage = "https://www.google.com/";
 
 	private boolean initial = true;
-	public boolean useFx = true;
+	public boolean useFx = false;
 	public Thread bthread;
 	public String page = "";
 
@@ -219,7 +219,7 @@ public class InternetBrowser {
 			public void run() {
 				jxBrowser = new Browser();
 				jxview = new BrowserView(jxBrowser);
-				jxBrowser.loadURL("http://www.google.com");
+				jxBrowser.loadURL(homepage);
 				jxPanel.add(jxview, BorderLayout.CENTER);
 			}
 		});
