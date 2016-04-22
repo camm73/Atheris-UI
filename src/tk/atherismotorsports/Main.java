@@ -147,10 +147,17 @@ public class Main implements Runnable {
 		JPanel bottomPanel = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
-		c.gridy = 0;
+		c.gridy = 0;		
 		c.anchor = GridBagConstraints.CENTER;
 		bottomPanel.setBackground(MusicPlayer.grayBack);
-
+		
+		/*if(musicPlayer != null && musicPlayer.playToggle != null){
+			JButton tempPlay = musicPlayer.playToggle;
+			
+			bottomPanel.add(tempPlay, c);
+			
+			c.gridx++;
+		}*/
 		Dimension songLabelSize = new Dimension(700, 40);
 		songLabel.setForeground(Color.red);
 		songLabel.setPreferredSize(songLabelSize);

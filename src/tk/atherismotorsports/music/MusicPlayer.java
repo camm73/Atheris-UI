@@ -101,7 +101,7 @@ public class MusicPlayer {
 
 	public Thread songThread;
 	public int songNum = 0;
-	public static String songTitle = "";
+	public static String songTitle = "No Song Playing";
 
 	public double songFrames = 0.0;
 	public double runtime = 0.0;
@@ -438,7 +438,6 @@ public class MusicPlayer {
 		if (initial) {
 			stopButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					// player.stop();
 					player.close();
 					songTime = 0;
 					seekBar.setValue(0);
@@ -454,10 +453,10 @@ public class MusicPlayer {
 		c.gridx = 2;
 
 		infoPanel.add(playToggle, c);
-		playToggle.setText("Pause");
 		playToggle.setBackground(grayBack);
 		playToggle.setForeground(Color.red);
 		if (initial) {
+			playToggle.setText("Play");
 			playToggle.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (playToggle.getText().equals("Pause")) {
@@ -468,9 +467,12 @@ public class MusicPlayer {
 						playToggle.setText("Pause");
 						pause = false;
 
-						if (!inPlaylist) {
+						if (!inPlaylist && playing) {
 							playSong(songFile.getName(), (int) (songTime * songFPS), false);
-						} else {
+						} else if(!inPlaylist && !playing){
+							playSong(songButtons.get(0).getText(), 0, false);
+							System.out.println(playToggle.getText());
+						}else {
 							playSong(songFile.getName(), (int) (songTime * songFPS), true);
 						}
 
@@ -583,6 +585,7 @@ public class MusicPlayer {
 
 		// center panel
 
+
 		getPlaylistSongScroll(playlist);
 		playlistSongPanel.add(playlistSongScroll, BorderLayout.CENTER);
 
@@ -600,7 +603,6 @@ public class MusicPlayer {
 		c.gridy = 0;
 
 		loadPlaylist(playlist);
-
 		for (int i = 0; i < playlistSongs.size(); i++) {
 			playlistSongButtons.add(new PlaylistSongButton(this, playlistSongs.get(i), i));
 		}
@@ -846,10 +848,12 @@ public class MusicPlayer {
 	}
 
 	public void playSong(String text, int startTime, boolean inPlaylist) {
-		playing = true;
 		songFile = new File(musicDirectory + "/" + text);
 		System.out.println("Song File: " + songFile);
-
+		
+		playToggle.setText("Pause");
+		playing = true;
+		
 		if (player != null) {
 			player.close();
 		}
