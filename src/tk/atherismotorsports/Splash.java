@@ -113,13 +113,9 @@ public class Splash extends Canvas {
 				main = new Main();
 				main.frame.setVisible(false);
 				main.musicPlayer = new MusicPlayer(main);
-				main.panel.remove(main.getBottomPanel());
-				main.panel.add(main.getBottomPanel(), BorderLayout.SOUTH);
 				main.musicPlayer.frame.setVisible(false);
 				main.panel.remove(main.getBottomPanel());
 				main.panel.add(main.getBottomPanel(), BorderLayout.SOUTH);
-				main.panel.repaint();
-				main.panel.revalidate();
 				main.fxmap = new FxMap(main);
 				//main.map = new Map(main);
 				main.camera = new BackupCamera(main);

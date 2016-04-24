@@ -1,6 +1,7 @@
 package tk.atherismotorsports.music;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -27,6 +28,7 @@ public class MusicControls extends JPanel{
 	
 	public Main main;
 	public MusicPlayer musicPlayer;
+	private Dimension panelSize = new Dimension(200, 40);
 	
 	public MusicControls(Main main){
 		this.main = main;
@@ -34,6 +36,7 @@ public class MusicControls extends JPanel{
 		loadButtonImages();
 		setBackground(MusicPlayer.grayBack);
 		setLayout(new GridBagLayout());
+		setMaximumSize(panelSize);
 		loadPanel();
 	}
 	
@@ -60,7 +63,6 @@ public class MusicControls extends JPanel{
 		add(playPause, c);
 		playPause.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				main.musicOpen = true;
 				musicPlayer.playToggleActions();
 			}
 		});

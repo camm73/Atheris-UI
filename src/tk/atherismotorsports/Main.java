@@ -145,18 +145,13 @@ public class Main implements Runnable {
 	}
 
 	public JComponent getBottomPanel() {
-		JPanel bottomPanel = new JPanel(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = 0;
-		c.anchor = GridBagConstraints.WEST;
+		JPanel bottomPanel = new JPanel(new BorderLayout());
 		bottomPanel.setBackground(MusicPlayer.grayBack);
-		
-		if(musicPlayer!=null){
-			bottomPanel.add(new MusicControls(this), c);
+
+		if (musicPlayer != null) {
+			bottomPanel.add(new MusicControls(this), BorderLayout.WEST);
 		}
-		
-		c.gridx++;
+
 		Dimension songLabelSize = new Dimension(700, 40);
 		songLabel.setForeground(Color.red);
 		songLabel.setPreferredSize(songLabelSize);
@@ -164,7 +159,7 @@ public class Main implements Runnable {
 		songLabel.setMaximumSize(songLabelSize);
 		songLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		songLabel.setFont(new Font("STENCIL", Font.PLAIN, 24));
-		bottomPanel.add(songLabel, c);
+		bottomPanel.add(songLabel, BorderLayout.CENTER);
 
 		return bottomPanel;
 	}
@@ -191,7 +186,7 @@ public class Main implements Runnable {
 
 	public void update() {
 		time.update();
-		//System.out.println("Threads: " + Thread.activeCount());
+		// System.out.println("Threads: " + Thread.activeCount());
 
 		if (settingsOpen) {
 			settings.update();
@@ -209,10 +204,14 @@ public class Main implements Runnable {
 
 		if (musicOpen) {
 			musicPlayer.update();
+		}
+
+		if (musicPlayer != null) {
 			if (musicPlayer.iconCover != null) {
 				songLabel.setIcon(new ImageIcon(musicPlayer.iconCover));
 			}
 			songLabel.setText("Now Playing: " + MusicPlayer.songTitle + " -- " + musicPlayer.artistName);
+			songLabel.revalidate();
 		}
 
 		if (cameraOpen) {
