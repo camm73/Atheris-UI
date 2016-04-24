@@ -100,7 +100,7 @@ public class Map {
 			 public void run(){
 				 browser = new Browser();
 				 view = new BrowserView(browser);
-				 browser.loadURL("http://maps.google.com");
+				 browser.loadURL("maps.google.com");
 				 browserPanel.add(view, BorderLayout.CENTER);
 			 }
 		 });

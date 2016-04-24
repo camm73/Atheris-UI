@@ -27,7 +27,7 @@ public class Splash extends Canvas {
 	public boolean threadInitial = true;
 	public Thread initThread;
 
-	public Main main = new Main();
+	public Main main;
 	
 	int w, h;
 	long old;
@@ -110,8 +110,11 @@ public class Splash extends Canvas {
 		@Override
 		public void run() {
 			if(threadInitial){
+				main = new Main();
 				main.frame.setVisible(false);
 				main.musicPlayer = new MusicPlayer(main);
+				main.panel.remove(main.getBottomPanel());
+				main.panel.add(main.getBottomPanel(), BorderLayout.SOUTH);
 				main.musicPlayer.frame.setVisible(false);
 				main.panel.remove(main.getBottomPanel());
 				main.panel.add(main.getBottomPanel(), BorderLayout.SOUTH);

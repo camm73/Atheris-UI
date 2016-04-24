@@ -22,7 +22,6 @@ public class SongButton extends JButton{
 		buttonText = text;
 		this.setText(buttonText);
 		musicPlayer.inPlaylist = false;
-		//System.out.println(text);
 		setFont(new Font("Arial", Font.BOLD, 14));
 		setMaximumSize(buttonSize);
 		setPreferredSize(buttonSize);
