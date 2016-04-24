@@ -27,6 +27,7 @@ import tk.atherismotorsports.camera.BackupCamera;
 import tk.atherismotorsports.internet.InternetBrowser;
 import tk.atherismotorsports.map.FxMap;
 import tk.atherismotorsports.map.Map;
+import tk.atherismotorsports.music.MusicControls;
 import tk.atherismotorsports.music.MusicPlayer;
 
 public class Main implements Runnable {
@@ -148,9 +149,14 @@ public class Main implements Runnable {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
-		c.anchor = GridBagConstraints.CENTER;
+		c.anchor = GridBagConstraints.WEST;
 		bottomPanel.setBackground(MusicPlayer.grayBack);
-
+		
+		if(musicPlayer!=null){
+			bottomPanel.add(new MusicControls(this), c);
+		}
+		
+		c.gridx++;
 		Dimension songLabelSize = new Dimension(700, 40);
 		songLabel.setForeground(Color.red);
 		songLabel.setPreferredSize(songLabelSize);
@@ -203,17 +209,14 @@ public class Main implements Runnable {
 
 		if (musicOpen) {
 			musicPlayer.update();
-		}
-
-		if (cameraOpen) {
-			camera.update();
-		}
-
-		if (musicOpen) {
 			if (musicPlayer.iconCover != null) {
 				songLabel.setIcon(new ImageIcon(musicPlayer.iconCover));
 			}
 			songLabel.setText("Now Playing: " + MusicPlayer.songTitle + " -- " + musicPlayer.artistName);
+		}
+
+		if (cameraOpen) {
+			camera.update();
 		}
 
 		if (browserOpen) {

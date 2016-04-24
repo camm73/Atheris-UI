@@ -111,10 +111,11 @@ public class MusicPlayer {
 	public int songTime = 0;
 	public int resumeFrame;
 	public boolean countTime = false;
+	public static int playStatus = 0; //0 not playing/paused;  1 - playing
 
 	public boolean pause = false;
 	public boolean initial = true;
-	public boolean playing = false;
+	public boolean initialPlay = true;
 	public boolean inPlaylist = false;
 	public boolean openPlaylist = false;
 
@@ -367,7 +368,7 @@ public class MusicPlayer {
 			infoPanel.add(albumLabel, c);
 			c.gridy++;
 		}
-		if (playing) {
+		if (!initialPlay) {
 			infoPanel.add(getSongInfo(), c);
 			c.gridy++;
 		}
@@ -386,9 +387,9 @@ public class MusicPlayer {
 		c.gridx = 0;
 
 		infoPanel.add(skipButton, c);
-		skipButton.setText("Skip");
 		skipButton.setBackground(grayBack);
 		skipButton.setForeground(Color.red);
+		skipButton.setIcon(new ImageIcon(resizeArtwork(MusicControls.skipForwardImage, BufferedImage.TYPE_INT_ARGB, 40)));
 		if (initial) {
 			skipButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -397,7 +398,7 @@ public class MusicPlayer {
 							player.stop();
 							seekBar.setValue(0);
 						} else {
-							playToggle.setText("Pause");
+							playStatus = 1;
 							songTime = 0;
 							seekBar.setValue(0);
 							if (songNum < (songList.size() - 1)) {
@@ -413,7 +414,7 @@ public class MusicPlayer {
 							player.stop();
 							seekBar.setValue(0); //may not be necessary
 						} else {
-							playToggle.setText("Pause");
+							playStatus = 1;
 							songTime = 0;
 							seekBar.setValue(0);
 							if (songNum < (songList.size() - 1)) {
@@ -443,7 +444,7 @@ public class MusicPlayer {
 					songTime = 0;
 					seekBar.setValue(0);
 					countTime = false;
-					playToggle.setText("Play");
+					playStatus = 0;
 					titleLabel.setText("");
 					titleLabel.repaint();
 				}
@@ -454,34 +455,41 @@ public class MusicPlayer {
 		c.gridx = 2;
 
 		infoPanel.add(playToggle, c);
-		playToggle.setText("Pause");
 		playToggle.setBackground(grayBack);
 		playToggle.setForeground(Color.red);
+		playToggle.setIcon(new ImageIcon(resizeArtwork(MusicControls.playImage, BufferedImage.TYPE_INT_ARGB, 40)));
 		if (initial) {
+			playStatus = 0;
 			playToggle.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					if (playToggle.getText().equals("Pause")) {
-						playToggle.setText("Play");
-						pause = true;
-						player.stop();
-					} else {
-						playToggle.setText("Pause");
-						pause = false;
-
-						if (!inPlaylist) {
-							playSong(songFile.getName(), (int) (songTime * songFPS), false);
-						} else {
-							playSong(songFile.getName(), (int) (songTime * songFPS), true);
-						}
-
-						System.out.println("First: " + songTime * songFPS + "    Rounded: " + (int) (songTime * songFPS));
-						countTime = true;
-					}
+					playToggleActions();
 				}
 			});
 		}
 
 		return infoPanel;
+	}
+	
+	public void playToggleActions(){
+		if (playStatus == 1) {
+			playStatus = 0;
+			pause = true;
+			player.stop();
+		} else {
+			playStatus = 1;
+			pause = false;
+
+			if (!inPlaylist && !initialPlay) {
+				playSong(songFile.getName(), (int) (songTime * songFPS), false);
+			} else if(!inPlaylist && initialPlay){
+				playSong(songButtons.get(0).getText(), 0, false);
+			}else {
+				playSong(songFile.getName(), (int) (songTime * songFPS), true);
+			}
+
+			System.out.println("First: " + songTime * songFPS + "    Rounded: " + (int) (songTime * songFPS));
+			countTime = true;
+		}
 	}
 
 	int time = 0;
@@ -846,9 +854,12 @@ public class MusicPlayer {
 	}
 
 	public void playSong(String text, int startTime, boolean inPlaylist) {
-		playing = true;
 		songFile = new File(musicDirectory + "/" + text);
 		System.out.println("Song File: " + songFile);
+		
+		playStatus = 1;
+		initialPlay = false;
+		
 
 		if (player != null) {
 			player.close();

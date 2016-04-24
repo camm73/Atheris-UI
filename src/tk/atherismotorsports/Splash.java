@@ -1,5 +1,6 @@
 package tk.atherismotorsports;
 
+import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -112,6 +113,10 @@ public class Splash extends Canvas {
 				main.frame.setVisible(false);
 				main.musicPlayer = new MusicPlayer(main);
 				main.musicPlayer.frame.setVisible(false);
+				main.panel.remove(main.getBottomPanel());
+				main.panel.add(main.getBottomPanel(), BorderLayout.SOUTH);
+				main.panel.repaint();
+				main.panel.revalidate();
 				main.fxmap = new FxMap(main);
 				//main.map = new Map(main);
 				main.camera = new BackupCamera(main);

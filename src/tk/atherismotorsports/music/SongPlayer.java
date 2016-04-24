@@ -21,6 +21,7 @@ public class SongPlayer implements Runnable {
 		this.player = player;
 		this.musicPlayer = mp;
 		this.startTime = startTime;
+		System.out.println("Creating Playback Listeners");
 		if (!inPlaylist) {
 			setRegPlaybackListener();
 		} else {
