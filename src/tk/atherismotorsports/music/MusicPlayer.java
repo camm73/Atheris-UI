@@ -125,6 +125,7 @@ public class MusicPlayer {
 	public SongPlayer sp;
 	public MusicPlayer musicPlayer;
 	public PlaylistManager manager;
+	public MusicControls musicControls;
 
 	public MusicPlayer(Main main) {
 		this.main = main;
@@ -240,6 +241,16 @@ public class MusicPlayer {
 			e.printStackTrace();
 		}
 	}
+	
+	public void loadImageIcons(){
+		musicControls = main.musicControls;
+		if(musicControls != null){
+			skipButton.setIcon(new ImageIcon(resizeArtwork(musicControls.skipForwardImage, BufferedImage.TYPE_INT_ARGB, 40)));
+			playToggle.setIcon(new ImageIcon(resizeArtwork(musicControls.playImage, BufferedImage.TYPE_INT_ARGB, 40)));
+		}else{
+			System.out.println("MusicControls is null");
+		}
+	}
 
 	public void loadSongButtons() {
 		for (int i = 0; i < songList.size(); i++) {
@@ -347,6 +358,8 @@ public class MusicPlayer {
 	public JComponent getInfoPanel() {
 		infoPanel = new JPanel(new GridBagLayout());
 		infoPanel.setBackground(grayBack);
+		
+		loadImageIcons();
 
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 1;
@@ -389,43 +402,10 @@ public class MusicPlayer {
 		infoPanel.add(skipButton, c);
 		skipButton.setBackground(grayBack);
 		skipButton.setForeground(Color.red);
-		skipButton.setIcon(new ImageIcon(resizeArtwork(MusicControls.skipForwardImage, BufferedImage.TYPE_INT_ARGB, 40)));
 		if (initial) {
 			skipButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					if (!inPlaylist) {
-						if (!pause) {
-							player.stop();
-							seekBar.setValue(0);
-						} else {
-							playStatus = 1;
-							songTime = 0;
-							seekBar.setValue(0);
-							if (songNum < (songList.size() - 1)) {
-								songNum++;
-								playSong(songList.get(songNum).getName(), 0, false);
-							} else if (songNum == (songList.size() - 1)) {
-								songNum = 0;
-								playSong(songList.get(songNum).getName(), 0, false);
-							}
-						}
-					} else {
-						if (!pause) {
-							player.stop();
-							seekBar.setValue(0); //may not be necessary
-						} else {
-							playStatus = 1;
-							songTime = 0;
-							seekBar.setValue(0);
-							if (songNum < (songList.size() - 1)) {
-								songNum++;
-								playSong(songList.get(songNum).getName(), 0, true);
-							} else if (songNum == (songList.size() - 1)) {
-								songNum = 0;
-								playSong(songList.get(songNum).getName(), 0, true);
-							}
-						}
-					}
+					skipForwardActions();
 				}
 			});
 		}
@@ -439,14 +419,7 @@ public class MusicPlayer {
 		if (initial) {
 			stopButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					// player.stop();
-					player.close();
-					songTime = 0;
-					seekBar.setValue(0);
-					countTime = false;
-					playStatus = 0;
-					titleLabel.setText("");
-					titleLabel.repaint();
+					stopActions();
 				}
 			});
 		}
@@ -457,7 +430,6 @@ public class MusicPlayer {
 		infoPanel.add(playToggle, c);
 		playToggle.setBackground(grayBack);
 		playToggle.setForeground(Color.red);
-		playToggle.setIcon(new ImageIcon(resizeArtwork(MusicControls.playImage, BufferedImage.TYPE_INT_ARGB, 40)));
 		if (initial) {
 			playStatus = 0;
 			playToggle.addActionListener(new ActionListener() {
@@ -490,6 +462,78 @@ public class MusicPlayer {
 			System.out.println("First: " + songTime * songFPS + "    Rounded: " + (int) (songTime * songFPS));
 			countTime = true;
 		}
+	}
+	
+	public void skipForwardActions(){
+		if (!inPlaylist) {
+			if (!pause) {
+				player.stop();
+				seekBar.setValue(0);
+			} else {
+				playStatus = 1;
+				songTime = 0;
+				seekBar.setValue(0);
+				if (songNum < (songList.size() - 1)) {
+					songNum++;
+					playSong(songList.get(songNum).getName(), 0, false);
+				} else if (songNum == (songList.size() - 1)) {
+					songNum = 0;
+					playSong(songList.get(songNum).getName(), 0, false);
+				}
+			}
+		} else {
+			if (!pause) {
+				player.stop();
+				seekBar.setValue(0); //may not be necessary
+			} else {
+				playStatus = 1;
+				songTime = 0;
+				seekBar.setValue(0);
+				if (songNum < (songList.size() - 1)) {
+					songNum++;
+					playSong(songList.get(songNum).getName(), 0, true);
+				} else if (songNum == (songList.size() - 1)) {
+					songNum = 0;
+					playSong(songList.get(songNum).getName(), 0, true);
+				}
+			}
+		}
+	}
+	
+	public void skipBackActions(){
+		if (!pause) {
+			player.stop();
+			seekBar.setValue(0);
+		} else {
+			playStatus = 1;
+			songTime = 0;
+			seekBar.setValue(0);
+			if (songNum <= (songList.size() - 1) && songNum != 0) {
+				songNum--;
+				if(!inPlaylist){
+					playSong(songList.get(songNum).getName(), 0, false);
+				}else{
+					playSong(songList.get(songNum).getName(), 0, true);
+				}
+			} else if (songNum == 0) {
+				songNum = (songList.size() - 1);
+				if(!inPlaylist){
+					playSong(songList.get(songNum).getName(), 0, false);
+				}else{
+					playSong(songList.get(songNum).getName(), 0, true);
+				}
+			}
+		}
+	}
+	
+	public void stopActions(){
+		player.close();
+		songTime = 0;
+		seekBar.setValue(0);
+		countTime = false;
+		playStatus = 0;
+		titleLabel.setText("");
+		titleLabel.repaint();
 	}
 
 	int time = 0;

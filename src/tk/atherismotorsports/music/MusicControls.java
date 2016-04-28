@@ -22,9 +22,9 @@ public class MusicControls extends JPanel{
 	public JButton skipForward = new JButton();
 	public JButton skipBackward = new JButton();
 	
-	public static BufferedImage playImage;
-	public static BufferedImage skipForwardImage;
-	public static BufferedImage skipBackwardImage;
+	public BufferedImage playImage;
+	public BufferedImage skipForwardImage;
+	public BufferedImage skipBackwardImage;
 	
 	public Main main;
 	public MusicPlayer musicPlayer;
@@ -51,7 +51,7 @@ public class MusicControls extends JPanel{
 		add(skipBackward, c);
 		skipBackward.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				//TODO create skip back method; stop, then change current and play again
+				
 			}
 		});
 		
@@ -75,7 +75,7 @@ public class MusicControls extends JPanel{
 		add(skipForward, c);
 		skipForward.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				
+				musicPlayer.skipForwardActions();
 			}
 		});
 	}

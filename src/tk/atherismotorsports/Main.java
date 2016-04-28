@@ -77,6 +77,7 @@ public class Main implements Runnable {
 	public Map map;
 	public FxMap fxmap;
 	public InternetBrowser inetBrowser;
+	public MusicControls musicControls;
 
 	public Main() {
 		main = this;
@@ -149,7 +150,7 @@ public class Main implements Runnable {
 		bottomPanel.setBackground(MusicPlayer.grayBack);
 
 		if (musicPlayer != null) {
-			bottomPanel.add(new MusicControls(this), BorderLayout.WEST);
+			bottomPanel.add(musicControls = new MusicControls(this), BorderLayout.WEST);
 		}
 
 		Dimension songLabelSize = new Dimension(700, 40);
