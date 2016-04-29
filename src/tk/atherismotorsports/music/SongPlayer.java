@@ -34,21 +34,30 @@ public class SongPlayer implements Runnable {
 		player.setPlayBackListener(new PlaybackListener() {
 			public void playbackFinished(PlaybackEvent e) {
 				if (!musicPlayer.pause) {
-					if (musicPlayer.songNum < (musicPlayer.songList.size() - 1)) {
+					if (musicPlayer.songNum < (musicPlayer.songList.size() - 1) || (musicPlayer.songNum == (musicPlayer.playlistSongs.size() - 1) && musicPlayer.skipBack)) {
 						System.out.println("Song isn't the last one in the list");
-						musicPlayer.songNum++;
+						if(!musicPlayer.skipBack){
+							musicPlayer.songNum++;
+						}else{
+							musicPlayer.songNum--;
+						}
 						musicPlayer.songTime = 0;
 						musicPlayer.playSong(musicPlayer.songList.get(musicPlayer.songNum).getName(), 0, false);
-					} else if (musicPlayer.songNum == (musicPlayer.songList.size() - 1)) {
+					} else if (musicPlayer.songNum == (musicPlayer.songList.size() - 1) && !musicPlayer.skipBack) {
 						System.out.println("Was last song; skipping to the beginning");
 						musicPlayer.songNum = 0;
 						musicPlayer.songTime = 0;
 						musicPlayer.playSong(musicPlayer.songList.get(musicPlayer.songNum).getName(), 0, false);
+					}else if(musicPlayer.songNum == 0 && musicPlayer.skipBack){
+						musicPlayer.songNum = musicPlayer.playlistSongs.size() - 1;
+						musicPlayer.songTime = 0;
+						musicPlayer.playSong(musicPlayer.playlistSongs.get(musicPlayer.songNum), 0, false);
 					}
 
 				} else if (musicPlayer.pause) {
 					musicPlayer.countTime = false;
 				}
+				musicPlayer.skipBack = false;
 			}
 		});
 	}
@@ -58,20 +67,29 @@ public class SongPlayer implements Runnable {
 		player.setPlayBackListener(new PlaybackListener() {
 			public void playbackFinished(PlaybackEvent e) {
 				if (!musicPlayer.pause) {
-					if (musicPlayer.songNum < (musicPlayer.playlistSongs.size() - 1)) {
+					if (musicPlayer.songNum < (musicPlayer.playlistSongs.size() - 1) || (musicPlayer.songNum == (musicPlayer.playlistSongs.size() - 1) && musicPlayer.skipBack)) {
 						System.out.println("Song isn't the last one in the list");
-						musicPlayer.songNum++;
+						if(!musicPlayer.skipBack){
+							musicPlayer.songNum++;
+						}else{
+							musicPlayer.songNum--;
+						}
 						musicPlayer.songTime = 0;
 						musicPlayer.playSong(musicPlayer.playlistSongs.get(musicPlayer.songNum), 0, true);
-					} else if (musicPlayer.songNum == (musicPlayer.playlistSongs.size() - 1)) {
+					} else if (musicPlayer.songNum == (musicPlayer.playlistSongs.size() - 1) && ! musicPlayer.skipBack) {
 						System.out.println("Was last song; skipping to the beginning");
 						musicPlayer.songNum = 0;
+						musicPlayer.songTime = 0;
+						musicPlayer.playSong(musicPlayer.playlistSongs.get(musicPlayer.songNum), 0, true);
+					}else if(musicPlayer.songNum == 0 && musicPlayer.skipBack){
+						musicPlayer.songNum = musicPlayer.playlistSongs.size() - 1;
 						musicPlayer.songTime = 0;
 						musicPlayer.playSong(musicPlayer.playlistSongs.get(musicPlayer.songNum), 0, true);
 					}
 				} else {
 					musicPlayer.countTime = false;
 				}
+				musicPlayer.skipBack = false;
 			}
 		});
 	}

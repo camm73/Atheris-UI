@@ -69,7 +69,8 @@ public class MusicPlayer {
 	public JLabel albumLabel;
 	public JLabel titleLabel = new JLabel();
 	public JButton backButton = new JButton();
-	public JButton skipButton = new JButton();
+	public JButton skipForwardButton = new JButton();
+	public JButton skipBackButton = new JButton();
 	public JButton playToggle = new JButton();
 	public JButton stopButton = new JButton();
 	public JButton createPlaylistButton = new JButton("Create Playist");
@@ -77,6 +78,11 @@ public class MusicPlayer {
 	public JButton songListViewButton = new JButton("Songs");
 	public Dimension buttonSize = new Dimension(115, 40);
 	public JProgressBar seekBar;
+	
+	public BufferedImage playImage;
+	public BufferedImage skipForwardImage;
+	public BufferedImage skipBackwardImage;
+	public BufferedImage stopImage;
 
 	public File musicDirectory;
 	public File playlistDirectory;
@@ -118,6 +124,7 @@ public class MusicPlayer {
 	public boolean initialPlay = true;
 	public boolean inPlaylist = false;
 	public boolean openPlaylist = false;
+	public boolean skipBack = false;
 
 	public Main main;
 	public AdvancedPlayer player;
@@ -146,6 +153,8 @@ public class MusicPlayer {
 		loadFiles();
 		loadArtwork();
 		loadSongButtons();
+		loadButtonImages();
+		loadImageIcons();
 		getPlaylistButtons();
 		setSongTitle();
 		setSongScroll();
@@ -243,13 +252,10 @@ public class MusicPlayer {
 	}
 	
 	public void loadImageIcons(){
-		musicControls = main.musicControls;
-		if(musicControls != null){
-			skipButton.setIcon(new ImageIcon(resizeArtwork(musicControls.skipForwardImage, BufferedImage.TYPE_INT_ARGB, 40)));
-			playToggle.setIcon(new ImageIcon(resizeArtwork(musicControls.playImage, BufferedImage.TYPE_INT_ARGB, 40)));
-		}else{
-			System.out.println("MusicControls is null");
-		}
+		skipForwardButton.setIcon(new ImageIcon(skipForwardImage));
+		skipBackButton.setIcon(new ImageIcon(skipBackwardImage));
+		playToggle.setIcon(new ImageIcon(playImage));
+		stopButton.setIcon(new ImageIcon(stopImage));
 	}
 
 	public void loadSongButtons() {
@@ -358,8 +364,6 @@ public class MusicPlayer {
 	public JComponent getInfoPanel() {
 		infoPanel = new JPanel(new GridBagLayout());
 		infoPanel.setBackground(grayBack);
-		
-		loadImageIcons();
 
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 1;
@@ -397,22 +401,37 @@ public class MusicPlayer {
 		infoPanel.add(seekBar, c);
 
 		c.gridy++;
-		c.gridx = 0;
+		c.gridx = 2;
 
-		infoPanel.add(skipButton, c);
-		skipButton.setBackground(grayBack);
-		skipButton.setForeground(Color.red);
+		infoPanel.add(skipForwardButton, c);
+		skipForwardButton.setBackground(grayBack);
+		skipForwardButton.setForeground(Color.red);
 		if (initial) {
-			skipButton.addActionListener(new ActionListener() {
+			skipForwardButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					skipForwardActions();
 				}
 			});
 		}
+		
+		c.gridx = 0;
+		
+		infoPanel.add(skipBackButton, c);
+		skipBackButton.setBackground(grayBack);
+		skipBackButton.setForeground(Color.red);
+		if(initial){
+			skipBackButton.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					System.out.println(songNum);
+					skipBackActions();
+					System.out.println(songNum);
+				}
+			});
+		}
 
 		c.gridy++;
+		c.gridx = 1;
 
-		stopButton.setText("Stop");
 		stopButton.setBackground(grayBack);
 		stopButton.setForeground(Color.red);
 		infoPanel.add(stopButton, c);
@@ -425,7 +444,7 @@ public class MusicPlayer {
 		}
 
 		c.gridy--;
-		c.gridx = 2;
+		c.gridx = 1;
 
 		infoPanel.add(playToggle, c);
 		playToggle.setBackground(grayBack);
@@ -461,6 +480,17 @@ public class MusicPlayer {
 
 			System.out.println("First: " + songTime * songFPS + "    Rounded: " + (int) (songTime * songFPS));
 			countTime = true;
+		}
+	}
+	
+	public void loadButtonImages(){
+		try{
+			playImage = ImageIO.read(MusicControls.class.getResource("/images/playPauseButton.png"));
+			skipForwardImage = ImageIO.read(MusicControls.class.getResource("/images/skipForwardButton.png"));
+			skipBackwardImage = ImageIO.read(MusicControls.class.getResource("/images/skipBackButton.png"));			
+			stopImage = ImageIO.read(MusicControls.class.getResource("/images/stopButton.png"));
+		}catch(IOException e){
+			e.printStackTrace();
 		}
 	}
 	
@@ -503,6 +533,8 @@ public class MusicPlayer {
 	public void skipBackActions(){
 		if (!pause) {
 			player.stop();
+			//need to add a boolean here to skip backwards
+			skipBack = true;
 			seekBar.setValue(0);
 		} else {
 			playStatus = 1;

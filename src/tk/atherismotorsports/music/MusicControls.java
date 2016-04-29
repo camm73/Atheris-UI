@@ -22,10 +22,6 @@ public class MusicControls extends JPanel{
 	public JButton skipForward = new JButton();
 	public JButton skipBackward = new JButton();
 	
-	public BufferedImage playImage;
-	public BufferedImage skipForwardImage;
-	public BufferedImage skipBackwardImage;
-	
 	public Main main;
 	public MusicPlayer musicPlayer;
 	private Dimension panelSize = new Dimension(200, 40);
@@ -33,7 +29,6 @@ public class MusicControls extends JPanel{
 	public MusicControls(Main main){
 		this.main = main;
 		this.musicPlayer = main.musicPlayer;
-		loadButtonImages();
 		setBackground(MusicPlayer.grayBack);
 		setLayout(new GridBagLayout());
 		setMaximumSize(panelSize);
@@ -47,11 +42,12 @@ public class MusicControls extends JPanel{
 		
 		skipBackward.setBackground(MusicPlayer.grayBack);
 		skipBackward.setForeground(Color.red);
-		skipBackward.setIcon(new ImageIcon(skipBackwardImage));
+		skipBackward.setIcon(new ImageIcon(musicPlayer.skipBackwardImage));
 		add(skipBackward, c);
 		skipBackward.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				
+				musicPlayer.skipBackActions();
+				main.musicOpen = true;
 			}
 		});
 		
@@ -59,11 +55,12 @@ public class MusicControls extends JPanel{
 		
 		playPause.setBackground(MusicPlayer.grayBack);
 		playPause.setForeground(Color.red);
-		playPause.setIcon(new ImageIcon(playImage));
+		playPause.setIcon(new ImageIcon(musicPlayer.playImage));
 		add(playPause, c);
 		playPause.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				musicPlayer.playToggleActions();
+				main.musicOpen = true;
 			}
 		});
 		
@@ -71,23 +68,14 @@ public class MusicControls extends JPanel{
 		
 		skipForward.setBackground(MusicPlayer.grayBack);
 		skipForward.setForeground(Color.red);
-		skipForward.setIcon(new ImageIcon(skipForwardImage));
+		skipForward.setIcon(new ImageIcon(musicPlayer.skipForwardImage));
 		add(skipForward, c);
 		skipForward.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				musicPlayer.skipForwardActions();
+				main.musicOpen = true;
 			}
 		});
-	}
-	
-	public void loadButtonImages(){
-		try{
-			playImage = ImageIO.read(MusicControls.class.getResource("/images/playPauseButton.png"));
-			skipForwardImage = ImageIO.read(MusicControls.class.getResource("/images/skipForwardButton.png"));
-			skipBackwardImage = ImageIO.read(MusicControls.class.getResource("/images/skipBackButton.png"));			
-		}catch(IOException e){
-			e.printStackTrace();
-		}
 	}
 
 }
