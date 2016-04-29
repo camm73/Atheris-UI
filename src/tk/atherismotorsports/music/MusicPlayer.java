@@ -422,9 +422,7 @@ public class MusicPlayer {
 		if(initial){
 			skipBackButton.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent e){
-					System.out.println(songNum);
 					skipBackActions();
-					System.out.println(songNum);
 				}
 			});
 		}
