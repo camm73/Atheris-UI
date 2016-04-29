@@ -532,6 +532,7 @@ public class MusicPlayer {
 	
 	public void skipBackActions(){
 		if (!pause) {
+			skipBack = true;
 			player.stop();
 			//need to add a boolean here to skip backwards
 			skipBack = true;

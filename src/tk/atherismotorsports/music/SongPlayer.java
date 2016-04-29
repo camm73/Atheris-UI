@@ -34,24 +34,28 @@ public class SongPlayer implements Runnable {
 		player.setPlayBackListener(new PlaybackListener() {
 			public void playbackFinished(PlaybackEvent e) {
 				if (!musicPlayer.pause) {
-					if (musicPlayer.songNum < (musicPlayer.songList.size() - 1) || (musicPlayer.songNum == (musicPlayer.playlistSongs.size() - 1) && musicPlayer.skipBack)) {
+					if ((musicPlayer.songNum < (musicPlayer.songList.size() - 1) && !musicPlayer.skipBack)) {
 						System.out.println("Song isn't the last one in the list");
-						if(!musicPlayer.skipBack){
-							musicPlayer.songNum++;
-						}else{
-							musicPlayer.songNum--;
-						}
+						musicPlayer.songNum++;
 						musicPlayer.songTime = 0;
 						musicPlayer.playSong(musicPlayer.songList.get(musicPlayer.songNum).getName(), 0, false);
-					} else if (musicPlayer.songNum == (musicPlayer.songList.size() - 1) && !musicPlayer.skipBack) {
+					}else if(musicPlayer.songNum <= (musicPlayer.songList.size() - 1) && musicPlayer.skipBack && musicPlayer.songNum > 0){
+						System.out.println("Song isn't the last one in the list");
+						musicPlayer.songNum--;
+						musicPlayer.songTime = 0;
+						musicPlayer.playSong(musicPlayer.songList.get(musicPlayer.songNum).getName(), 0, false);
+					}else if (musicPlayer.songNum == (musicPlayer.songList.size() - 1) && !musicPlayer.skipBack) {
 						System.out.println("Was last song; skipping to the beginning");
 						musicPlayer.songNum = 0;
 						musicPlayer.songTime = 0;
 						musicPlayer.playSong(musicPlayer.songList.get(musicPlayer.songNum).getName(), 0, false);
 					}else if(musicPlayer.songNum == 0 && musicPlayer.skipBack){
-						musicPlayer.songNum = musicPlayer.playlistSongs.size() - 1;
+						musicPlayer.songNum = (musicPlayer.songList.size() - 1);
 						musicPlayer.songTime = 0;
-						musicPlayer.playSong(musicPlayer.playlistSongs.get(musicPlayer.songNum), 0, false);
+						System.out.println("Songnum: " + musicPlayer.songNum + " after the shift to end of songList");
+						musicPlayer.playSong(musicPlayer.songList.get(musicPlayer.songNum).getName(), 0, false);
+					}else{
+						System.out.println("None of the above --- " + (musicPlayer.songList.size() - 1));
 					}
 
 				} else if (musicPlayer.pause) {
