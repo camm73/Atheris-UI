@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -73,16 +74,22 @@ public class MusicPlayer {
 	public JButton skipBackButton = new JButton();
 	public JButton playToggle = new JButton();
 	public JButton stopButton = new JButton();
+	public JButton volumeUpButton = new JButton();
+	public JButton volumeDownButton = new JButton();
+	public JButton muteButton = new JButton();
 	public JButton createPlaylistButton = new JButton("Create Playist");
 	public JButton playlistViewButton = new JButton("Playlists");
 	public JButton songListViewButton = new JButton("Songs");
 	public Dimension buttonSize = new Dimension(115, 40);
 	public JProgressBar seekBar;
-	
+
 	public BufferedImage playImage;
 	public BufferedImage skipForwardImage;
 	public BufferedImage skipBackwardImage;
 	public BufferedImage stopImage;
+	public BufferedImage volumeUpImage;
+	public BufferedImage volumeDownImage;
+	public BufferedImage muteImage;
 
 	public File musicDirectory;
 	public File playlistDirectory;
@@ -132,7 +139,7 @@ public class MusicPlayer {
 	public SongPlayer sp;
 	public MusicPlayer musicPlayer;
 	public PlaylistManager manager;
-	public MusicControls musicControls;
+	public MusicControlPanel musicControlPanel;
 
 	public MusicPlayer(Main main) {
 		this.main = main;
@@ -251,11 +258,28 @@ public class MusicPlayer {
 		}
 	}
 	
-	public void loadImageIcons(){
+	public void loadButtonImages() {
+		try {
+			playImage = ImageIO.read(MusicPlayer.class.getResource("/images/playPauseButton.png"));
+			skipForwardImage = ImageIO.read(MusicPlayer.class.getResource("/images/skipForwardButton.png"));
+			skipBackwardImage = ImageIO.read(MusicPlayer.class.getResource("/images/skipBackButton.png"));
+			stopImage = ImageIO.read(MusicPlayer.class.getResource("/images/stopButton.png"));
+			volumeUpImage = ImageIO.read(MusicPlayer.class.getResource("/images/volumeUpImage.png"));
+			volumeDownImage = ImageIO.read(MusicPlayer.class.getResource("/images/volumeDownImage.png"));
+			muteImage = ImageIO.read(MusicPlayer.class.getResource("/images/muteImage.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void loadImageIcons() {
 		skipForwardButton.setIcon(new ImageIcon(skipForwardImage));
 		skipBackButton.setIcon(new ImageIcon(skipBackwardImage));
 		playToggle.setIcon(new ImageIcon(playImage));
 		stopButton.setIcon(new ImageIcon(stopImage));
+		volumeUpButton.setIcon(new ImageIcon(volumeUpImage));
+		volumeDownButton.setIcon(new ImageIcon(volumeDownImage));
+		muteButton.setIcon(new ImageIcon(muteImage));
 	}
 
 	public void loadSongButtons() {
@@ -306,10 +330,10 @@ public class MusicPlayer {
 		playlistViewButton.setBackground(grayBack);
 		songListViewButton.setForeground(Color.red);
 		playlistViewButton.setForeground(Color.red);
-		
+
 		songListViewButton.setFont(new Font("Arial", Font.PLAIN, 16));
 		playlistViewButton.setFont(new Font("Arial", Font.PLAIN, 16));
-		
+
 		playlistViewButton.setPreferredSize(buttonSize);
 		songListViewButton.setPreferredSize(buttonSize);
 		GridBagConstraints c = new GridBagConstraints();
@@ -368,7 +392,7 @@ public class MusicPlayer {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = 0;
-		c.anchor = GridBagConstraints.NORTH;
+		c.anchor = GridBagConstraints.CENTER;
 
 		titleLabel.setForeground(Color.RED);
 		titleLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -413,15 +437,15 @@ public class MusicPlayer {
 				}
 			});
 		}
-		
+
 		c.gridx = 0;
-		
+
 		infoPanel.add(skipBackButton, c);
 		skipBackButton.setBackground(grayBack);
 		skipBackButton.setForeground(Color.red);
-		if(initial){
-			skipBackButton.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e){
+		if (initial) {
+			skipBackButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
 					skipBackActions();
 				}
 			});
@@ -456,10 +480,41 @@ public class MusicPlayer {
 			});
 		}
 
+		c.gridy += 2;
+		c.gridx = 0;
+		
+		volumeDownButton.setBackground(grayBack);
+		infoPanel.add(volumeDownButton, c);
+		volumeDownButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				MusicVolume.lowerVolume();
+			}
+		});
+		
+		c.gridx++;
+		
+		muteButton.setBackground(grayBack);
+		infoPanel.add(muteButton, c);
+		muteButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				MusicVolume.toggleMute();
+			}
+		});
+		
+		c.gridx++;
+		
+		volumeUpButton.setBackground(grayBack);
+		infoPanel.add(volumeUpButton, c);
+		volumeUpButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				MusicVolume.raiseVolume();
+			}
+		});
+		
 		return infoPanel;
 	}
-	
-	public void playToggleActions(){
+
+	public void playToggleActions() {
 		if (playStatus == 1) {
 			playStatus = 0;
 			pause = true;
@@ -470,9 +525,9 @@ public class MusicPlayer {
 
 			if (!inPlaylist && !initialPlay) {
 				playSong(songFile.getName(), (int) (songTime * songFPS), false);
-			} else if(!inPlaylist && initialPlay){
+			} else if (!inPlaylist && initialPlay) {
 				playSong(songButtons.get(0).getText(), 0, false);
-			}else {
+			} else {
 				playSong(songFile.getName(), (int) (songTime * songFPS), true);
 			}
 
@@ -480,19 +535,8 @@ public class MusicPlayer {
 			countTime = true;
 		}
 	}
-	
-	public void loadButtonImages(){
-		try{
-			playImage = ImageIO.read(MusicControls.class.getResource("/images/playPauseButton.png"));
-			skipForwardImage = ImageIO.read(MusicControls.class.getResource("/images/skipForwardButton.png"));
-			skipBackwardImage = ImageIO.read(MusicControls.class.getResource("/images/skipBackButton.png"));			
-			stopImage = ImageIO.read(MusicControls.class.getResource("/images/stopButton.png"));
-		}catch(IOException e){
-			e.printStackTrace();
-		}
-	}
-	
-	public void skipForwardActions(){
+
+	public void skipForwardActions() {
 		if (!inPlaylist) {
 			if (!pause) {
 				player.stop();
@@ -527,8 +571,8 @@ public class MusicPlayer {
 			}
 		}
 	}
-	
-	public void skipBackActions(){
+
+	public void skipBackActions() {
 		if (!pause) {
 			skipBack = true;
 			player.stop();
@@ -541,23 +585,23 @@ public class MusicPlayer {
 			seekBar.setValue(0);
 			if (songNum <= (songList.size() - 1) && songNum != 0) {
 				songNum--;
-				if(!inPlaylist){
+				if (!inPlaylist) {
 					playSong(songList.get(songNum).getName(), 0, false);
-				}else{
+				} else {
 					playSong(songList.get(songNum).getName(), 0, true);
 				}
 			} else if (songNum == 0) {
 				songNum = (songList.size() - 1);
-				if(!inPlaylist){
+				if (!inPlaylist) {
 					playSong(songList.get(songNum).getName(), 0, false);
-				}else{
+				} else {
 					playSong(songList.get(songNum).getName(), 0, true);
 				}
 			}
 		}
 	}
-	
-	public void stopActions(){
+
+	public void stopActions() {
 		player.close();
 		songTime = 0;
 		seekBar.setValue(0);
@@ -726,7 +770,6 @@ public class MusicPlayer {
 		c1.gridx = 0;
 		c1.gridy = 0;
 		c1.weightx = 1.0;
-
 
 		Dimension buttonSize = new Dimension(140, 40);
 		createPlaylistButton.setPreferredSize(buttonSize);
@@ -931,10 +974,9 @@ public class MusicPlayer {
 	public void playSong(String text, int startTime, boolean inPlaylist) {
 		songFile = new File(musicDirectory + "/" + text);
 		System.out.println("Song File: " + songFile);
-		
+
 		playStatus = 1;
 		initialPlay = false;
-		
 
 		if (player != null) {
 			player.close();

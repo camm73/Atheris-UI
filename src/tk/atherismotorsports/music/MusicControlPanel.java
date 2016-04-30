@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 
 import tk.atherismotorsports.Main;
 
-public class MusicControls extends JPanel{
+public class MusicControlPanel extends JPanel{
 	
 	public JButton playPause = new JButton();
 	public JButton skipForward = new JButton();
@@ -24,9 +24,9 @@ public class MusicControls extends JPanel{
 	
 	public Main main;
 	public MusicPlayer musicPlayer;
-	private Dimension panelSize = new Dimension(200, 40);
+	private Dimension panelSize = new Dimension(150, 40);
 	
-	public MusicControls(Main main){
+	public MusicControlPanel(Main main){
 		this.main = main;
 		this.musicPlayer = main.musicPlayer;
 		setBackground(MusicPlayer.grayBack);

@@ -27,8 +27,9 @@ import tk.atherismotorsports.camera.BackupCamera;
 import tk.atherismotorsports.internet.InternetBrowser;
 import tk.atherismotorsports.map.FxMap;
 import tk.atherismotorsports.map.Map;
-import tk.atherismotorsports.music.MusicControls;
+import tk.atherismotorsports.music.MusicControlPanel;
 import tk.atherismotorsports.music.MusicPlayer;
+import tk.atherismotorsports.music.VolumeControlPanel;
 
 public class Main implements Runnable {
 
@@ -77,7 +78,8 @@ public class Main implements Runnable {
 	public Map map;
 	public FxMap fxmap;
 	public InternetBrowser inetBrowser;
-	public MusicControls musicControls;
+	public MusicControlPanel musicControlPanel;
+	public VolumeControlPanel volumeControlPanel;
 
 	public Main() {
 		main = this;
@@ -150,7 +152,7 @@ public class Main implements Runnable {
 		bottomPanel.setBackground(MusicPlayer.grayBack);
 
 		if (musicPlayer != null) {
-			bottomPanel.add(musicControls = new MusicControls(this), BorderLayout.WEST);
+			bottomPanel.add(musicControlPanel = new MusicControlPanel(this), BorderLayout.WEST);
 		}
 
 		Dimension songLabelSize = new Dimension(700, 40);
@@ -161,6 +163,10 @@ public class Main implements Runnable {
 		songLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		songLabel.setFont(new Font("STENCIL", Font.PLAIN, 24));
 		bottomPanel.add(songLabel, BorderLayout.CENTER);
+		
+		if(musicPlayer != null){
+			bottomPanel.add(volumeControlPanel = new VolumeControlPanel(this), BorderLayout.EAST);
+		}
 
 		return bottomPanel;
 	}
