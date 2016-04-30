@@ -12,6 +12,9 @@ Features:
   - Settings including theme personilization (coming soon)
   - User Profiles(coming soon)
   
+Prerequisites:
+  - Nircmd (Will function w/o this, but this is needed in order to have volume control)
+  
 Included Libraries:
   - JLayer
   - JxBrowser
