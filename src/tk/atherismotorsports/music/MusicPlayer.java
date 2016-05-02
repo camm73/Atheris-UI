@@ -538,7 +538,8 @@ public class MusicPlayer {
 
 	public void skipForwardActions() {
 		if (!inPlaylist) {
-			if (!pause) {
+			if (!pause && playStatus == 1) {
+				skipBack = true;
 				player.stop();
 				seekBar.setValue(0);
 			} else {
@@ -573,11 +574,9 @@ public class MusicPlayer {
 	}
 
 	public void skipBackActions() {
-		if (!pause) {
+		if (!pause && playStatus == 1) {
 			skipBack = true;
 			player.stop();
-			//need to add a boolean here to skip backwards
-			skipBack = true;
 			seekBar.setValue(0);
 		} else {
 			playStatus = 1;
