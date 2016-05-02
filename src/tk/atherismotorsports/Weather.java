@@ -1,16 +1,17 @@
 package tk.atherismotorsports;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Insets;
+import java.awt.BorderLayout;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
+import tk.atherismotorsports.music.MusicPlayer;
 
 public class Weather {
 	
@@ -18,13 +19,21 @@ public class Weather {
 	private final int HEIGHT = Main.HEIGHT;
 	
 	public JFrame weatherFrame;
+	public JPanel panel;
+	public JPanel topPanel;
+	public JPanel centerPanel;
+	
+	public JButton backButton = new JButton();
+	
 	private Main main;
 	
 	public boolean frameDone = false;
 
 	public Weather(Main main){
 		this.main = main;
+		content();
 		createFrame();
+		frameDone = true;
 	}
 	
 	public void createFrame(){
@@ -34,42 +43,41 @@ public class Weather {
 		weatherFrame.setLocationRelativeTo(null);
 		weatherFrame.setResizable(false);
 		weatherFrame.setUndecorated(true);
-		weatherFrame.add(new WeatherPanel());
-		//weatherFrame.setAlwaysOnTop(true);
+		weatherFrame.add(panel);
 		weatherFrame.setVisible(true);
 		frameDone = true;
 	}
 	
-	
-	class WeatherPanel extends JPanel{
-		
-		private static final long serialVersionUID = -4504295841389630389L;
-		Insets insets = this.getInsets();
-		JButton backButton = new JButton();
-
-		public WeatherPanel(){
-			setLayout(null);
-			backButton.setBackground(new Color(56, 56, 56));
-			backButton.setIcon(new ImageIcon(main.backImage));
-			
-			content();
-		}
-		
-		private void content(){
-			Dimension size = backButton.getPreferredSize();
-			backButton.setBounds(insets.left + 40, insets.top, size.width, size.height);
-			add(backButton);
-			backButton.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e){
-					weatherFrame.dispose();
-					}
-			});
-		}
-		
-		
-		public void paintComponent(Graphics g){
-			g.drawImage(main.backgroundImage, 0, 0, null);
-		}
-		
+	public void content(){
+		panel = new JPanel(new BorderLayout());
+		panel.add(getTopPanel(), BorderLayout.NORTH);
+		panel.add(getCenterPanel(), BorderLayout.CENTER);
 	}
+	
+	public JComponent getTopPanel(){
+		topPanel = new JPanel(new BorderLayout());
+		topPanel.setBackground(MusicPlayer.grayBack);
+		
+		backButton.setIcon(new ImageIcon(main.backImage));
+		backButton.setBackground(MusicPlayer.grayBack);
+		topPanel.add(backButton, BorderLayout.WEST);
+		backButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				main.frame.setAlwaysOnTop(true);
+				weatherFrame.dispose();
+			}
+		});
+		
+		return topPanel;
+	}
+	
+	public JComponent getCenterPanel(){
+		centerPanel = new JPanel(new GridBagLayout());
+		centerPanel.setBackground(MusicPlayer.grayBack);
+		
+		return centerPanel;
+	}
+	
+	
+	
 }

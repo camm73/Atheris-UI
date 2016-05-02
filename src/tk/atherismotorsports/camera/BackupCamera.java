@@ -36,6 +36,7 @@ public class BackupCamera {
 	public WebcamPanel webcamPanel;
 	public JPanel centerPanel;
 	public Dimension[] nonStandardResolutions;
+	public Thread webcamThread;
 
 	public BackupCamera(Main main) {
 		this.main = main;
@@ -65,8 +66,9 @@ public class BackupCamera {
 		topPanel.add(backButton, BorderLayout.WEST);
 		backButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				frame.setAlwaysOnTop(false);
 				main.frame.setAlwaysOnTop(true);
+				frame.dispose();
+				webcam.close();
 			}
 		});
 		return topPanel;
@@ -80,7 +82,7 @@ public class BackupCamera {
 				WebcamResolution.HD720.getSize()
 			};
 		
-		Thread webcamThread = new Thread(new Runnable(){
+		webcamThread = new Thread(new Runnable(){
 			public void run(){
 				webcam = Webcam.getDefault();
 				webcam.setCustomViewSizes(nonStandardResolutions);

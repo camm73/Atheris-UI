@@ -118,7 +118,7 @@ public class Splash extends Canvas {
 				main.panel.add(main.getBottomPanel(), BorderLayout.SOUTH);
 				main.fxmap = new FxMap(main);
 				//main.map = new Map(main);
-				main.camera = new BackupCamera(main);
+				//main.camera = new BackupCamera(main);
 				System.out.println("Done loading all preliminary things");
 			}
 			threadInitial = false;

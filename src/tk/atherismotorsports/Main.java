@@ -10,7 +10,11 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -25,6 +29,7 @@ import com.github.sarxos.webcam.Webcam;
 
 import tk.atherismotorsports.camera.BackupCamera;
 import tk.atherismotorsports.internet.InternetBrowser;
+import tk.atherismotorsports.json.JSONObject;
 import tk.atherismotorsports.map.FxMap;
 import tk.atherismotorsports.map.Map;
 import tk.atherismotorsports.music.MusicControlPanel;
@@ -63,6 +68,10 @@ public class Main implements Runnable {
 	public boolean cameraOpen = false;
 	public boolean browserOpen = false;
 	public Thread thread;
+	
+	public String city;
+	public String zipCode;
+	public String countryCode;
 
 	public int alpha = 25;
 	public boolean initial = true;
@@ -87,11 +96,39 @@ public class Main implements Runnable {
 		timeLabel = new JLabel("");
 		frame = new JFrame(title);
 		start();
+		getLocation();
 		loadImages();
 		app1 = new AppPanel1();
 		app2 = new AppPanel2();
 		loadPanel();
 		createFrame();
+	}
+
+	public void getLocation() {
+		try{
+		URL url = new URL("http://ip-api.com/json");
+		URLConnection connection = url.openConnection();
+
+		String line;
+		StringBuilder builder = new StringBuilder();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+		while ((line = reader.readLine()) != null) {
+			builder.append(line);
+		}
+
+		JSONObject json = new JSONObject(builder.toString());
+		String status = json.getString("status");
+		System.out.println("Location retrieval was: " + status);
+		if(status.equals("success")){
+			city = json.getString("city");
+			zipCode = json.getString("zip");
+			countryCode = json.getString("countryCode");
+		}else{
+			System.out.println("Failed to retreive location");
+		}
+		}catch(IOException e){
+			e.printStackTrace();
+		}
 	}
 
 	public synchronized void start() {
@@ -344,9 +381,10 @@ public class Main implements Runnable {
 			add(cameraButton, c);
 			cameraButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					frame.setAlwaysOnTop(false);
+					camera = new BackupCamera(main);
 					camera.frame.setAlwaysOnTop(true);
 					cameraOpen = true;
+					frame.setAlwaysOnTop(false);
 				}
 			});
 			Webcam wc = Webcam.getDefault();
