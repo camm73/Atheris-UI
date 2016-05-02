@@ -25,7 +25,7 @@ public abstract class MusicVolume {
 	
 	public static void toggleMute(){
 		try{
-			String command = "nircmd.exe mutesysvolume 2";
+			String command = "nircmd.exe setsysvolume 0";
 			Process p = Runtime.getRuntime().exec(command);
 		}catch(IOException e){
 			e.printStackTrace();
