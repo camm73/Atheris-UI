@@ -47,6 +47,11 @@ public class Weather {
 	public String conditions;
 	public String lowTemp;
 	public String highTemp;
+	public String humidity;
+	public String windSpeed;
+	public String windDirDegrees;
+	public String sunriseTime;
+	public String sunsetTime;
 
 	public boolean frameDone = false;
 
@@ -115,29 +120,49 @@ public class Weather {
 	}
 
 	public void getWeather() {
-		try {
-			URL url = new URL("http://api.openweathermap.org/data/2.5/weather?zip=" + zipCode + "," + countryCode + "&units=imperial" + "&APPID=" + weatherKey);
-			URLConnection connection = url.openConnection();
+		Thread weatherThread = new Thread(new Runnable() {
+			public void run() {
+				try {
+					URL url = new URL("http://api.openweathermap.org/data/2.5/weather?zip=" + zipCode + "," + countryCode + "&units=imperial" + "&APPID=" + weatherKey);
+					URLConnection connection = url.openConnection();
 
-			String line;
-			StringBuilder builder = new StringBuilder();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			while ((line = reader.readLine()) != null) {
-				builder.append(line);
-			}
+					String line;
+					StringBuilder builder = new StringBuilder();
+					BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+					while ((line = reader.readLine()) != null) {
+						builder.append(line);
+					}
 
-			JSONObject json = new JSONObject(builder.toString());
-			int status = json.getJSONObject("main").length();
-			if (status > 0) {
-				temperature = json.getJSONObject("main").get("temp").toString();
-				conditions = json.getJSONArray("weather").getJSONObject(0).getString("main");
-				//lowTemp = json.getString("main.temp_min");
-				//highTemp = json.getString("main.temp_max");
-			} else {
-				System.out.println("Failed to retreive weather");
+					JSONObject json = new JSONObject(builder.toString());
+					int status = json.getJSONObject("main").length();
+					if (status > 0) {
+						temperature = json.getJSONObject("main").get("temp").toString();
+						conditions = json.getJSONArray("weather").getJSONObject(0).getString("main");
+						lowTemp = json.getJSONObject("main").get("temp_min").toString();
+						highTemp = json.getJSONObject("main").get("temp_max").toString();
+						humidity = json.getJSONObject("main").get("humidity").toString();
+						windSpeed = json.getJSONObject("wind").get("speed").toString();
+						windDirDegrees = json.getJSONObject("wind").get("deg").toString();
+						sunriseTime = json.getJSONObject("sys").get("sunrise").toString();
+						//TODO need to add sunset time and pressure
+					} else {
+						System.out.println("Failed to retreive weather");
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		});
+
+		if (!weatherThread.isAlive()) {
+			weatherThread.start();
+		} else {
+			try {
+				weatherThread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			weatherThread.start();
 		}
 	}
 
