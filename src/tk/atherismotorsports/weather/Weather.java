@@ -3,20 +3,26 @@ package tk.atherismotorsports.weather;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
 import tk.atherismotorsports.Main;
@@ -33,11 +39,13 @@ public class Weather {
 	public JPanel panel;
 	public JPanel topPanel;
 	public JPanel centerPanel;
+	public JLayeredPane layeredPane;
 
 	public JLabel timeLabel;
 	public JButton backButton = new JButton();
 
 	private Main main;
+	private BackgroundPanel backgroundPanel;
 
 	public final String weatherKey = "487f4731f8e2110fb34192e05beaa1ce";
 	public String city;
@@ -52,7 +60,19 @@ public class Weather {
 	public String windDirDegrees;
 	public String sunriseTime;
 	public String sunsetTime;
+	
+	public BufferedImage clearImage;
+	public BufferedImage cloudImage;
+	public BufferedImage rainImage;
+	public BufferedImage thunderImage;
+	public BufferedImage background;
 
+	public ArrayList<String> tempList = new ArrayList<String>();
+	public ArrayList<String> maxList = new ArrayList<String>();
+	public ArrayList<String> minList = new ArrayList<String>();
+	public ArrayList<String> conditionList = new ArrayList<String>();
+
+	public final int days = 38;
 	public boolean frameDone = false;
 
 	public Weather(Main main) {
@@ -65,6 +85,8 @@ public class Weather {
 		timeLabel.setFont(new Font("Stencil", Font.PLAIN, 28));
 		timeLabel.setHorizontalAlignment(JLabel.CENTER);
 		getWeather();
+		getForecast();
+		loadImages();
 		content();
 		createFrame();
 		frameDone = true;
@@ -109,10 +131,21 @@ public class Weather {
 	}
 
 	public JComponent getCenterPanel() {
+		layeredPane = new JLayeredPane();
+		
+		layeredPane.add(backgroundPanel = new BackgroundPanel(), JLayeredPane.DEFAULT_LAYER);
+		backgroundPanel.setBounds(0, 0, 1366, 738);
+		backgroundPanel.repaint();
 		centerPanel = new JPanel(new GridBagLayout());
-		centerPanel.setBackground(MusicPlayer.grayBack);
+		
+		layeredPane.add(centerPanel, JLayeredPane.PALETTE_LAYER);
+		
+		GridBagConstraints c = new GridBagConstraints();
+		
+		//TODO layout weather details
+	
 
-		return centerPanel;
+		return layeredPane;
 	}
 
 	public void update() {
@@ -123,7 +156,8 @@ public class Weather {
 		Thread weatherThread = new Thread(new Runnable() {
 			public void run() {
 				try {
-					URL url = new URL("http://api.openweathermap.org/data/2.5/weather?zip=" + zipCode + "," + countryCode + "&units=imperial" + "&APPID=" + weatherKey);
+					URL url = new URL("http://api.openweathermap.org/data/2.5/weather?zip=" + zipCode + ","
+							+ countryCode + "&units=imperial" + "&APPID=" + weatherKey);
 					URLConnection connection = url.openConnection();
 
 					String line;
@@ -144,7 +178,9 @@ public class Weather {
 						windSpeed = json.getJSONObject("wind").get("speed").toString();
 						windDirDegrees = json.getJSONObject("wind").get("deg").toString();
 						sunriseTime = json.getJSONObject("sys").get("sunrise").toString();
-						//TODO need to add sunset time and pressure
+						sunsetTime = json.getJSONObject("sys").get("sunset").toString();
+
+						System.out.println("Successfully retrieved data");
 					} else {
 						System.out.println("Failed to retreive weather");
 					}
@@ -163,6 +199,101 @@ public class Weather {
 				e.printStackTrace();
 			}
 			weatherThread.start();
+		}
+	}
+
+	public void getForecast() {
+		Thread forecastThread = new Thread(new Runnable() {
+			public void run() {
+				try {
+					URL url = new URL("http://api.openweathermap.org/data/2.5/forecast?zip=" + zipCode + ","
+							+ countryCode + "&units=imperial" + "&APPID=" + weatherKey);
+					URLConnection connection = url.openConnection();
+
+					String line;
+					StringBuilder builder = new StringBuilder();
+					BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+					while ((line = reader.readLine()) != null) {
+						builder.append(line);
+					}
+
+					JSONObject json = new JSONObject(builder.toString());
+					String status = json.get("cnt").toString();
+					if (Integer.parseInt(status) > 0) {
+						clearArrays();
+						for (int i = 0; i < days; i += 9) {
+							tempList.add(json.getJSONArray("list").getJSONObject(i).getJSONObject("main").get("temp")
+									.toString());
+							minList.add(json.getJSONArray("list").getJSONObject(i).getJSONObject("main").get("temp_min")
+									.toString());
+							maxList.add(json.getJSONArray("list").getJSONObject(i).getJSONObject("main").get("temp_max")
+									.toString());
+							conditionList.add(json.getJSONArray("list").getJSONObject(i).getJSONArray("weather")
+									.getJSONObject(0).get("main").toString());
+						}
+
+						System.out.println("Successfully retrieved forecast");
+					} else {
+						System.out.println("Failed to retreive forecast");
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		if (!forecastThread.isAlive()) {
+			forecastThread.start();
+		} else {
+			try {
+				forecastThread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			forecastThread.start();
+		}
+	}
+
+	public void clearArrays() {
+		tempList.clear();
+		minList.clear();
+		maxList.clear();
+	}
+	
+	public void loadImages(){
+		try{
+			clearImage = ImageIO.read(Weather.class.getResource("/images/clearBackground.png"));
+			rainImage = ImageIO.read(Weather.class.getResource("/images/rainBackground.png"));
+			cloudImage = ImageIO.read(Weather.class.getResource("/images/cloudBackground.png"));
+			thunderImage = ImageIO.read(Weather.class.getResource("/images/thunderstormBackground.png"));
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
+	
+	class BackgroundPanel extends JPanel{
+		
+		public BackgroundPanel(){
+			setBackgroundImage();
+		}
+		
+		protected void setBackgroundImage(){
+			if(conditions.equals("Clear")){
+				background = clearImage;
+			}else if(conditions.equals("Clouds")){
+				background = cloudImage;
+			}else if(conditions.equals("Rain")){
+				background = rainImage;
+			}else if(conditions.equals("Extreme")){
+				background = thunderImage;
+			}else{
+				System.out.println("None of the above conditions");
+			}
+			
+		}
+		
+		public void paintComponent(Graphics g){
+			g.drawImage(background, 0, 0, null);
 		}
 	}
 
