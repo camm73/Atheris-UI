@@ -15,6 +15,7 @@ import tk.atherismotorsports.camera.BackupCamera;
 import tk.atherismotorsports.map.FxMap;
 import tk.atherismotorsports.map.Map;
 import tk.atherismotorsports.music.MusicPlayer;
+import tk.atherismotorsports.weather.Weather;
 
 public class Splash extends Canvas {
 
@@ -117,6 +118,7 @@ public class Splash extends Canvas {
 				main.panel.remove(main.getBottomPanel());
 				main.panel.add(main.getBottomPanel(), BorderLayout.SOUTH);
 				main.fxmap = new FxMap(main);
+				main.weather = new Weather(main);
 				//main.camera = new BackupCamera(main);
 				//main.map = new Map(main);
 				//main.camera = new BackupCamera(main);

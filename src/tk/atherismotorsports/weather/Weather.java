@@ -100,7 +100,7 @@ public class Weather {
 		weatherFrame.setResizable(false);
 		weatherFrame.setUndecorated(true);
 		weatherFrame.add(panel);
-		weatherFrame.setVisible(true);
+		weatherFrame.setVisible(false);
 		frameDone = true;
 	}
 
@@ -120,8 +120,9 @@ public class Weather {
 		backButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				main.frame.setAlwaysOnTop(true);
+				weatherFrame.setAlwaysOnTop(false);
+				weatherFrame.setVisible(false);
 				main.weatherOpen = false;
-				weatherFrame.dispose();
 			}
 		});
 
@@ -141,6 +142,9 @@ public class Weather {
 		layeredPane.add(centerPanel, JLayeredPane.PALETTE_LAYER);
 		
 		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.weighty = 1.0;
 		
 		//TODO layout weather details
 	

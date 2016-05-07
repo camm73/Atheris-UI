@@ -62,6 +62,7 @@ public class Main implements Runnable {
 	public JLabel background;
 	public static JLabel timeLabel;
 	public JLabel songLabel = new JLabel();
+	public JLabel tempLabel = new JLabel();
 	public JButton exitButton = new JButton("Exit");
 
 	public boolean running = false;
@@ -98,6 +99,8 @@ public class Main implements Runnable {
 		main = this;
 		time = new Time();
 		timeLabel = new JLabel("");
+		tempLabel.setFont(new Font("Stencil", Font.PLAIN, 24));
+		tempLabel.setForeground(Color.white);
 		frame = new JFrame(title);
 		start();
 		getLocation();
@@ -186,6 +189,8 @@ public class Main implements Runnable {
 	public JComponent getTopBar() {
 		JPanel topPanel = new JPanel(new BorderLayout());
 		topPanel.setBackground(MusicPlayer.grayBack);
+		
+		topPanel.add(tempLabel, BorderLayout.WEST);
 
 		timeLabel.setForeground(Color.white);
 		timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -248,13 +253,41 @@ public class Main implements Runnable {
 		background = new JLabel(new ImageIcon(backgroundImage));
 	}
 
+	int weatherCount = 0;
 	public void update() {
-		time.update();
-		// System.out.println("Threads: " + Thread.activeCount());
-
+		time.update();		
+		
+		weatherCount++;
+		if(weather != null){
+			tempLabel.setText(weather.temperature + " °F");
+			if(weatherCount % 180000 == 0){//retreive weather ever 10 mins
+				weather.getWeather();
+				tempLabel.setText(weather.temperature + " °F");
+				tempLabel.repaint();
+				tempLabel.revalidate();
+			}
+		}
+		
 		if (settingsOpen) {
 			settings.update();
 		}
+		
+		if (musicOpen) {
+			musicPlayer.update();
+		}
+		
+		if (cameraOpen) {
+			camera.update();
+		}
+
+		if (musicPlayer != null) {
+			if (musicPlayer.iconCover != null) {
+				songLabel.setIcon(new ImageIcon(musicPlayer.iconCover));
+			}
+			songLabel.setText("Now Playing: " + MusicPlayer.songTitle + " -- " + musicPlayer.artistName);
+			songLabel.revalidate();
+		}
+		
 		
 		//add weatherOpen
 		if(weatherOpen){
@@ -271,22 +304,6 @@ public class Main implements Runnable {
 
 		}
 
-		if (musicOpen) {
-			musicPlayer.update();
-		}
-
-		if (musicPlayer != null) {
-			if (musicPlayer.iconCover != null) {
-				songLabel.setIcon(new ImageIcon(musicPlayer.iconCover));
-			}
-			songLabel.setText("Now Playing: " + MusicPlayer.songTitle + " -- " + musicPlayer.artistName);
-			songLabel.revalidate();
-		}
-
-		if (cameraOpen) {
-			camera.update();
-		}
-
 		if (browserOpen) {
 			inetBrowser.update();
 		}
@@ -297,7 +314,7 @@ public class Main implements Runnable {
 
 	public void run() {
 		long prev = System.nanoTime();
-		final double limit = 1000000000.0 / 20.0;
+		final double limit = 1000000000.0 / 300.0;
 		double delta = 0;
 
 		while (running) {
@@ -305,11 +322,11 @@ public class Main implements Runnable {
 			delta += (now - prev) / limit;
 			prev = now;
 			while (delta >= 1) {
-				update();
-				timeLabel.setText(Time.timeString);
-
 				frame.repaint();
 				frame.revalidate();
+				update();
+				timeLabel.setText(Time.timeString);
+				delta--;
 			}
 		}
 		stop();
@@ -367,13 +384,8 @@ public class Main implements Runnable {
 			add(weatherButton, c);
 			weatherButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					frame.setAlwaysOnTop(true);
-					weather = new Weather(main);
 					weatherOpen = true;
-					while (!weather.frameDone) {
-						System.out.println("Weather frame loading");
-					}
-					frame.setAlwaysOnTop(false);
+					weather.weatherFrame.setVisible(true);
 					weather.weatherFrame.setAlwaysOnTop(true);
 				}
 			});
