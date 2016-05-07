@@ -37,6 +37,8 @@ public class BackupCamera {
 	public JPanel centerPanel;
 	public Dimension[] nonStandardResolutions;
 	public Thread webcamThread;
+	
+	public boolean initial = true;
 
 	public BackupCamera(Main main) {
 		this.main = main;
@@ -69,6 +71,7 @@ public class BackupCamera {
 				main.frame.setAlwaysOnTop(true);
 				frame.dispose();
 				webcam.close();
+				frame.setAlwaysOnTop(false);
 			}
 		});
 		return topPanel;
@@ -84,10 +87,12 @@ public class BackupCamera {
 		
 		webcamThread = new Thread(new Runnable(){
 			public void run(){
-				webcam = Webcam.getDefault();
-				webcam.setCustomViewSizes(nonStandardResolutions);
-				webcam.setViewSize(WebcamResolution.HD720.getSize());
-				
+				if(initial){
+					webcam = Webcam.getDefault();
+					webcam.setCustomViewSizes(nonStandardResolutions);
+					webcam.setViewSize(WebcamResolution.HD720.getSize());
+				}
+				initial = false;
 				webcamPanel = new WebcamPanel(webcam);
 				//make written stuff only available if it is enabled in settings
 				webcamPanel.setFPSDisplayed(false);

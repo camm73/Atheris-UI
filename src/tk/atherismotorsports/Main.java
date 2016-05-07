@@ -13,8 +13,10 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -35,6 +37,7 @@ import tk.atherismotorsports.map.Map;
 import tk.atherismotorsports.music.MusicControlPanel;
 import tk.atherismotorsports.music.MusicPlayer;
 import tk.atherismotorsports.music.VolumeControlPanel;
+import tk.atherismotorsports.weather.Weather;
 
 public class Main implements Runnable {
 
@@ -105,29 +108,45 @@ public class Main implements Runnable {
 	}
 
 	public void getLocation() {
-		try{
-		URL url = new URL("http://ip-api.com/json");
-		URLConnection connection = url.openConnection();
-
-		String line;
-		StringBuilder builder = new StringBuilder();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-		while ((line = reader.readLine()) != null) {
-			builder.append(line);
-		}
-
-		JSONObject json = new JSONObject(builder.toString());
-		String status = json.getString("status");
-		System.out.println("Location retrieval was: " + status);
-		if(status.equals("success")){
-			city = json.getString("city");
-			zipCode = json.getString("zip");
-			countryCode = json.getString("countryCode");
+		//A thread must be used here to avoid wait times at startup due to slow connection
+		Thread locationThread = new Thread(new Runnable(){
+			public void run(){
+				try{
+					URL url = new URL("http://ip-api.com/json");
+					URLConnection connection = url.openConnection();
+				
+					String line;
+					StringBuilder builder = new StringBuilder();
+					BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+					while ((line = reader.readLine()) != null) {
+						builder.append(line);
+					}
+				
+					JSONObject json = new JSONObject(builder.toString());
+					String status = json.getString("status");
+					System.out.println("Location retrieval was: " + status);
+					if(status.equals("success")){
+						city = json.getString("city");
+						zipCode = json.getString("zip");
+						countryCode = json.getString("countryCode");
+					}else{
+						System.out.println("Failed to retreive location");
+					}
+				}catch(IOException  e){
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		if(!locationThread.isAlive()){
+			locationThread.start();
 		}else{
-			System.out.println("Failed to retreive location");
-		}
-		}catch(IOException e){
-			e.printStackTrace();
+			try {
+				locationThread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			locationThread.start();
 		}
 	}
 
@@ -235,6 +254,9 @@ public class Main implements Runnable {
 		if (settingsOpen) {
 			settings.update();
 		}
+		
+		//add weatherOpen
+		weather.update();
 
 		if (mapOpen) {
 			if (map != null) {

@@ -1,6 +1,8 @@
-package tk.atherismotorsports;
+package tk.atherismotorsports.weather;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,8 +11,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import tk.atherismotorsports.Main;
+import tk.atherismotorsports.Time;
 import tk.atherismotorsports.music.MusicPlayer;
 
 public class Weather {
@@ -23,6 +28,7 @@ public class Weather {
 	public JPanel topPanel;
 	public JPanel centerPanel;
 	
+	public JLabel timeLabel;
 	public JButton backButton = new JButton();
 	
 	private Main main;
@@ -31,6 +37,10 @@ public class Weather {
 
 	public Weather(Main main){
 		this.main = main;
+		timeLabel = new JLabel(Time.timeString);
+		timeLabel.setForeground(Color.white);
+		timeLabel.setFont(new Font("Stencil", Font.PLAIN, 28));
+		timeLabel.setHorizontalAlignment(JLabel.CENTER);
 		content();
 		createFrame();
 		frameDone = true;
@@ -68,6 +78,8 @@ public class Weather {
 			}
 		});
 		
+		topPanel.add(timeLabel, BorderLayout.CENTER);
+		
 		return topPanel;
 	}
 	
@@ -78,6 +90,10 @@ public class Weather {
 		return centerPanel;
 	}
 	
+	
+	public void update(){
+		timeLabel.setText(Time.timeString);
+	}
 	
 	
 }

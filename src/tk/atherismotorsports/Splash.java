@@ -71,7 +71,7 @@ public class Splash extends Canvas {
 		}
 		
 		while(threadInitial){
-			System.out.println("Waiting for thread to finish loading songs");
+			//System.out.println("Waiting for thread to finish loading songs");
 		}
 		
 		main.frame.setVisible(true);
@@ -117,6 +117,7 @@ public class Splash extends Canvas {
 				main.panel.remove(main.getBottomPanel());
 				main.panel.add(main.getBottomPanel(), BorderLayout.SOUTH);
 				main.fxmap = new FxMap(main);
+				//main.camera = new BackupCamera(main);
 				//main.map = new Map(main);
 				//main.camera = new BackupCamera(main);
 				System.out.println("Done loading all preliminary things");
