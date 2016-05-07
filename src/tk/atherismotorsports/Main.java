@@ -70,6 +70,7 @@ public class Main implements Runnable {
 	public boolean mapOpen = false;
 	public boolean cameraOpen = false;
 	public boolean browserOpen = false;
+	public boolean weatherOpen = false;
 	public Thread thread;
 	
 	public String city;
@@ -256,7 +257,9 @@ public class Main implements Runnable {
 		}
 		
 		//add weatherOpen
-		weather.update();
+		if(weatherOpen){
+			weather.update();
+		}
 
 		if (mapOpen) {
 			if (map != null) {
@@ -366,6 +369,7 @@ public class Main implements Runnable {
 				public void actionPerformed(ActionEvent e) {
 					frame.setAlwaysOnTop(true);
 					weather = new Weather(main);
+					weatherOpen = true;
 					while (!weather.frameDone) {
 						System.out.println("Weather frame loading");
 					}
