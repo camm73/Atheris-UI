@@ -14,7 +14,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -39,13 +42,16 @@ public class Weather {
 	public JPanel panel;
 	public JPanel topPanel;
 	public JPanel centerPanel;
+	public JPanel currentPanel;
+	public JPanel forecastPanel;
 	public JLayeredPane layeredPane;
+
+	public Color clear = new Color(0, 0, 0, 0);
 
 	public JLabel timeLabel;
 	public JButton backButton = new JButton();
 
 	private Main main;
-	private BackgroundPanel backgroundPanel;
 
 	public final String weatherKey = "487f4731f8e2110fb34192e05beaa1ce";
 	public String city;
@@ -61,6 +67,18 @@ public class Weather {
 	public String sunriseTime;
 	public String sunsetTime;
 	
+	public final String units = "°F";
+
+	public JLabel locationLabel = new JLabel();
+	public JLabel currentConditionLabel = new JLabel();
+	public JLabel currentTempLabel = new JLabel();
+	public JLabel currentLowLabel = new JLabel();
+	public JLabel currentHighLabel = new JLabel();
+	public JLabel currentWindSpeedLabel = new JLabel();
+	public JLabel currentWindDirLabel = new JLabel();
+	public JLabel currentSunriseLabel = new JLabel();
+	public JLabel currentSunsetLabel = new JLabel();
+
 	public BufferedImage clearImage;
 	public BufferedImage cloudImage;
 	public BufferedImage rainImage;
@@ -87,7 +105,6 @@ public class Weather {
 		getWeather();
 		getForecast();
 		loadImages();
-		content();
 		createFrame();
 		frameDone = true;
 	}
@@ -99,57 +116,9 @@ public class Weather {
 		weatherFrame.setLocationRelativeTo(null);
 		weatherFrame.setResizable(false);
 		weatherFrame.setUndecorated(true);
-		weatherFrame.add(panel);
+		weatherFrame.add(new WeatherPanel());
 		weatherFrame.setVisible(false);
 		frameDone = true;
-	}
-
-	public void content() {
-		panel = new JPanel(new BorderLayout());
-		panel.add(getTopPanel(), BorderLayout.NORTH);
-		panel.add(getCenterPanel(), BorderLayout.CENTER);
-	}
-
-	public JComponent getTopPanel() {
-		topPanel = new JPanel(new BorderLayout());
-		topPanel.setBackground(MusicPlayer.grayBack);
-
-		backButton.setIcon(new ImageIcon(main.backImage));
-		backButton.setBackground(MusicPlayer.grayBack);
-		topPanel.add(backButton, BorderLayout.WEST);
-		backButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				main.frame.setAlwaysOnTop(true);
-				weatherFrame.setAlwaysOnTop(false);
-				weatherFrame.setVisible(false);
-				main.weatherOpen = false;
-			}
-		});
-
-		topPanel.add(timeLabel, BorderLayout.CENTER);
-
-		return topPanel;
-	}
-
-	public JComponent getCenterPanel() {
-		layeredPane = new JLayeredPane();
-		
-		layeredPane.add(backgroundPanel = new BackgroundPanel(), JLayeredPane.DEFAULT_LAYER);
-		backgroundPanel.setBounds(0, 0, 1366, 738);
-		backgroundPanel.repaint();
-		centerPanel = new JPanel(new GridBagLayout());
-		
-		layeredPane.add(centerPanel, JLayeredPane.PALETTE_LAYER);
-		
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = 0;
-		c.weighty = 1.0;
-		
-		//TODO layout weather details
-	
-
-		return layeredPane;
 	}
 
 	public void update() {
@@ -160,8 +129,7 @@ public class Weather {
 		Thread weatherThread = new Thread(new Runnable() {
 			public void run() {
 				try {
-					URL url = new URL("http://api.openweathermap.org/data/2.5/weather?zip=" + zipCode + ","
-							+ countryCode + "&units=imperial" + "&APPID=" + weatherKey);
+					URL url = new URL("http://api.openweathermap.org/data/2.5/weather?zip=" + zipCode + "," + countryCode + "&units=imperial" + "&APPID=" + weatherKey);
 					URLConnection connection = url.openConnection();
 
 					String line;
@@ -210,8 +178,7 @@ public class Weather {
 		Thread forecastThread = new Thread(new Runnable() {
 			public void run() {
 				try {
-					URL url = new URL("http://api.openweathermap.org/data/2.5/forecast?zip=" + zipCode + ","
-							+ countryCode + "&units=imperial" + "&APPID=" + weatherKey);
+					URL url = new URL("http://api.openweathermap.org/data/2.5/forecast?zip=" + zipCode + "," + countryCode + "&units=imperial" + "&APPID=" + weatherKey);
 					URLConnection connection = url.openConnection();
 
 					String line;
@@ -226,14 +193,10 @@ public class Weather {
 					if (Integer.parseInt(status) > 0) {
 						clearArrays();
 						for (int i = 0; i < days; i += 9) {
-							tempList.add(json.getJSONArray("list").getJSONObject(i).getJSONObject("main").get("temp")
-									.toString());
-							minList.add(json.getJSONArray("list").getJSONObject(i).getJSONObject("main").get("temp_min")
-									.toString());
-							maxList.add(json.getJSONArray("list").getJSONObject(i).getJSONObject("main").get("temp_max")
-									.toString());
-							conditionList.add(json.getJSONArray("list").getJSONObject(i).getJSONArray("weather")
-									.getJSONObject(0).get("main").toString());
+							tempList.add(json.getJSONArray("list").getJSONObject(i).getJSONObject("main").get("temp").toString());
+							minList.add(json.getJSONArray("list").getJSONObject(i).getJSONObject("main").get("temp_min").toString());
+							maxList.add(json.getJSONArray("list").getJSONObject(i).getJSONObject("main").get("temp_max").toString());
+							conditionList.add(json.getJSONArray("list").getJSONObject(i).getJSONArray("weather").getJSONObject(0).get("main").toString());
 						}
 
 						System.out.println("Successfully retrieved forecast");
@@ -263,40 +226,189 @@ public class Weather {
 		minList.clear();
 		maxList.clear();
 	}
-	
-	public void loadImages(){
-		try{
+
+	public void loadImages() {
+		try {
 			clearImage = ImageIO.read(Weather.class.getResource("/images/clearBackground.png"));
 			rainImage = ImageIO.read(Weather.class.getResource("/images/rainBackground.png"));
 			cloudImage = ImageIO.read(Weather.class.getResource("/images/cloudBackground.png"));
 			thunderImage = ImageIO.read(Weather.class.getResource("/images/thunderstormBackground.png"));
-		}catch(IOException e){
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	class BackgroundPanel extends JPanel{
-		
-		public BackgroundPanel(){
+
+	class WeatherPanel extends JPanel {
+
+		public WeatherPanel() {
 			setBackgroundImage();
+			setLayout(new BorderLayout());
+			panel = this;
+			content();
+		}
+
+		public void content() {
+			panel.add(getTopPanel(), BorderLayout.NORTH);
+			panel.add(getCenterPanel(), BorderLayout.CENTER);
+		}
+
+		public JComponent getTopPanel() {
+			topPanel = new JPanel(new BorderLayout());
+			topPanel.setBackground(MusicPlayer.grayBack);
+
+			backButton.setIcon(new ImageIcon(main.backImage));
+			backButton.setBackground(MusicPlayer.grayBack);
+			topPanel.add(backButton, BorderLayout.WEST);
+			backButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					main.frame.setAlwaysOnTop(true);
+					weatherFrame.setAlwaysOnTop(false);
+					weatherFrame.setVisible(false);
+					main.weatherOpen = false;
+				}
+			});
+
+			topPanel.add(timeLabel, BorderLayout.CENTER);
+
+			return topPanel;
+		}
+
+		public JComponent getCenterPanel() {
+			centerPanel = new JPanel(new BorderLayout());
+			centerPanel.setBackground(clear);
+
+			centerPanel.add(getCurrentPanel(), BorderLayout.CENTER);
+			centerPanel.add(getForecastPanel(), BorderLayout.SOUTH);
+
+			return centerPanel;
+		}
+
+		public JComponent getCurrentPanel() {
+			currentPanel = new JPanel(new GridBagLayout());
+			currentPanel.setBackground(clear);
+			GridBagConstraints c = new GridBagConstraints();
+			c.gridx = 1;
+			c.gridy = 0;
+
+			locationLabel.setFont(new Font("Arial", Font.PLAIN, 48));
+			locationLabel.setForeground(Color.red);
+			locationLabel.setText(city + ", " + countryCode);
+			currentPanel.add(locationLabel, c);
+			
+			c.gridy++;
+			
+			currentConditionLabel.setFont(new Font("Arial", Font.PLAIN, 42));
+			currentConditionLabel.setForeground(Color.red);
+			currentConditionLabel.setText(conditions);
+			
+			c.gridy++;
+			
+			currentTempLabel.setFont(new Font("Arial", Font.PLAIN, 54));
+			currentTempLabel.setForeground(Color.red);
+			currentTempLabel.setText(temperature + units);
+			currentPanel.add(currentTempLabel, c);
+			
+			c.gridx = 0;
+			c.gridy++;
+			
+			currentLowLabel.setFont(new Font("Arial", Font.PLAIN, 36));
+			currentLowLabel.setForeground(Color.red);
+			currentLowLabel.setText("Low: " + lowTemp + units);
+			currentPanel.add(currentLowLabel, c);
+			
+			c.gridx = 2;
+			
+			currentHighLabel.setFont(new Font("Arial", Font.PLAIN, 36));
+			currentHighLabel.setForeground(Color.red);
+			currentHighLabel.setText("High: " + highTemp + units);
+			currentPanel.add(currentHighLabel, c);
+			
+			c.gridx = 0;
+			c.gridy++;
+			
+			currentWindSpeedLabel.setFont(new Font("Arial", Font.PLAIN, 28));
+			currentWindSpeedLabel.setForeground(Color.red);
+			currentWindSpeedLabel.setText("Wind Speed: " + windSpeed + " mph");
+			currentPanel.add(currentWindSpeedLabel, c);
+			
+			c.gridx = 2;
+			
+			currentWindDirLabel.setFont(new Font("Arial", Font.PLAIN, 28));
+			currentWindDirLabel.setText("Wind Direction: " + getCardinal(Double.parseDouble(windDirDegrees)));
+			currentWindDirLabel.setForeground(Color.red);
+			currentPanel.add(currentWindDirLabel, c);
+			
+			c.gridx = 0;
+			c.gridy++;
+			
+			currentSunriseLabel.setFont(new Font("Arial", Font.PLAIN, 28));
+			currentSunriseLabel.setForeground(Color.red);
+			currentSunriseLabel.setText("Sunrise: " + convertUnix(sunriseTime) + " AM");
+			currentPanel.add(currentSunriseLabel, c);
+			
+			c.gridx = 2;
+			
+			currentSunsetLabel.setFont(new Font("Arial", Font.PLAIN, 28));
+			currentSunsetLabel.setForeground(Color.red);
+			currentSunsetLabel.setText("Sunset: " + convertUnix(sunsetTime) + " PM");
+			currentPanel.add(currentSunsetLabel, c);
+			
+			return currentPanel;
+		}
+
+		public JComponent getForecastPanel() {
+			forecastPanel = new JPanel(new GridBagLayout());
+			forecastPanel.setBackground(clear);
+			GridBagConstraints c = new GridBagConstraints();
+
+			return forecastPanel;
 		}
 		
-		protected void setBackgroundImage(){
-			if(conditions.equals("Clear")){
-				background = clearImage;
-			}else if(conditions.equals("Clouds")){
-				background = cloudImage;
-			}else if(conditions.equals("Rain")){
-				background = rainImage;
-			}else if(conditions.equals("Extreme")){
-				background = thunderImage;
+		public String getCardinal(double deg){
+			String cardinal = "";
+			
+			if(deg > 315.0 || deg <= 45.0){
+				cardinal = "North";
+			}else if(deg > 45.0 && deg <= 135.0){
+				cardinal = "East";
+			}else if(deg > 135.0 && deg <= 225.0){
+				cardinal = "South";
 			}else{
-				System.out.println("None of the above conditions");
+				cardinal = "West";
 			}
 			
+			return cardinal;
 		}
 		
-		public void paintComponent(Graphics g){
+		public String convertUnix(String time){
+			String newTime = "";
+			
+			long unixTime= Long.parseLong(time);
+			Date date = new Date(unixTime*1000L);
+			SimpleDateFormat sdf = new SimpleDateFormat("K:mm");
+			sdf.setTimeZone(TimeZone.getTimeZone("GMT-7"));
+			newTime = sdf.format(date);
+			return newTime;
+		}
+
+		protected void setBackgroundImage() {
+			if (conditions != null) {
+				if (conditions.equals("Clear")) {
+					background = clearImage;
+				} else if (conditions.equals("Clouds")) {
+					background = cloudImage;
+				} else if (conditions.equals("Rain")) {
+					background = rainImage;
+				} else if (conditions.equals("Extreme")) {
+					background = thunderImage;
+				} else {
+					System.out.println("None of the above conditions");
+				}
+			}
+		}
+
+		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
 			g.drawImage(background, 0, 0, null);
 		}
 	}
