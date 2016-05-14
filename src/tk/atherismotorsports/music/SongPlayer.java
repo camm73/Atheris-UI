@@ -37,13 +37,13 @@ public class SongPlayer implements Runnable {
 			public void playbackFinished(PlaybackEvent e) {
 				if (!musicPlayer.pause) {
 					if ((musicPlayer.songNum < (musicPlayer.songList.size() - 1) && !musicPlayer.skipBack)) {
-						System.out.println("Song isn't the last one in the list");
+						System.out.println("Song isn't the last one in the list; skipback: " + musicPlayer.skipBack);
 						musicPlayer.songNum++;
 						musicPlayer.songTime = 0;
 						musicPlayer.playSong(musicPlayer.songList.get(musicPlayer.songNum).getName(), 0, false);
 					} else if (musicPlayer.songNum <= (musicPlayer.songList.size() - 1) && musicPlayer.skipBack
 							&& musicPlayer.songNum > 0) {
-						System.out.println("Song isn't the last one in the list");
+						System.out.println("Song isn't the last one in the list; skipBack: " + musicPlayer.skipBack);
 						musicPlayer.songNum--;
 						musicPlayer.songTime = 0;
 						musicPlayer.playSong(musicPlayer.songList.get(musicPlayer.songNum).getName(), 0, false);

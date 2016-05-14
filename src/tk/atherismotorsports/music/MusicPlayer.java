@@ -539,7 +539,7 @@ public class MusicPlayer {
 	public void skipForwardActions() {
 		if (!inPlaylist) {
 			if (!pause && playStatus == 1) {
-				skipBack = true;
+				skipBack = false;
 				player.stop();
 				seekBar.setValue(0);
 			} else {
@@ -574,7 +574,7 @@ public class MusicPlayer {
 	}
 
 	public void skipBackActions() {
-		if (!pause && playStatus == 1) {
+		if (!pause && playStatus == 1 && player != null) {
 			skipBack = true;
 			player.stop();
 			seekBar.setValue(0);

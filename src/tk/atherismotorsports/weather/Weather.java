@@ -52,6 +52,7 @@ public class Weather {
 	public JButton backButton = new JButton();
 
 	private Main main;
+	public WeatherPanel weatherPanel;
 
 	public final String weatherKey = "487f4731f8e2110fb34192e05beaa1ce";
 	public String city;
@@ -68,6 +69,8 @@ public class Weather {
 	public String sunsetTime;
 	
 	public final String units = "°F";
+	
+	public Color weatherColor = Color.red;
 
 	public JLabel locationLabel = new JLabel();
 	public JLabel currentConditionLabel = new JLabel();
@@ -78,6 +81,7 @@ public class Weather {
 	public JLabel currentWindDirLabel = new JLabel();
 	public JLabel currentSunriseLabel = new JLabel();
 	public JLabel currentSunsetLabel = new JLabel();
+	public JLabel futureLabel = new JLabel("5 Day Forecast");
 
 	public BufferedImage clearImage;
 	public BufferedImage cloudImage;
@@ -92,6 +96,8 @@ public class Weather {
 
 	public final int days = 38;
 	public boolean frameDone = false;
+	
+	public boolean weatherDone = false;
 
 	public Weather(Main main) {
 		this.main = main;
@@ -104,6 +110,7 @@ public class Weather {
 		timeLabel.setHorizontalAlignment(JLabel.CENTER);
 		getWeather();
 		getForecast();
+		while(!weatherDone);
 		loadImages();
 		createFrame();
 		frameDone = true;
@@ -192,7 +199,7 @@ public class Weather {
 					String status = json.get("cnt").toString();
 					if (Integer.parseInt(status) > 0) {
 						clearArrays();
-						for (int i = 0; i < days; i += 9) {
+						for (int i = 0; i < days; i += 8) {
 							tempList.add(json.getJSONArray("list").getJSONObject(i).getJSONObject("main").get("temp").toString());
 							minList.add(json.getJSONArray("list").getJSONObject(i).getJSONObject("main").get("temp_min").toString());
 							maxList.add(json.getJSONArray("list").getJSONObject(i).getJSONObject("main").get("temp_max").toString());
@@ -206,6 +213,8 @@ public class Weather {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				
+				weatherDone = true;
 			}
 		});
 
@@ -238,12 +247,13 @@ public class Weather {
 		}
 	}
 
-	class WeatherPanel extends JPanel {
+	public class WeatherPanel extends JPanel {
 
 		public WeatherPanel() {
 			setBackgroundImage();
 			setLayout(new BorderLayout());
 			panel = this;
+			weatherPanel = this;
 			content();
 		}
 
@@ -291,20 +301,20 @@ public class Weather {
 			c.gridy = 0;
 
 			locationLabel.setFont(new Font("Arial", Font.PLAIN, 48));
-			locationLabel.setForeground(Color.red);
+			locationLabel.setForeground(weatherColor);
 			locationLabel.setText(city + ", " + countryCode);
 			currentPanel.add(locationLabel, c);
 			
 			c.gridy++;
 			
 			currentConditionLabel.setFont(new Font("Arial", Font.PLAIN, 42));
-			currentConditionLabel.setForeground(Color.red);
+			currentConditionLabel.setForeground(weatherColor);
 			currentConditionLabel.setText(conditions);
 			
 			c.gridy++;
 			
 			currentTempLabel.setFont(new Font("Arial", Font.PLAIN, 54));
-			currentTempLabel.setForeground(Color.red);
+			currentTempLabel.setForeground(weatherColor);
 			currentTempLabel.setText(temperature + units);
 			currentPanel.add(currentTempLabel, c);
 			
@@ -312,14 +322,14 @@ public class Weather {
 			c.gridy++;
 			
 			currentLowLabel.setFont(new Font("Arial", Font.PLAIN, 36));
-			currentLowLabel.setForeground(Color.red);
+			currentLowLabel.setForeground(weatherColor);
 			currentLowLabel.setText("Low: " + lowTemp + units);
 			currentPanel.add(currentLowLabel, c);
 			
 			c.gridx = 2;
 			
 			currentHighLabel.setFont(new Font("Arial", Font.PLAIN, 36));
-			currentHighLabel.setForeground(Color.red);
+			currentHighLabel.setForeground(weatherColor);
 			currentHighLabel.setText("High: " + highTemp + units);
 			currentPanel.add(currentHighLabel, c);
 			
@@ -327,7 +337,7 @@ public class Weather {
 			c.gridy++;
 			
 			currentWindSpeedLabel.setFont(new Font("Arial", Font.PLAIN, 28));
-			currentWindSpeedLabel.setForeground(Color.red);
+			currentWindSpeedLabel.setForeground(weatherColor);
 			currentWindSpeedLabel.setText("Wind Speed: " + windSpeed + " mph");
 			currentPanel.add(currentWindSpeedLabel, c);
 			
@@ -335,21 +345,21 @@ public class Weather {
 			
 			currentWindDirLabel.setFont(new Font("Arial", Font.PLAIN, 28));
 			currentWindDirLabel.setText("Wind Direction: " + getCardinal(Double.parseDouble(windDirDegrees)));
-			currentWindDirLabel.setForeground(Color.red);
+			currentWindDirLabel.setForeground(weatherColor);
 			currentPanel.add(currentWindDirLabel, c);
 			
 			c.gridx = 0;
 			c.gridy++;
 			
 			currentSunriseLabel.setFont(new Font("Arial", Font.PLAIN, 28));
-			currentSunriseLabel.setForeground(Color.red);
+			currentSunriseLabel.setForeground(weatherColor);
 			currentSunriseLabel.setText("Sunrise: " + convertUnix(sunriseTime) + " AM");
 			currentPanel.add(currentSunriseLabel, c);
 			
 			c.gridx = 2;
 			
 			currentSunsetLabel.setFont(new Font("Arial", Font.PLAIN, 28));
-			currentSunsetLabel.setForeground(Color.red);
+			currentSunsetLabel.setForeground(weatherColor);
 			currentSunsetLabel.setText("Sunset: " + convertUnix(sunsetTime) + " PM");
 			currentPanel.add(currentSunsetLabel, c);
 			
@@ -360,7 +370,36 @@ public class Weather {
 			forecastPanel = new JPanel(new GridBagLayout());
 			forecastPanel.setBackground(clear);
 			GridBagConstraints c = new GridBagConstraints();
-
+			
+			c.gridx = 2;
+			c.gridy = 0;
+			c.weightx = 1.0;
+			
+			futureLabel.setFont(new Font("Arial", Font.PLAIN, 36));
+			futureLabel.setForeground(weatherColor);
+			forecastPanel.add(futureLabel, c);
+			
+			c.gridx = 0;
+			c.gridy++;
+			
+			for(int i = 0; i < tempList.size(); i++){
+				JLabel dayTemp = new JLabel(tempList.get(i));
+				dayTemp.setForeground(weatherColor);
+				dayTemp.setFont(new Font("Arial", Font.PLAIN, 32));
+				forecastPanel.add(dayTemp, c);
+				c.gridx++;
+			}
+			
+			c.gridy++;
+			c.gridx = 0;
+			
+			for(int i = 0; i < conditionList.size(); i++){
+				JLabel dayCondition = new JLabel(conditionList.get(i));
+				dayCondition.setFont(new Font("Arial", Font.PLAIN, 28));
+				dayCondition.setForeground(weatherColor);
+				forecastPanel.add(dayCondition, c);
+				c.gridx++;
+			}
 			return forecastPanel;
 		}
 		
