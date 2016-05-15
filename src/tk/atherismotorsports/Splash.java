@@ -23,7 +23,7 @@ public class Splash extends Canvas {
 	protected BufferedImage splash;
 	private JFrame splashWindow;
 	public boolean splashEnabled = true;
-	public double splashDuration = 5000;
+	public double splashDuration = 7000;
 	public boolean initial = true;
 	public boolean threadInitial = true;
 	public Thread initThread;
