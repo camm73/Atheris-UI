@@ -95,7 +95,7 @@ public class SongPlayer implements Runnable {
 						musicPlayer.songTime = 0;
 						musicPlayer.playSong(musicPlayer.playlistSongs.get(musicPlayer.songNum), 0, true);
 					} else {
-						System.out.println("None of the above --- " + (musicPlayer.playlistSongs.size() - 1));
+						System.out.println("SongNum: " + musicPlayer.songNum + "  None of the above --- " + (musicPlayer.playlistSongs.size() - 1));
 					}
 
 				} else if (musicPlayer.pause) {

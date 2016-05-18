@@ -110,7 +110,9 @@ public class Weather {
 		timeLabel.setHorizontalAlignment(JLabel.CENTER);
 		getWeather();
 		getForecast();
-		while(!weatherDone);
+		while(!weatherDone){
+			System.out.println("Weather not finished!");
+		}
 		loadImages();
 		createFrame();
 		frameDone = true;
@@ -210,11 +212,11 @@ public class Weather {
 					} else {
 						System.out.println("Failed to retreive forecast");
 					}
+					weatherDone = true;
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 				
-				weatherDone = true;
 			}
 		});
 
