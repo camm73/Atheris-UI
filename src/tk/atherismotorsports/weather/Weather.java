@@ -155,7 +155,7 @@ public class Weather {
 						highTemp = json.getJSONObject("main").get("temp_max").toString();
 						humidity = json.getJSONObject("main").get("humidity").toString();
 						windSpeed = json.getJSONObject("wind").get("speed").toString();
-						windDirDegrees = json.getJSONObject("wind").get("deg").toString();
+						//windDirDegrees = json.getJSONObject("wind").get("deg").toString();
 						sunriseTime = json.getJSONObject("sys").get("sunrise").toString();
 						sunsetTime = json.getJSONObject("sys").get("sunset").toString();
 
@@ -344,7 +344,8 @@ public class Weather {
 			c.gridx = 2;
 			
 			currentWindDirLabel.setFont(new Font("Arial", Font.PLAIN, 28));
-			currentWindDirLabel.setText("Wind Direction: " + getCardinal(Double.parseDouble(windDirDegrees)));
+			//currentWindDirLabel.setText("Wind Direction: " + getCardinal(Double.parseDouble(windDirDegrees)));
+			//TODO figure out why windDirDegrees is null
 			currentWindDirLabel.setForeground(weatherColor);
 			currentPanel.add(currentWindDirLabel, c);
 			
@@ -440,8 +441,10 @@ public class Weather {
 					background = rainImage;
 				} else if (conditions.equals("Extreme")) {
 					background = thunderImage;
-				} else {
-					System.out.println("None of the above conditions");
+				} else if(conditions.equals("Mist")){ 
+					background = rainImage;
+				}else{
+					System.out.println("None of the above conditions; Conditions: " + conditions);
 				}
 			}
 		}
