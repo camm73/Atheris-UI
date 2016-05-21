@@ -8,13 +8,15 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.sound.sampled.Port;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -54,6 +56,9 @@ public class PlaylistManager {
 	public ArrayList<JLabel> playlistLabels = new ArrayList<JLabel>();
 	public JTextField playlistNameField = new JTextField(30);
 	
+	public boolean edit = false;
+	public String playlistName;
+	
 	public PlaylistManager(MusicPlayer musicPlayer){
 		this.musicPlayer = musicPlayer;
 		this.manager = this;
@@ -63,6 +68,24 @@ public class PlaylistManager {
 		
 		content();
 		createFrame();
+	}
+	
+	public PlaylistManager(MusicPlayer musicPlayer, String playlistName){
+		edit = true;
+		this.musicPlayer = musicPlayer;
+		this.manager = this;
+		this.playlistName = playlistName;
+		backButton.setBackground(new Color(56, 56, 56));
+		backButton.setBorderPainted(false);
+		backButton.setIcon(new ImageIcon(Main.backImage));
+		
+		loadPlaylistSongs(playlistName);
+		
+		content(); //need to make changes here
+		createFrame();
+		
+		//TODO change the createPlaylistButton to say save playlist and make sure it handles correct songs to add into file
+		//TODO also make sure that removing songs from playlist works correctly
 	}
 	
 	public void createFrame(){
@@ -80,7 +103,7 @@ public class PlaylistManager {
 	public void content(){
 		panel = new JPanel(new BorderLayout());
 		panel.setBackground(musicPlayer.grayBack);
-		panel.add(getTopBar(), BorderLayout.NORTH);
+		panel.add(getTopBar(), BorderLayout.NORTH); //ok
 		panel.add(getCenterPanel(), BorderLayout.CENTER);
 		panel.add(getButtonBar(), BorderLayout.SOUTH);
 	}
@@ -95,7 +118,6 @@ public class PlaylistManager {
 				PlaylistPrompt prompt = new PlaylistPrompt(manager);
 				changeBackground(true);
 				frame.setEnabled(false);
-				//TODO add confirmation that you want to exit without saving playlist
 			}
 		});
 		
@@ -145,7 +167,6 @@ public class PlaylistManager {
 		c.gridx = 0;
 		c.gridy = 0;
 		
-		//TODO add label that says songs to add
 		songLabel.setFont(new Font("Arial", Font.PLAIN, 16));
 		songLabel.setForeground(Color.red);
 		centerPanel.add(songLabel, c);
@@ -160,6 +181,10 @@ public class PlaylistManager {
 		playlistNameField.setForeground(Color.red);
 		playlistNameField.setFont(new Font("Verdana", Font.PLAIN, 18));
 		playlistNameField.setFocusable(true);
+		if(edit){
+			playlistNameField.setText(playlistName);
+			playlistNameField.setEditable(false);//temporary until I make a method to transfer files
+		}
 		centerPanel.add(playlistNameField, c);
 		
 		c.gridx++;
@@ -231,12 +256,24 @@ public class PlaylistManager {
 		c.gridx = 0;
 		c.gridy = 0;
 		c.weighty = 1.0;
-		
-		for(int i = 0; i < musicPlayer.songButtons.size(); i++){
-			localSongButtons.add(new CreatePlaylistButton(musicPlayer, this, musicPlayer.songButtons.get(i).getText()));
-			System.out.println(i);
-			songPanel.add(localSongButtons.get(i), c);
-			c.gridy++;
+		if(!edit){
+			for(int i = 0; i < musicPlayer.songButtons.size(); i++){
+				localSongButtons.add(new CreatePlaylistButton(musicPlayer, this, musicPlayer.songButtons.get(i).getText(), true));
+				System.out.println(i);
+				songPanel.add(localSongButtons.get(i), c);
+				c.gridy++;
+			}
+		}else{
+			for(int i = 0; i < musicPlayer.songButtons.size(); i++){
+				if(!playlistSongs.contains(musicPlayer.songButtons.get(i).getText())){
+					localSongButtons.add(new CreatePlaylistButton(musicPlayer, this, musicPlayer.songButtons.get(i).getText(), true));
+				}else{
+					localSongButtons.add(new CreatePlaylistButton(musicPlayer, this, musicPlayer.songButtons.get(i).getText(), false));
+				}
+				System.out.println(i);
+				songPanel.add(localSongButtons.get(i), c);
+				c.gridy++;
+			}
 		}
 		localSongScroll.repaint();
 		
@@ -257,15 +294,22 @@ public class PlaylistManager {
 		playlistC.gridy = 0;
 		
 		for(int i = 0; i < playlistSongs.size(); i++){
-			playlistLabels.add(new JLabel(playlistSongs.get(i)));
+			JLabel tempLabel = new JLabel(playlistSongs.get(i));
+			tempLabel.setForeground(Color.red);
+			tempLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+			Dimension labelSize = new Dimension(250, 35);
+			tempLabel.setPreferredSize(labelSize);
+			tempLabel.setMaximumSize(labelSize);
+			tempLabel.setMinimumSize(labelSize);
+			playlistLabels.add(tempLabel);
 			playlistPanel.add(playlistLabels.get(i), playlistC);
-			playlistC.gridx = 0;
 			
 			playlistC.gridx++;
 			
 			playlistPanel.add(new RemoveSongButton(this, playlistSongs.get(i)), playlistC);
 			
 			playlistC.gridy++;
+			playlistC.gridx =0;
 		}
 		
 		return playlistScroll;
@@ -305,6 +349,23 @@ public class PlaylistManager {
 			writePlaylistSongs(playlistFolder);
 		}else{
 			System.out.println("Error creating playist " + playlistNameField.getText());
+		}
+	}
+	
+	public void loadPlaylistSongs(String playlist){
+		File playlistContent = new File(musicPlayer.playlistDirectory + "/" + playlist + "/playlistContent.txt");
+		playlistSongs.clear();
+		
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(playlistContent));
+			String line;
+			
+			while((line = reader.readLine()) != null){
+				playlistSongs.add(line.trim());
+			}
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	

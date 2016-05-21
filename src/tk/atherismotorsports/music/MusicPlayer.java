@@ -115,6 +115,7 @@ public class MusicPlayer {
 	public Thread songThread;
 	public int songNum = 0;
 	public static String songTitle = "";
+	public String currentPlaylist;
 
 	public double songFrames = 0.0;
 	public double runtime = 0.0;
@@ -676,17 +677,19 @@ public class MusicPlayer {
 		playlistSongPanel.add(playlistTopPanel, BorderLayout.NORTH);
 
 		// top panel
-		JButton songEditButton = new JButton("Edit Playlist");
+		JButton playlistEditButton = new JButton("Edit Playlist");
 		JButton returnButton = new JButton("Back");
 
-		songEditButton.setBackground(grayBack);
-		songEditButton.setForeground(Color.red);
-		songEditButton.setFont(new Font("Arial", Font.BOLD, 14));
-		playlistTopPanel.add(songEditButton, BorderLayout.EAST);
+		playlistEditButton.setBackground(grayBack);
+		playlistEditButton.setForeground(Color.red);
+		playlistEditButton.setFont(new Font("Arial", Font.BOLD, 14));
+		playlistTopPanel.add(playlistEditButton, BorderLayout.EAST);
 		if (playlistInitial) {
-			songEditButton.addActionListener(new ActionListener() {
+			playlistEditButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					// TODO add actions here >> delete songs from playlist
+					manager = new PlaylistManager(musicPlayer, currentPlaylist);
+					frame.setAlwaysOnTop(false);
 				}
 			});
 		}

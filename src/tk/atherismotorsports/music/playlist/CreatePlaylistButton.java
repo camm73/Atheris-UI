@@ -17,13 +17,16 @@ public class CreatePlaylistButton extends JButton{
 	public MusicPlayer musicPlayer;
 	public PlaylistManager manager;
 	protected Dimension buttonSize = new Dimension(375, 40);
+	public boolean enabled = false;
 	
 	
-	public CreatePlaylistButton(MusicPlayer musicPlayer, PlaylistManager pm, String text){
+	public CreatePlaylistButton(MusicPlayer musicPlayer, PlaylistManager pm, String text, boolean enabled){
 		this.buttonText = text;
 		this.musicPlayer = musicPlayer;
 		this.manager = pm;
+		this.enabled = enabled;
 		setText(buttonText);
+		setEnabled(enabled);
 		setMaximumSize(buttonSize);
 		setPreferredSize(buttonSize);
 		setMinimumSize(buttonSize);

@@ -33,8 +33,8 @@ public class OpenPlaylistButton extends JButton {
 		addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				musicPlayer.viewPlaylistContents(getText());
+				musicPlayer.currentPlaylist = getText();
 				musicPlayer.openPlaylist = true;
-				
 			}
 		});
 	}
