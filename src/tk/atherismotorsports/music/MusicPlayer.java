@@ -258,7 +258,7 @@ public class MusicPlayer {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void loadButtonImages() {
 		try {
 			playImage = ImageIO.read(MusicPlayer.class.getResource("/images/playPauseButton.png"));
@@ -374,6 +374,9 @@ public class MusicPlayer {
 		if (initial) {
 			backButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+					if(initialPlay){
+						inPlaylist = false;
+					}
 					frame.setVisible(false);
 					main.frame.setAlwaysOnTop(true);
 				}
@@ -483,35 +486,35 @@ public class MusicPlayer {
 
 		c.gridy += 2;
 		c.gridx = 0;
-		
+
 		volumeDownButton.setBackground(grayBack);
 		infoPanel.add(volumeDownButton, c);
-		volumeDownButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+		volumeDownButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				MusicVolume.lowerVolume();
 			}
 		});
-		
+
 		c.gridx++;
-		
+
 		muteButton.setBackground(grayBack);
 		infoPanel.add(muteButton, c);
-		muteButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+		muteButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				MusicVolume.toggleMute();
 			}
 		});
-		
+
 		c.gridx++;
-		
+
 		volumeUpButton.setBackground(grayBack);
 		infoPanel.add(volumeUpButton, c);
-		volumeUpButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+		volumeUpButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				MusicVolume.raiseVolume();
 			}
 		});
-		
+
 		return infoPanel;
 	}
 
@@ -529,6 +532,7 @@ public class MusicPlayer {
 			} else if (!inPlaylist && initialPlay) {
 				playSong(songButtons.get(0).getText(), 0, false);
 			} else {
+				System.out.println("playlist: " + inPlaylist + "  init: " + initialPlay);
 				playSong(songFile.getName(), (int) (songTime * songFPS), true);
 			}
 
@@ -684,15 +688,12 @@ public class MusicPlayer {
 		playlistEditButton.setForeground(Color.red);
 		playlistEditButton.setFont(new Font("Arial", Font.BOLD, 14));
 		playlistTopPanel.add(playlistEditButton, BorderLayout.EAST);
-		if (playlistInitial) {
-			playlistEditButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					// TODO add actions here >> delete songs from playlist
-					manager = new PlaylistManager(musicPlayer, currentPlaylist);
-					frame.setAlwaysOnTop(false);
-				}
-			});
-		}
+		playlistEditButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				manager = new PlaylistManager(musicPlayer, currentPlaylist); //opens with current songs in playlist
+				frame.setAlwaysOnTop(false);
+			}
+		});
 
 		returnButton.setBackground(grayBack);
 		returnButton.setForeground(Color.red);
@@ -707,6 +708,7 @@ public class MusicPlayer {
 				playlistPanel.repaint();
 				leftPanel.repaint();
 				leftPanel.revalidate();
+				System.out.println("Leaving playlist: " + currentPlaylist);
 			}
 		});
 

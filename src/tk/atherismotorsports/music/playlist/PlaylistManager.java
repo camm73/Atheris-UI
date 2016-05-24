@@ -47,6 +47,7 @@ public class PlaylistManager {
 	public JLabel playlistLabel = new JLabel("Songs in playlist");
 	public JButton backButton = new JButton();
 	public JButton createPlaylist = new JButton("Create Playlist");
+	public JButton savePlaylist = new JButton("Save Playlist");
 	
 	public JScrollPane localSongScroll;
 	public JScrollPane playlistScroll;
@@ -140,6 +141,7 @@ public class PlaylistManager {
 			
 			backButton.setBackground(lightColor);
 			createPlaylist.setBackground(lightColor);
+			savePlaylist.setBackground(lightColor);
 			playlistNameField.setBackground(lightColor);
 			
 		}else{ //darkens panels again
@@ -156,6 +158,7 @@ public class PlaylistManager {
 			
 			backButton.setBackground(MusicPlayer.grayBack);
 			createPlaylist.setBackground(MusicPlayer.grayBack);
+			savePlaylist.setBackground(MusicPlayer.grayBack);
 			playlistNameField.setBackground(MusicPlayer.grayBack);
 		}
 	}
@@ -224,20 +227,44 @@ public class PlaylistManager {
 		createPlaylist.setForeground(Color.red);
 		createPlaylist.setBackground(MusicPlayer.grayBack);
 		createPlaylist.setFont(new Font("Arial", Font.PLAIN, 18));
-		buttonPanel.add(createPlaylist, c);
-		createPlaylist.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				if(playlistNameField.getText().trim() != "" && !musicPlayer.playlistFolderNames.contains(playlistNameField.getText().trim())){
-					createPlaylistFolder();
-					updateMusicPlaylist();
-					frame.dispose();
-				}else if(musicPlayer.playlistFolderNames.contains(playlistNameField.getText().trim())){
-					//TODO warn the person that they can't create folder with same name.
-				}else{
-					//TODO give warning that you need to enter name
+		
+		savePlaylist.setForeground(Color.red);
+		savePlaylist.setBackground(MusicPlayer.grayBack);
+		savePlaylist.setFont(new Font("Arial", Font.PLAIN, 18));
+		if(!edit){
+			buttonPanel.add(createPlaylist, c);
+			createPlaylist.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					if(playlistNameField.getText().trim() != "" && !musicPlayer.playlistFolderNames.contains(playlistNameField.getText().trim())){
+						createPlaylistFolder();
+						updateMusicPlaylist();
+						frame.dispose();
+					}else if(musicPlayer.playlistFolderNames.contains(playlistNameField.getText().trim())){
+						//TODO warn the person that they can't create folder with same name.
+					}else{
+						//TODO give warning that you need to enter name
+					}
 				}
-			}
-		});
+			});
+		}else{
+			buttonPanel.add(savePlaylist, c);
+			savePlaylist.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					//TODO need to add the capability to edit playlist name; currently just adding this for the future.
+					if(playlistNameField.getText().trim() != "" && !musicPlayer.playlistFolderNames.contains(playlistNameField.getText().trim())){
+						playlistName = playlistNameField.getText().trim();
+						createPlaylistFolder();
+						updateInternalPlaylist();
+						frame.dispose();
+					}else if(playlistNameField.getText().trim() != "" && musicPlayer.playlistFolderNames.contains(playlistNameField.getText().trim())){
+						playlistName = playlistNameField.getText().trim();
+						writePlaylistSongs(new File(musicPlayer.playlistDirectory + "/" + playlistNameField.getText().trim() + "/"));
+						updateInternalPlaylist();
+						frame.dispose();
+					}
+				}
+			});
+		}
 		
 		return buttonPanel;
 	}
@@ -373,7 +400,6 @@ public class PlaylistManager {
 		File playlistContent = new File(folder + "/playlistContent.txt");
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(playlistContent));
-			
 			for(int i = 0; i < playlistSongs.size(); i++){
 				writer.write(playlistSongs.get(i));
 				writer.newLine();
@@ -392,7 +418,17 @@ public class PlaylistManager {
 		musicPlayer.getPlaylistScroll();
 		//musicPlayer.playlistScroll.repaint();
 		musicPlayer.internalPanel.repaint();
-		
+	}
+	
+	public void updateInternalPlaylist(){
+		musicPlayer.loadFiles();
+		musicPlayer.getPlaylistButtons();
+		musicPlayer.leftPanel.remove(musicPlayer.playlistSongPanel);
+		musicPlayer.getPlaylistSongPanel(playlistName);
+		musicPlayer.leftPanel.add(musicPlayer.playlistSongPanel, BorderLayout.CENTER);
+		musicPlayer.playlistSongPanel.repaint();
+		musicPlayer.playlistSongPanel.revalidate();
+		musicPlayer.leftPanel.repaint();
 	}
 
 }
