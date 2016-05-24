@@ -98,6 +98,7 @@ public class Weather {
 	public boolean frameDone = false;
 	
 	public boolean weatherDone = false;
+	public boolean failed = false;
 
 	public Weather(Main main) {
 		this.main = main;
@@ -110,12 +111,19 @@ public class Weather {
 		timeLabel.setHorizontalAlignment(JLabel.CENTER);
 		getWeather();
 		getForecast();
-		while(!weatherDone){
+		/*while(!weatherDone){
 			System.out.println("Weather not finished!");
+		}*/
+		
+		if(!failed){
+			loadImages();
+			createFrame();
+			frameDone = true;
 		}
-		loadImages();
-		createFrame();
-		frameDone = true;
+		
+		if(failed){
+			main.weatherButton.setEnabled(false);
+		}
 	}
 
 	public void createFrame() {
@@ -166,7 +174,8 @@ public class Weather {
 						System.out.println("Failed to retreive weather");
 					}
 				} catch (IOException e) {
-					e.printStackTrace();
+					failed = true;
+					System.out.println("Failed to retrieve primary weather information");
 				}
 			}
 		});
@@ -214,7 +223,8 @@ public class Weather {
 					}
 					weatherDone = true;
 				} catch (IOException e) {
-					e.printStackTrace();
+					failed = true;
+					System.out.println("Failed to retrieve forecast information");
 				}
 				
 			}
@@ -345,9 +355,11 @@ public class Weather {
 			
 			c.gridx = 2;
 			
+			
 			currentWindDirLabel.setFont(new Font("Arial", Font.PLAIN, 28));
-			currentWindDirLabel.setText("Wind Direction: " + getCardinal(Double.parseDouble(windDirDegrees)));
-			//TODO figure out why windDirDegrees is null
+			if(windDirDegrees != null){ //for some reason this occasionally returns null
+				currentWindDirLabel.setText("Wind Direction: " + getCardinal(Double.parseDouble(windDirDegrees)));
+			}
 			currentWindDirLabel.setForeground(weatherColor);
 			currentPanel.add(currentWindDirLabel, c);
 			

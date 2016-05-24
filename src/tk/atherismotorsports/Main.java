@@ -63,6 +63,14 @@ public class Main implements Runnable {
 	public JLabel songLabel = new JLabel();
 	public JLabel tempLabel = new JLabel();
 	public JButton exitButton = new JButton("Exit");
+	
+	public JButton musicButton = new JButton();
+	public JButton weatherButton = new JButton();
+	public JButton speed = new JButton();
+	public JButton settingsButton = new JButton();
+	public JButton mapButton = new JButton();
+	public JButton cameraButton = new JButton();
+	public JButton rightButton = new JButton();
 
 	public boolean running = false;
 	public boolean settingsOpen = false;
@@ -343,13 +351,6 @@ public class Main implements Runnable {
 		}
 
 		public void content() {
-			JButton musicButton = new JButton();
-			JButton weatherButton = new JButton();
-			JButton speed = new JButton();
-			JButton settingsButton = new JButton();
-			JButton mapButton = new JButton();
-			JButton cameraButton = new JButton();
-			JButton rightButton = new JButton();
 			GridBagConstraints c = new GridBagConstraints();
 			c.gridx = 1;
 			c.gridy = 0;

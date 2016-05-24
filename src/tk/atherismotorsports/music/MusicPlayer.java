@@ -374,7 +374,7 @@ public class MusicPlayer {
 		if (initial) {
 			backButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					if(initialPlay){
+					if(initialPlay){//TODO need to check this because there was bug with it earlier where it exitted playlist mode
 						inPlaylist = false;
 					}
 					frame.setVisible(false);
