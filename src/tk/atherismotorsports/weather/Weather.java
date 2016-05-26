@@ -368,14 +368,18 @@ public class Weather {
 			
 			currentSunriseLabel.setFont(new Font("Arial", Font.PLAIN, 28));
 			currentSunriseLabel.setForeground(weatherColor);
-			currentSunriseLabel.setText("Sunrise: " + convertUnix(sunriseTime) + " AM");
+			if(sunriseTime != null){
+				currentSunriseLabel.setText("Sunrise: " + convertUnix(sunriseTime) + " AM");
+			}
 			currentPanel.add(currentSunriseLabel, c);
 			
 			c.gridx = 2;
 			
 			currentSunsetLabel.setFont(new Font("Arial", Font.PLAIN, 28));
 			currentSunsetLabel.setForeground(weatherColor);
-			currentSunsetLabel.setText("Sunset: " + convertUnix(sunsetTime) + " PM");
+			if(sunsetTime != null){
+				currentSunsetLabel.setText("Sunset: " + convertUnix(sunsetTime) + " PM");
+			}
 			currentPanel.add(currentSunsetLabel, c);
 			
 			return currentPanel;
