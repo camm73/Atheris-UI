@@ -1,5 +1,5 @@
 # Atheris-UI
-The goal of this project is to develop a universal car infotainment system with support for maps, engine diagnostics, music, and much more.
+The goal of this project is to develop a universal car infotainment system, designed specifically for a personal dune buggy project, with support for maps, engine diagnostics, music, and much more.
 
 This Interface will be developed entirely in Java to help with portability.
 
